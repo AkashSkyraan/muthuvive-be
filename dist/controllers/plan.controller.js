@@ -30,6 +30,7 @@ class PlanController {
             return (0, helper_1.sendResponse)(res, 200, 1, planId ? [plans] : plans, "Plans fetched successfully", []);
         }
         catch (error) {
+            console.log(error);
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
                 error.errors,
             ]);

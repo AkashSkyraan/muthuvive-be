@@ -19,6 +19,7 @@ export class PlanController {
         [],
       );
     } catch (error: any) {
+      
       return sendResponse(
         res,
         error.status || 500,
@@ -57,6 +58,7 @@ export class PlanController {
         [],
       );
     } catch (error: any) {
+        console.log(error);
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error.errors,
       ]);

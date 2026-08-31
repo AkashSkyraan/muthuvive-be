@@ -71,7 +71,7 @@ export class PlanModel {
     let sql = `
     SELECT
       id,
-      
+      name,
       duration,
       old_amount,
       new_amount,
@@ -90,6 +90,31 @@ export class PlanModel {
 
     const rows: any = await executeQuery(sql, values);
 
+    const parseFeatures = (features: any) => {
+      if (!features) {
+        return [];
+      }
+
+      // MySQL driver may already return an array/object
+      if (Array.isArray(features)) {
+        return features;
+      }
+
+      if (typeof features === "object") {
+        return features;
+      }
+
+      if (typeof features === "string") {
+        try {
+          return JSON.parse(features);
+        } catch {
+          return [];
+        }
+      }
+
+      return [];
+    };
+
     if (data.id) {
       if (!rows || rows.length === 0) {
         return null;
@@ -97,14 +122,14 @@ export class PlanModel {
 
       const plan = rows[0];
 
-      plan.features = plan.features ? JSON.parse(plan.features) : [];
+      plan.features = parseFeatures(plan.features);
 
       return plan;
     }
 
     return (rows || []).map((plan: any) => ({
       ...plan,
-      features: plan.features ? JSON.parse(plan.features) : [],
+      features: parseFeatures(plan.features),
     }));
   }
 

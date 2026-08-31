@@ -63,7 +63,7 @@ class PlanModel {
         let sql = `
     SELECT
       id,
-      
+      name,
       duration,
       old_amount,
       new_amount,
@@ -78,17 +78,38 @@ class PlanModel {
         }
         sql += ` ORDER BY id DESC`;
         const rows = await (0, helper_1.executeQuery)(sql, values);
+        const parseFeatures = (features) => {
+            if (!features) {
+                return [];
+            }
+            // MySQL driver may already return an array/object
+            if (Array.isArray(features)) {
+                return features;
+            }
+            if (typeof features === "object") {
+                return features;
+            }
+            if (typeof features === "string") {
+                try {
+                    return JSON.parse(features);
+                }
+                catch {
+                    return [];
+                }
+            }
+            return [];
+        };
         if (data.id) {
             if (!rows || rows.length === 0) {
                 return null;
             }
             const plan = rows[0];
-            plan.features = plan.features ? JSON.parse(plan.features) : [];
+            plan.features = parseFeatures(plan.features);
             return plan;
         }
         return (rows || []).map((plan) => ({
             ...plan,
-            features: plan.features ? JSON.parse(plan.features) : [],
+            features: parseFeatures(plan.features),
         }));
     }
     static async deletePlan(id) {

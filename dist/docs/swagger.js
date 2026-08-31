@@ -7,7 +7,8 @@ const doc = {
     },
     // host: "localhost:5001/api",
     // schemes: ["http"],
-    host: "https://muthuvives.skyraantech.com/server/api",
+    host: "muthuvives.skyraantech.com",
+    basePath: "/server/api",
     schemes: ["https"],
 };
 const outputFile = "./swagger-output.json";

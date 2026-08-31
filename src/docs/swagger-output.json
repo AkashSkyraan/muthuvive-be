@@ -5,8 +5,8 @@
     "description": "Real Estate Website API",
     "version": "1.0.0"
   },
-  "host": "https://muthuvives.skyraantech.com/server/api",
-  "basePath": "/",
+  "host": "muthuvives.skyraantech.com",
+  "basePath": "/server/api",
   "schemes": [
     "https"
   ],

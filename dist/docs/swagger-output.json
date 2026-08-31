@@ -1,0 +1,550 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Muthu Vive's API",
+        "description": "Real Estate Website API",
+        "version": "1.0.0"
+    },
+    "host": "localhost:5001/api",
+    "basePath": "/",
+    "schemes": [
+        "http"
+    ],
+    "paths": {
+        "/upload": {
+            "post": {
+                "tags": [
+                    "1.Upload"
+                ],
+                "summary": "Upload Files",
+                "description": "Upload single or multiple images, videos, and PDF files",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "files",
+                        "in": "formData",
+                        "type": "file",
+                        "required": true,
+                        "description": "Select one or more files"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Files Uploaded Successfully"
+                    },
+                    "400": {
+                        "description": "No files uploaded"
+                    }
+                }
+            }
+        },
+        "/get-uploads": {
+            "post": {
+                "tags": [
+                    "1.Upload"
+                ],
+                "summary": "Get Uploaded Files",
+                "description": "Fetch uploaded images, videos, PDFs with pagination and filters",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": false,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "page": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "limit": {
+                                    "type": "number",
+                                    "example": 10
+                                },
+                                "media_type": {
+                                    "type": "string",
+                                    "example": "image"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "example": "1,2,3"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 0
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Something went wrong"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/request-otp": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/verify-otp": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/signup": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/property/add-property": {
+            "post": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Add or Update Property",
+                "description": "Create a new property or update an existing property",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "image": {
+                                    "type": "string",
+                                    "example": "property.jpg"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Farmland"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Property added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/property/properties": {
+            "get": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Get Properties",
+                "description": "Get all properties, a single property by ID, or filter properties by status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Property ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Property status (Inactive, Active)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Properties fetched successfully"
+                    },
+                    "400": {
+                        "description": "Invalid property ID or status"
+                    },
+                    "404": {
+                        "description": "Property not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/property/properties/{id}": {
+            "delete": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Delete Property",
+                "description": "Delete a property based on property ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Property ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property deleted successfully"
+                    },
+                    "400": {
+                        "description": "Invalid property ID"
+                    },
+                    "404": {
+                        "description": "Property not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/plan/add-plan": {
+            "post": {
+                "tags": [
+                    "3.Plan"
+                ],
+                "summary": "Add or Update Plan",
+                "description": "Create a new plan or update an existing plan",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "duration": {
+                                    "type": "string",
+                                    "example": "year"
+                                },
+                                "old_amount": {
+                                    "type": "number",
+                                    "example": 4999
+                                },
+                                "new_amount": {
+                                    "type": "number",
+                                    "example": 2999
+                                },
+                                "features": {
+                                    "type": "array",
+                                    "example": [
+                                        "365 Days Listing",
+                                        "Wider Visibility",
+                                        "Property Promotion",
+                                        "Regular Verification",
+                                        "Better Selling Opportunity"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plan added or updated successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/plan/plans": {
+            "get": {
+                "tags": [
+                    "3.Plan"
+                ],
+                "summary": "Get Plans",
+                "description": "Get all plans or filter by ID and status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Plan ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Plan status"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plans fetched successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/plan/plans/{id}": {
+            "delete": {
+                "tags": [
+                    "3.Plan"
+                ],
+                "summary": "Delete Plan",
+                "description": "Delete a plan based on plan ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Plan ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plan deleted successfully"
+                    },
+                    "404": {
+                        "description": "Plan not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/testimonial/add-testimonial": {
+            "post": {
+                "tags": [
+                    "4.Testimonial"
+                ],
+                "summary": "Add or Update Testimonial",
+                "description": "Create a new testimonial or update an existing testimonial",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "John David"
+                                },
+                                "image": {
+                                    "type": "string",
+                                    "example": "uploads/images/john.jpg"
+                                },
+                                "content": {
+                                    "type": "string",
+                                    "example": "This platform helped me find the perfect property. Highly recommended!"
+                                },
+                                "rating": {
+                                    "type": "number",
+                                    "example": 5
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Testimonial added or updated successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/testimonial/testimonials": {
+            "get": {
+                "tags": [
+                    "4.Testimonial"
+                ],
+                "summary": "Get Testimonials",
+                "description": "Get all testimonials or filter by ID and status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Testimonial ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Testimonial status"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Testimonials fetched successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/testimonial/testimonials/{id}": {
+            "delete": {
+                "tags": [
+                    "4.Testimonial"
+                ],
+                "summary": "Delete Testimonial",
+                "description": "Delete a testimonial based on testimonial ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Testimonial ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Testimonial deleted successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    }
+}

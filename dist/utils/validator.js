@@ -1,0 +1,93 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
+const joi_1 = __importDefault(require("joi"));
+exports.requestOtpSchema = joi_1.default.object({
+    type: joi_1.default.string().optional(),
+    purpose: joi_1.default.number().required().messages({
+        "any.required": "Purpose is required",
+    }),
+    email: joi_1.default.string().optional(),
+    mobile: joi_1.default.string().optional(),
+})
+    .or("email", "mobile")
+    .messages({
+    "object.missing": "Either email or mobile is required",
+});
+exports.verifyOtpSchema = joi_1.default.object({
+    type: joi_1.default.string().valid("email", "mobile").required(),
+    purpose: joi_1.default.number().valid(1, 2).required(),
+    email: joi_1.default.string().optional(),
+    mobile: joi_1.default.number().optional(),
+    otp: joi_1.default.string()
+        .pattern(/^[0-9]{6}$/)
+        .required()
+        .messages({
+        "string.pattern.base": "OTP must be a 6 digit number",
+    }),
+});
+exports.resetPasswordSchema = joi_1.default.object({
+    type: joi_1.default.string().valid("email", "mobile").required(),
+    email: joi_1.default.optional(),
+    mobile: joi_1.default.optional(),
+    password: joi_1.default.string().min(8).max(128).required(),
+    confirmPassword: joi_1.default.any().valid(joi_1.default.ref("password")).required().messages({
+        "any.only": "Passwords do not match",
+    }),
+});
+exports.signupSchema = joi_1.default.object({
+    email: joi_1.default.string().optional(),
+    mobile: joi_1.default.string().optional(),
+    password: joi_1.default.string().required().messages({
+        "any.required": "Password is required",
+    }),
+    confirm_password: joi_1.default.any().valid(joi_1.default.ref("password")).required().messages({
+        "any.only": "Passwords do not match",
+    }),
+}).or("email", "mobile");
+exports.loginSchema = joi_1.default.object({
+    type: joi_1.default.string().valid("email", "mobile").required(),
+    email: joi_1.default.string().optional(),
+    mobile: joi_1.default.string().optional(),
+    password: joi_1.default.string().required(),
+});
+exports.addUpdateCategorySchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    image: joi_1.default.string().max(500).allow(null, "").optional(),
+    name: joi_1.default.string().trim().max(255).required(),
+    status: joi_1.default.string().valid("active", "inactive").optional(),
+});
+exports.addUpdatePlanSchema = joi_1.default.object({
+    id: joi_1.default.number().optional(),
+    duration: joi_1.default.string().trim().min(1).max(50).required().messages({
+        "string.empty": "Duration is required",
+        "any.required": "Duration is required",
+    }),
+    old_amount: joi_1.default.number().default(0),
+    new_amount: joi_1.default.number().required().messages({
+        "number.base": "New amount must be a number",
+        "any.required": "New amount is required",
+    }),
+    features: joi_1.default.array().items(joi_1.default.string().trim().min(1).max(255)).default([]),
+    status: joi_1.default.string().valid("active", "active").default("active"),
+});
+exports.addUpdateTestimonialSchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    name: joi_1.default.string().trim().min(1).max(150).required().messages({
+        "string.empty": "Name is required",
+        "any.required": "Name is required",
+    }),
+    image: joi_1.default.string().trim().allow("", null).optional(),
+    content: joi_1.default.string().trim().min(1).required().messages({
+        "string.empty": "Testimonial content is required",
+        "any.required": "Testimonial content is required",
+    }),
+    rating: joi_1.default.number().required().messages({
+        "string.empty": "Rating  is required",
+        "any.required": "Rating is required",
+    }),
+    status: joi_1.default.string().valid("active", "inactive").default("active"),
+});

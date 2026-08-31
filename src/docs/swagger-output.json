@@ -5,10 +5,10 @@
     "description": "Real Estate Website API",
     "version": "1.0.0"
   },
-  "host": "muthuvives.skyraantech.com",
-  "basePath": "/server/api",
+  "host": "localhost:5001/api",
+  "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "paths": {
     "/upload": {
@@ -462,6 +462,10 @@
                   "type": "number",
                   "example": 5
                 },
+                "location": {
+                  "type": "string",
+                  "example": "Peelamedu , CBE"
+                },
                 "status": {
                   "type": "string",
                   "example": "active"
@@ -544,6 +548,65 @@
             "description": "Internal Server Error"
           }
         }
+      }
+    },
+    "/user/update-profile": {
+      "put": {
+        "tags": [
+          "2.User"
+        ],
+        "summary": "Update Profile",
+        "description": "Update user name, email, or mobile number",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Kamalesh"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "kamalesh@example.com"
+                },
+                "mobile": {
+                  "type": "string",
+                  "example": "9876543210"
+                }
+              },
+              "required": [
+                "user_id"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   }

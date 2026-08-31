@@ -3,6 +3,7 @@ import authRoutes from "./auth.routes";
 import propertyRoutes from "./property.routes";
 import planRoutes from "./plan.routes";
 import testimonialRoutes from "./testimonial.routes";
+import userRoutes from "./user.routes";
 import { UploadController } from "../controllers/upload.controller";
 import { upload } from "../config/multer";
 const router = Router();
@@ -10,6 +11,7 @@ router.use("/auth", authRoutes);
 router.use("/property", propertyRoutes);
 router.use("/plan", planRoutes);
 router.use("/testimonial", testimonialRoutes);
+router.use("/user", userRoutes);
 router.post(
   "/upload",
 

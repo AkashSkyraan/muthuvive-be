@@ -94,6 +94,10 @@ export const addUpdatePlanSchema = Joi.object({
 
 export const addUpdateTestimonialSchema = Joi.object({
   id: Joi.number().integer().optional(),
+  location: Joi.string().required().messages({
+    "any.required": "Location is required",
+    "string.empty": "Location is required",
+  }),
 
   name: Joi.string().trim().min(1).max(150).required().messages({
     "string.empty": "Name is required",
@@ -113,4 +117,26 @@ export const addUpdateTestimonialSchema = Joi.object({
   }),
 
   status: Joi.string().valid("active", "inactive").default("active"),
+});
+
+export const updateProfileSchema = Joi.object({
+  name: Joi.string().trim().min(2).max(100).optional().messages({
+    "string.empty": "Name cannot be empty",
+    "string.min": "Name must be at least 2 characters",
+    "string.max": "Name cannot exceed 100 characters",
+  }),
+
+  email: Joi.string().optional(),
+
+  mobile: Joi.string()
+    .trim()
+    .pattern(/^[0-9]{10}$/)
+    .optional()
+    .messages({
+      "string.pattern.base": "Mobile number must be 10 digits",
+    }),
+  country_code: Joi.string().optional(),
+  user_id: Joi.number().required().messages({
+    "any.required": "User ID is required",
+  }),
 });

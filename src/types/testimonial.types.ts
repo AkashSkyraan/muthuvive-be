@@ -5,6 +5,7 @@ export interface AddUpdateTestimonialInput {
   content: string;
   rating?: number;
   status?: string;
+  location: string;
 }
 
 export interface GetTestimonialInput {

@@ -22,6 +22,7 @@ router.post(
           image: 'uploads/images/john.jpg',
           content: 'This platform helped me find the perfect property. Highly recommended!',
           rating: 5,
+          location : "Peelamedu , CBE",
           status: 'active'
         }
       }

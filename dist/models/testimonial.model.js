@@ -12,6 +12,7 @@ class TestimonialModel {
         image = ?,
         content = ?,
         rating = ?,
+        location = ?,
         status = ?
       WHERE id = ?
     `;
@@ -20,6 +21,7 @@ class TestimonialModel {
                 data.image || null,
                 data.content,
                 data.rating ?? 5,
+                data.location,
                 data.status ?? 1,
                 data.id,
             ]);
@@ -33,15 +35,17 @@ class TestimonialModel {
       image,
       content,
       rating,
+      location,
       status
     )
-    VALUES (?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?,?)
   `;
         const result = await (0, helper_1.executeQuery)(sql, [
             data.name,
             data.image || null,
             data.content,
             data.rating ?? 5,
+            data.location,
             data.status ?? "active",
         ]);
         return {
@@ -57,7 +61,7 @@ class TestimonialModel {
         }
         if (data.status !== undefined) {
             conditions.push("status = ?");
-            values.push(data.status === "active" ? 1 : 0);
+            values.push(data.status === "active" ? "active" : "inactive");
         }
         let sql = `
     SELECT
@@ -66,6 +70,7 @@ class TestimonialModel {
       image,
       content,
       rating,
+      location,
       status,
       created_at,
       updated_at

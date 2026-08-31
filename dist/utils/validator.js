@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
+exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 exports.requestOtpSchema = joi_1.default.object({
     type: joi_1.default.string().optional(),
@@ -76,6 +76,10 @@ exports.addUpdatePlanSchema = joi_1.default.object({
 });
 exports.addUpdateTestimonialSchema = joi_1.default.object({
     id: joi_1.default.number().integer().optional(),
+    location: joi_1.default.string().required().messages({
+        "any.required": "Location is required",
+        "string.empty": "Location is required",
+    }),
     name: joi_1.default.string().trim().min(1).max(150).required().messages({
         "string.empty": "Name is required",
         "any.required": "Name is required",
@@ -90,4 +94,23 @@ exports.addUpdateTestimonialSchema = joi_1.default.object({
         "any.required": "Rating is required",
     }),
     status: joi_1.default.string().valid("active", "inactive").default("active"),
+});
+exports.updateProfileSchema = joi_1.default.object({
+    name: joi_1.default.string().trim().min(2).max(100).optional().messages({
+        "string.empty": "Name cannot be empty",
+        "string.min": "Name must be at least 2 characters",
+        "string.max": "Name cannot exceed 100 characters",
+    }),
+    email: joi_1.default.string().optional(),
+    mobile: joi_1.default.string()
+        .trim()
+        .pattern(/^[0-9]{10}$/)
+        .optional()
+        .messages({
+        "string.pattern.base": "Mobile number must be 10 digits",
+    }),
+    country_code: joi_1.default.string().optional(),
+    user_id: joi_1.default.number().required().messages({
+        "any.required": "User ID is required",
+    }),
 });

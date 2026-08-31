@@ -5,12 +5,12 @@ const doc = {
     title: "Muthu Vive's API",
     description: "Real Estate Website API",
   },
-  host: "localhost:5001/api",
-  schemes: ["http"],
+  // host: "localhost:5001/api",
+  // schemes: ["http"],
 
-  // host: "muthuvives.skyraantech.com",
-  // basePath: "/server/api",
-  // schemes: ["https"],
+  host: "muthuvives.skyraantech.com",
+  basePath: "/server/api",
+  schemes: ["https"],
 };
 
 const outputFile = "./swagger-output.json";

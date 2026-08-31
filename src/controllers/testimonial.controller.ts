@@ -21,6 +21,7 @@ export class TestimonialController {
         [],
       );
     } catch (error: any) {
+      console.log(error);
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error.errors,
       ]);
@@ -104,6 +105,4 @@ export class TestimonialController {
       ]);
     }
   }
-
-  
 }

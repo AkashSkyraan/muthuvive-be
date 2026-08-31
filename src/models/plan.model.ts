@@ -71,7 +71,6 @@ export class PlanModel {
     let sql = `
     SELECT
       id,
-      name,
       duration,
       old_amount,
       new_amount,

@@ -28,7 +28,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(
   "/uploads/images",
-  express.static(path.join(process.cwd(),  "uploads", "images")),
+  express.static(path.join(process.cwd(), "src", "uploads", "images")),
 );
 
 const PORT = process.env.PORT || 5000;

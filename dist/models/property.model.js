@@ -57,6 +57,7 @@ class PropertyModel {
       image,
       name,
       status,
+      has_subcat,
       created_at,
       updated_at
     FROM property

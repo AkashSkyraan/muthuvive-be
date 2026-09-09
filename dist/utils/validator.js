@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
+exports.addUpdateSubCategorySchema = exports.addUpdatePropertyHighlightSchema = exports.addUpdateAmenitiesSchema = exports.addUpdateEnquirySchema = exports.addUpdateGallerySchema = exports.addUpdateAboutUsSchema = exports.addUpdatePropertyAreaSchema = exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 exports.requestOtpSchema = joi_1.default.object({
     type: joi_1.default.string().optional(),
@@ -18,7 +18,6 @@ exports.requestOtpSchema = joi_1.default.object({
     "object.missing": "Either email or mobile is required",
 });
 exports.verifyOtpSchema = joi_1.default.object({
-    type: joi_1.default.string().valid("email", "mobile").required(),
     purpose: joi_1.default.number().valid(1, 2).required(),
     email: joi_1.default.string().optional(),
     mobile: joi_1.default.number().optional(),
@@ -30,26 +29,19 @@ exports.verifyOtpSchema = joi_1.default.object({
     }),
 });
 exports.resetPasswordSchema = joi_1.default.object({
-    type: joi_1.default.string().valid("email", "mobile").required(),
-    email: joi_1.default.optional(),
-    mobile: joi_1.default.optional(),
+    email: joi_1.default.string().optional(),
+    mobile: joi_1.default.string().optional(),
     password: joi_1.default.string().min(8).max(128).required(),
-    confirmPassword: joi_1.default.any().valid(joi_1.default.ref("password")).required().messages({
-        "any.only": "Passwords do not match",
-    }),
 });
 exports.signupSchema = joi_1.default.object({
+    user_name: joi_1.default.string().optional(),
     email: joi_1.default.string().optional(),
     mobile: joi_1.default.string().optional(),
     password: joi_1.default.string().required().messages({
         "any.required": "Password is required",
     }),
-    confirm_password: joi_1.default.any().valid(joi_1.default.ref("password")).required().messages({
-        "any.only": "Passwords do not match",
-    }),
 }).or("email", "mobile");
 exports.loginSchema = joi_1.default.object({
-    type: joi_1.default.string().valid("email", "mobile").required(),
     email: joi_1.default.string().optional(),
     mobile: joi_1.default.string().optional(),
     password: joi_1.default.string().required(),
@@ -113,4 +105,86 @@ exports.updateProfileSchema = joi_1.default.object({
     user_id: joi_1.default.number().required().messages({
         "any.required": "User ID is required",
     }),
+});
+// by area
+exports.addUpdatePropertyAreaSchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    image: joi_1.default.string().max(500).allow(null, "").optional(),
+    name: joi_1.default.string().trim().max(255).required(),
+    property_count: joi_1.default.number().required().messages({
+        "any.required": "Property Count is required",
+    }),
+    status: joi_1.default.string().valid("active", "inactive").optional(),
+});
+// aboutus
+exports.addUpdateAboutUsSchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    yoe: joi_1.default.number().required().messages({
+        "any.required": "Years Of Experience is required",
+    }),
+    projects: joi_1.default.number().required().messages({
+        "any.required": "Completed Projects are required",
+    }),
+    clients: joi_1.default.number().required().messages({
+        "any.required": "Clients are required",
+    }),
+    users: joi_1.default.number().required().messages({
+        "any.required": "Users are required",
+    }),
+    address: joi_1.default.string().required().messages({
+        "any.required": "address is required",
+    }),
+    mobile: joi_1.default.string().required().messages({
+        "any.required": "Mobile Number is required",
+    }),
+    email: joi_1.default.string().required().messages({
+        "any.required": "address is required",
+    }),
+});
+// Gallery
+exports.addUpdateGallerySchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    type: joi_1.default.string().required().messages({
+        "any.required": "Type is required",
+    }),
+    image: joi_1.default.string().required().messages({
+        "any.required": "Image is required",
+    }),
+    is_hero: joi_1.default.number().optional(),
+    status: joi_1.default.string().optional(),
+});
+// enquiry
+exports.addUpdateEnquirySchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    name: joi_1.default.string().required().messages({
+        "any.required": "name is required",
+    }),
+    email: joi_1.default.string().optional(),
+    mobile: joi_1.default.string().optional(),
+    messages: joi_1.default.string().optional(),
+    regarding: joi_1.default.string().required().messages({
+        "any.required": "Regarding is required",
+    }),
+    property_id: joi_1.default.number().optional(),
+    status: joi_1.default.string().optional(),
+});
+exports.addUpdateAmenitiesSchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    name: joi_1.default.string().required().messages({
+        "any.required": "name is required",
+    }),
+    status: joi_1.default.string().optional(),
+});
+exports.addUpdatePropertyHighlightSchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    name: joi_1.default.string().required().messages({
+        "any.required": "name is required",
+    }),
+    status: joi_1.default.string().optional(),
+});
+exports.addUpdateSubCategorySchema = joi_1.default.object({
+    id: joi_1.default.number().integer().positive().optional(),
+    prop_id: joi_1.default.number().integer().positive().required(),
+    sub_name: joi_1.default.string().trim().required(),
+    status: joi_1.default.string().optional(),
 });

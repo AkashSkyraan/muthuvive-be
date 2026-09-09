@@ -50,7 +50,7 @@ const getOtpExpiry = () => {
     return new Date(Date.now() + expirySeconds * 1000);
 };
 exports.getOtpExpiry = getOtpExpiry;
-const SALT_ROUNDS = 12;
+const SALT_ROUNDS = 10;
 const hashPassword = async (password) => {
     return bcryptjs_1.default.hash(password, SALT_ROUNDS);
 };
@@ -59,12 +59,8 @@ const comparePassword = async (password, hashedPassword) => {
     return bcryptjs_1.default.compare(password, hashedPassword);
 };
 exports.comparePassword = comparePassword;
-const generateToken = (payload) => {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-        throw new Error("JWT_SECRET is not configured");
-    }
-    return jsonwebtoken_1.default.sign(payload, secret, {
+const generateToken = (userId) => {
+    return jsonwebtoken_1.default.sign({ user_id: userId }, process.env.JWT_SECRET, {
         expiresIn: "7d",
     });
 };

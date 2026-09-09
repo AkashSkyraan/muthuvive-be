@@ -5,10 +5,10 @@
         "description": "Real Estate Website API",
         "version": "1.0.0"
     },
-    "host": "muthuvives.skyraantech.com",
-    "basePath": "/server/api",
+    "host": "localhost:5001/api",
+    "basePath": "/",
     "schemes": [
-        "https"
+        "http"
     ],
     "paths": {
         "/upload": {
@@ -105,30 +105,368 @@
         },
         "/auth/request-otp": {
             "post": {
-                "description": "",
+                "tags": [
+                    "1.Auth"
+                ],
+                "summary": "Request OTP",
+                "description": "Send OTP to the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "example": "user@example.com"
+                                },
+                                "mobile": {
+                                    "type": "string",
+                                    "example": "9876543210"
+                                },
+                                "purpose": {
+                                    "type": "number",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                ],
                 "responses": {
-                    "default": {
-                        "description": ""
+                    "200": {
+                        "description": "OTP sent successfully"
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
         },
         "/auth/verify-otp": {
             "post": {
-                "description": "",
+                "tags": [
+                    "1.Auth"
+                ],
+                "summary": "Verify OTP",
+                "description": "Verify the OTP sent to the user email or mobile number",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "example": "user@example.com"
+                                },
+                                "mobile": {
+                                    "type": "string",
+                                    "example": "9876543210"
+                                },
+                                "otp": {
+                                    "type": "string",
+                                    "example": "123456"
+                                },
+                                "purpose": {
+                                    "type": "number",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                ],
                 "responses": {
-                    "default": {
-                        "description": ""
+                    "200": {
+                        "description": "OTP verified successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "OTP verified successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or expired OTP"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
         },
         "/auth/signup": {
             "post": {
-                "description": "",
+                "tags": [
+                    "1.Auth"
+                ],
+                "summary": "User Signup",
+                "description": "Create a new user account after verifying email or mobile OTP",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "user_name": {
+                                    "type": "string",
+                                    "example": "Kamalesh"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "example": "user@example.com"
+                                },
+                                "mobile": {
+                                    "type": "string",
+                                    "example": "9876543210"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "Skyraan@123"
+                                }
+                            }
+                        }
+                    }
+                ],
                 "responses": {
-                    "default": {
-                        "description": ""
+                    "201": {
+                        "description": "Signup successful",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            },
+                                            "user_name": {
+                                                "type": "string",
+                                                "example": "Kamalesh"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "user@example.com"
+                                            },
+                                            "mobile": {
+                                                "type": "string",
+                                                "example": "9876543210"
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Signup successful"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "OTP verification required or validation error"
+                    },
+                    "409": {
+                        "description": "User already exists"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "1.Auth"
+                ],
+                "summary": "User Login",
+                "description": "Login using email or mobile number and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "example": "user@example.com"
+                                },
+                                "mobile": {
+                                    "type": "string",
+                                    "example": "9876543210"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "Skyraan@123"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            },
+                                            "user_name": {
+                                                "type": "string",
+                                                "example": "Kamalesh"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "user@example.com"
+                                            },
+                                            "mobile": {
+                                                "type": "string",
+                                                "example": "9876543210"
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Login successful"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "1.Auth"
+                ],
+                "summary": "Reset Password",
+                "description": "Reset user password using email or mobile number",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "example": "user@example.com"
+                                },
+                                "mobile": {
+                                    "type": "string",
+                                    "example": "9876543210"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "Skyraan@123"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Password reset successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "User not found or validation error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -283,6 +621,296 @@
                     },
                     "404": {
                         "description": "Property not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/property/add-property-area": {
+            "post": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Add or Update Property Area",
+                "description": "Create a new property area or update an existing property area",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "image": {
+                                    "type": "string",
+                                    "example": "property.jpg"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Farmland"
+                                },
+                                "property_count": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property area added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Property added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/property/property-area": {
+            "get": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Get Property Areas",
+                "description": "Get all property Areas, a single property Area by ID, or filter property Area by status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Property ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Property status (Inactive, Active)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property Area fetched successfully"
+                    },
+                    "400": {
+                        "description": "Invalid property ID or status"
+                    },
+                    "404": {
+                        "description": "Property Area not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/property/property-areas/{id}": {
+            "delete": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Delete Property Areas",
+                "description": "Delete a property Areas based on property ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Property ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property Area deleted successfully"
+                    },
+                    "400": {
+                        "description": "Invalid property ID"
+                    },
+                    "404": {
+                        "description": "Property Area not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/property/add-sub-prop": {
+            "post": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Add or Update Property Sub Category",
+                "description": "Create a new property sub category or update an existing property sub category",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "prop_id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "sub_name": {
+                                    "type": "string",
+                                    "example": "Residential Land"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property sub category added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Property sub category added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/property/get-sub-prop": {
+            "get": {
+                "tags": [
+                    "2.Property"
+                ],
+                "summary": "Get Property Sub Categories",
+                "description": "Get all property sub categories, a single sub category by ID, or filter by property ID and status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Property Sub Category ID"
+                    },
+                    {
+                        "name": "prop_id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Property ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Sub category status"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property sub categories fetched successfully"
+                    },
+                    "404": {
+                        "description": "Property sub category not found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -553,7 +1181,7 @@
         "/user/update-profile": {
             "put": {
                 "tags": [
-                    "2.User"
+                    "5.User"
                 ],
                 "summary": "Update Profile",
                 "description": "Update user name, email, or mobile number",
@@ -607,6 +1235,680 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/about/add-aboutus-data": {
+            "post": {
+                "tags": [
+                    "6.About Us"
+                ],
+                "summary": "Add or Update About us data",
+                "description": "Create a About us data (counts) or update an existing Abouts us count",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "yoe": {
+                                    "type": "number",
+                                    "example": 5
+                                },
+                                "projects": {
+                                    "type": "number",
+                                    "example": 120
+                                },
+                                "clients": {
+                                    "type": "number",
+                                    "example": 1200
+                                },
+                                "users": {
+                                    "type": "number",
+                                    "example": 50000
+                                },
+                                "address": {
+                                    "type": "string",
+                                    "example": "No.5, Skyraan Building"
+                                },
+                                "mobile": {
+                                    "type": "string",
+                                    "example": "98764210"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "example": "abc@gmail.com"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Abouts Us added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/about/about-data": {
+            "get": {
+                "tags": [
+                    "6.About Us"
+                ],
+                "summary": "Get About Us data",
+                "description": "Get all About Us data or fetch a specific record by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "About Us ID. If provided, fetches the specific record; otherwise fetches all records."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "About Us data fetched successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/gallery/add-gallery": {
+            "post": {
+                "tags": [
+                    "7.Gallery"
+                ],
+                "summary": "Add or Update Gallery",
+                "description": "Create a new gallery item or update an existing gallery item",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "image": {
+                                    "type": "string",
+                                    "example": "uploads/gallery.jpg"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "example": "project"
+                                },
+                                "is_hero": {
+                                    "type": "number",
+                                    "example": 0
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Gallery added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Gallery added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/gallery/get-gallery": {
+            "get": {
+                "tags": [
+                    "7.Gallery"
+                ],
+                "summary": "Get Gallery",
+                "description": "Get all gallery items or filter by ID, type, and status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Gallery ID"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": "Gallery type"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Gallery status"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Gallery fetched successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/gallery/gallery/{id}": {
+            "delete": {
+                "tags": [
+                    "7.Gallery"
+                ],
+                "summary": "Delete Gallery Images",
+                "description": "Delete a Gallery images based on Image ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "description": "Image ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Galary Images deleted successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/enquiry/add-enquiry": {
+            "post": {
+                "tags": [
+                    "8.Enquiry"
+                ],
+                "summary": "Add / Update Enquiry",
+                "description": "Send a new enquiry or update an existing enquiry for a property",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Kamalesh"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "example": "kamalesh@gmail.com"
+                                },
+                                "mobile": {
+                                    "type": "string",
+                                    "example": "9876543210"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "I am interested in this property"
+                                },
+                                "regarding": {
+                                    "type": "string",
+                                    "example": "Property Enquiry"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "pending"
+                                },
+                                "property_id": {
+                                    "type": "number",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Enquiry sent successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Enquiry sent successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/enquiry/get-enquiries": {
+            "get": {
+                "tags": [
+                    "8.Enquiry"
+                ],
+                "summary": "Get Enquiries list data",
+                "description": "Get enquiries by ID, status, regarding, property ID, mobile or email",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Enquiry ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "contacted",
+                            "closed"
+                        ],
+                        "description": "Filter enquiries by status"
+                    },
+                    {
+                        "name": "regarding",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": "Filter enquiries by regarding"
+                    },
+                    {
+                        "name": "property_id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Filter enquiries by property ID"
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": "Search mobile number using wildcard"
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": "Search email using wildcard"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Enquiries fetched successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/src/add-amenities": {
+            "post": {
+                "tags": [
+                    "9.Source"
+                ],
+                "summary": "Add or Update Amenities",
+                "description": "Create a new Amenities or update an existing amenity",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Parking"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Amenity added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Amenity added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/src/get-amenities": {
+            "get": {
+                "tags": [
+                    "9.Source"
+                ],
+                "summary": "Get Amenities",
+                "description": "Get all amenities, a single amenity by ID, or filter amenities by status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Amenity ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Amenity status (Inactive, Active)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Amenities fetched successfully"
+                    },
+                    "400": {
+                        "description": "Invalid amenity ID or status"
+                    },
+                    "404": {
+                        "description": "Amenity not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/src/add-prop-highlights": {
+            "post": {
+                "tags": [
+                    "9.Source"
+                ],
+                "summary": "Add or Update Property Highlights",
+                "description": "Create a new property highlight or update an existing property highlight",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Swimming Pool"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property highlight added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Property highlight added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/src/get-prop-highlights": {
+            "get": {
+                "tags": [
+                    "9.Source"
+                ],
+                "summary": "Get Property Highlights",
+                "description": "Get all property highlights, a single property highlight by ID, or filter property highlights by status",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Property Highlight ID"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "description": "Property Highlight status (Inactive, Active)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property Highlights fetched successfully"
+                    },
+                    "400": {
+                        "description": "Invalid property highlight ID or status"
+                    },
+                    "404": {
+                        "description": "Property Highlight not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         }
     }

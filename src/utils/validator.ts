@@ -14,7 +14,6 @@ export const requestOtpSchema = Joi.object({
   });
 
 export const verifyOtpSchema = Joi.object({
-  type: Joi.string().valid("email", "mobile").required(),
   purpose: Joi.number().valid(1, 2).required(),
   email: Joi.string().optional(),
   mobile: Joi.number().optional(),
@@ -27,18 +26,13 @@ export const verifyOtpSchema = Joi.object({
 });
 
 export const resetPasswordSchema = Joi.object({
-  type: Joi.string().valid("email", "mobile").required(),
-
-  email: Joi.optional(),
-  mobile: Joi.optional(),
+  email: Joi.string().optional(),
+  mobile: Joi.string().optional(),
   password: Joi.string().min(8).max(128).required(),
-
-  confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
-    "any.only": "Passwords do not match",
-  }),
 });
 
 export const signupSchema = Joi.object({
+  user_name: Joi.string().optional(),
   email: Joi.string().optional(),
 
   mobile: Joi.string().optional(),
@@ -46,15 +40,9 @@ export const signupSchema = Joi.object({
   password: Joi.string().required().messages({
     "any.required": "Password is required",
   }),
-
-  confirm_password: Joi.any().valid(Joi.ref("password")).required().messages({
-    "any.only": "Passwords do not match",
-  }),
 }).or("email", "mobile");
 
 export const loginSchema = Joi.object({
-  type: Joi.string().valid("email", "mobile").required(),
-
   email: Joi.string().optional(),
 
   mobile: Joi.string().optional(),
@@ -140,3 +128,109 @@ export const updateProfileSchema = Joi.object({
     "any.required": "User ID is required",
   }),
 });
+
+// by area
+
+export const addUpdatePropertyAreaSchema = Joi.object({
+  id: Joi.number().integer().optional(),
+
+  image: Joi.string().max(500).allow(null, "").optional(),
+
+  name: Joi.string().trim().max(255).required(),
+  property_count: Joi.number().required().messages({
+    "any.required": "Property Count is required",
+  }),
+
+  status: Joi.string().valid("active", "inactive").optional(),
+});
+
+// aboutus
+export const addUpdateAboutUsSchema = Joi.object({
+  id: Joi.number().integer().optional(),
+  yoe: Joi.number().required().messages({
+    "any.required": "Years Of Experience is required",
+  }),
+  projects: Joi.number().required().messages({
+    "any.required": "Completed Projects are required",
+  }),
+  clients: Joi.number().required().messages({
+    "any.required": "Clients are required",
+  }),
+  users: Joi.number().required().messages({
+    "any.required": "Users are required",
+  }),
+  address: Joi.string().required().messages({
+    "any.required": "address is required",
+  }),
+  mobile: Joi.string().required().messages({
+    "any.required": "Mobile Number is required",
+  }),
+  email: Joi.string().required().messages({
+    "any.required": "address is required",
+  }),
+});
+
+// Gallery
+
+export const addUpdateGallerySchema = Joi.object({
+  id: Joi.number().integer().optional(),
+  type: Joi.string().required().messages({
+    "any.required": "Type is required",
+  }),
+  image: Joi.string().required().messages({
+    "any.required": "Image is required",
+  }),
+  is_hero: Joi.number().optional(),
+  status: Joi.string().optional(),
+});
+
+// enquiry
+
+export const addUpdateEnquirySchema = Joi.object({
+  id: Joi.number().integer().optional(),
+  name: Joi.string().required().messages({
+    "any.required": "name is required",
+  }),
+  email: Joi.string().optional(),
+  mobile: Joi.string().optional(),
+  messages: Joi.string().optional(),
+
+  regarding: Joi.string().required().messages({
+    "any.required": "Regarding is required",
+  }),
+  property_id: Joi.number().optional(),
+  status: Joi.string().optional(),
+});
+
+export const addUpdateAmenitiesSchema = Joi.object({
+  id: Joi.number().integer().optional(),
+  name: Joi.string().required().messages({
+    "any.required": "name is required",
+  }),
+  status: Joi.string().optional(),
+});
+export const addUpdatePropertyHighlightSchema = Joi.object({
+  id: Joi.number().integer().optional(),
+  name: Joi.string().required().messages({
+    "any.required": "name is required",
+  }),
+  status: Joi.string().optional(),
+});
+
+export const addUpdateSubCategorySchema = Joi.object({
+  id: Joi.number().integer().positive().optional(),
+
+  prop_id: Joi.number().integer().positive().required(),
+
+  sub_name: Joi.string().trim().required(),
+
+  status: Joi.string().optional(),
+});
+
+
+export interface GetSubPropertyInput {
+  id?: number;
+  prop_id?: number;
+  status?: string;
+}
+

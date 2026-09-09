@@ -1,3 +1,8 @@
+import {
+  addUpdateAminities,
+  getAmenities,
+  getPropertyHighlights,
+} from "../types/src.types";
 import { executeQuery } from "../utils/helper";
 
 export class SourceModel {
@@ -105,5 +110,136 @@ export class SourceModel {
     return {
       data: rows || [],
     };
+  }
+
+  // aminities
+
+  static async addUpdateAminities(data: addUpdateAminities) {
+    console.log(data);
+    if (data.id) {
+      const sql = `
+        UPDATE amenities
+        SET
+          name = ?,
+          status = ?
+        WHERE id = ?
+      `;
+
+      await executeQuery(sql, [data.name, data.status, data.id]);
+
+      return {
+        id: data.id,
+      };
+    }
+
+    const sql = `
+      INSERT INTO amenities (
+       name 
+      )
+      VALUES (?)
+    `;
+
+    const result: any = await executeQuery(sql, [data.name]);
+
+    return {
+      id: result.insertId,
+    };
+  }
+
+  static async getAmenities(data: getAmenities = {}) {
+    const conditions: string[] = [];
+    const values: any[] = [];
+
+    if (data.id) {
+      conditions.push("id = ?");
+      values.push(data.id);
+    }
+
+    if (data.status !== undefined) {
+      conditions.push("status = ?");
+      values.push(data.status === "active" ? 1 : 0);
+    }
+
+    let sql = `
+    SELECT 
+      id,
+      name,
+      status,
+      created_at
+    FROM amenities
+  `;
+
+    if (conditions.length > 0) {
+      sql += ` WHERE ${conditions.join(" AND ")}`;
+    }
+
+    sql += ` ORDER BY id DESC`;
+
+    const rows: any = await executeQuery(sql, values);
+
+    if (data.id) {
+      return rows.length > 0 ? rows[0] : null;
+    }
+
+    return rows || [];
+  }
+
+  // property highlights
+
+  static async addUpdatePropertyHighlights(data: any) {
+    if (data.id) {
+      const sql = `
+      UPDATE prop_highlights
+      SET
+        name = ?,
+        status = ?
+      WHERE id = ?
+    `;
+
+      const values = [data.name, data.status, data.id];
+
+      await executeQuery(sql, values);
+
+      return {
+        id: data.id,
+      };
+    }
+
+    const sql = `
+    INSERT INTO prop_highlights (
+      name,
+      status
+    )
+    VALUES (?, ?)
+  `;
+
+    const result: any = await executeQuery(sql, [data.name, data.status]);
+
+    return {
+      id: result.insertId,
+    };
+  }
+
+  static async getPropertyHighlights(data: getPropertyHighlights = {}) {
+    const conditions: string[] = [];
+    const values: any[] = [];
+    if (data.id) {
+      conditions.push("id = ?");
+      values.push(data.id);
+    }
+    if (data.status !== undefined) {
+      conditions.push("status = ?");
+      values.push(data.status);
+    }
+    let sql = ` SELECT id, name, status, created_at FROM prop_highlights `;
+    if (conditions.length > 0) {
+      sql += ` WHERE ${conditions.join(" AND ")}`;
+    }
+    sql += ` ORDER BY id DESC`;
+    const rows: any = await executeQuery(sql, values);
+    if (data.id) {
+      return rows.length > 0 ? rows[0] : null;
+    }
+    return rows || [];
   }
 }

@@ -9,6 +9,10 @@ const property_routes_1 = __importDefault(require("./property.routes"));
 const plan_routes_1 = __importDefault(require("./plan.routes"));
 const testimonial_routes_1 = __importDefault(require("./testimonial.routes"));
 const user_routes_1 = __importDefault(require("./user.routes"));
+const about_routes_1 = __importDefault(require("./about.routes"));
+const gallery_routes_1 = __importDefault(require("./gallery.routes"));
+const enquiry_routes_1 = __importDefault(require("./enquiry.routes"));
+const src_routes_1 = __importDefault(require("./src.routes"));
 const upload_controller_1 = require("../controllers/upload.controller");
 const multer_1 = require("../config/multer");
 const router = (0, express_1.Router)();
@@ -17,6 +21,10 @@ router.use("/property", property_routes_1.default);
 router.use("/plan", plan_routes_1.default);
 router.use("/testimonial", testimonial_routes_1.default);
 router.use("/user", user_routes_1.default);
+router.use("/about", about_routes_1.default);
+router.use("/gallery", gallery_routes_1.default);
+router.use("/enquiry", enquiry_routes_1.default);
+router.use("/src", src_routes_1.default);
 router.post("/upload", 
 /*
       #swagger.tags = ['1.Upload']

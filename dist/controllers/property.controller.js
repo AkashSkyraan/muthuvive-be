@@ -14,7 +14,9 @@ class PropertyController {
                 : "Category added successfully", []);
         }
         catch (err) {
-            return (0, helper_1.sendResponse)(res, err.status || 500, 0, [], err.message || "Internal Server Error", err.errors || []);
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal Server Error", [
+                err.errors,
+            ]);
         }
     }
     static async getProperties(req, res) {
@@ -68,6 +70,126 @@ class PropertyController {
                 return (0, helper_1.sendResponse)(res, 200, 0, [], "Property not found", []);
             }
             return (0, helper_1.sendResponse)(res, 200, 1, [result], "Property deleted successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error.errors,
+            ]);
+        }
+    }
+    // by area
+    static async addUpdatePropertyArea(req, res) {
+        try {
+            const data = (0, helper_1.validateRequest)(req.body, validator_1.addUpdatePropertyAreaSchema);
+            const result = await property_model_1.PropertyModel.addUpdatePropertyArea(data);
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], data.id
+                ? "Property Area updated successfully"
+                : "Property Area added successfully", []);
+        }
+        catch (err) {
+            return (0, helper_1.sendResponse)(res, err.status || 500, 0, [], err.message || "Internal Server Error", err.errors || []);
+        }
+    }
+    static async getPropertyArea(req, res) {
+        try {
+            const { id, status } = req.query;
+            const propertyId = id ? Number(id) : undefined;
+            const propertyStatus = status !== undefined ? String(status).trim() : undefined;
+            if (id && (isNaN(propertyId) || propertyId <= 0)) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Invalid property id", []);
+            }
+            if (propertyStatus !== undefined &&
+                !["active", "inactive"].includes(propertyStatus.toLowerCase())) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Status must be either active or inactive", []);
+            }
+            const properties = await property_model_1.PropertyModel.getPropertyArea({
+                id: propertyId,
+                status: propertyStatus?.toLowerCase(),
+            });
+            if (propertyId && !properties) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Property Area not found", []);
+            }
+            const assetUrl = process.env.ASSET_URL || "";
+            if (propertyId) {
+                properties.image = properties.image
+                    ? `${assetUrl}${properties.image}`
+                    : null;
+            }
+            else {
+                properties.forEach((property) => {
+                    property.image = property.image
+                        ? `${assetUrl}${property.image}`
+                        : null;
+                });
+            }
+            return (0, helper_1.sendResponse)(res, 200, 1, propertyId ? [properties] : properties, "Property Area fetched successfully", []);
+        }
+        catch (error) {
+            console.log(error);
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error.errors,
+            ]);
+        }
+    }
+    static async deletePropertyArea(req, res) {
+        try {
+            const { id } = req.params;
+            if (!id) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Invalid property id", []);
+            }
+            const result = await property_model_1.PropertyModel.deletePropertyArea(Number(id));
+            if (!result) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Property not found", []);
+            }
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], "Property Area deleted successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error.errors,
+            ]);
+        }
+    }
+    // sub cat
+    static async addUpdateSubProperty(req, res) {
+        try {
+            const data = (0, helper_1.validateRequest)(req.body, validator_1.addUpdateSubCategorySchema);
+            const result = await property_model_1.PropertyModel.addUpdateSubProperty(data);
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], data.id
+                ? "Sub category updated successfully"
+                : "Sub category added successfully", []);
+        }
+        catch (err) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal Server Error", [
+                err.errors,
+            ]);
+        }
+    }
+    static async getSubProperties(req, res) {
+        try {
+            const { id, prop_id, status } = req.query;
+            const subPropertyId = id ? Number(id) : undefined;
+            const propertyId = prop_id ? Number(prop_id) : undefined;
+            const subPropertyStatus = status !== undefined ? String(status).trim().toLowerCase() : undefined;
+            if (id !== undefined && (isNaN(subPropertyId) || subPropertyId <= 0)) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Invalid sub category id", []);
+            }
+            if (prop_id !== undefined && (isNaN(propertyId) || propertyId <= 0)) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Invalid property id", []);
+            }
+            if (subPropertyStatus !== undefined &&
+                !["active", "inactive"].includes(subPropertyStatus)) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Status must be either active or inactive", []);
+            }
+            const subProperties = await property_model_1.PropertyModel.getSubProperty({
+                id: subPropertyId,
+                prop_id: propertyId,
+                status: subPropertyStatus,
+            });
+            // Single ID requested but not found
+            if (subPropertyId && !subProperties) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Property sub category not found", []);
+            }
+            return (0, helper_1.sendResponse)(res, 200, 1, subPropertyId ? [subProperties] : subProperties, "Property sub categories fetched successfully", []);
         }
         catch (error) {
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [

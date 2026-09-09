@@ -157,20 +157,27 @@ export class AuthModel {
   }
 
   static async createUser(
+    user_name: string,
     email: string | null,
     mobile: string | null,
-    password: string,
+    hashedPassword: string,
   ) {
     const sql = `
       INSERT INTO users (
+      user_name,
         email,
         mobile,
         password
       )
-      VALUES (?, ?, ?)
+      VALUES (?, ?, ? , ?)
     `;
 
-    const result: any = await executeQuery(sql, [email, mobile, password]);
+    const result: any = await executeQuery(sql, [
+      user_name,
+      email,
+      mobile,
+      hashedPassword,
+    ]);
 
     return result.insertId;
   }

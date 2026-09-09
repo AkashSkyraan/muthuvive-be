@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import {
   generateOtp,
+  generateToken,
   getOtpExpiry,
   sendResponse,
   validateRequest,
 } from "../utils/helper";
 import {
+  loginSchema,
   requestOtpSchema,
   resetPasswordSchema,
   signupSchema,
@@ -13,17 +15,20 @@ import {
 } from "../utils/validator";
 import { AuthModel } from "../models/auth.model";
 import bcrypt from "bcryptjs";
+import { sendSmsOTP } from "../services/sms.service";
 // signup - 1
 //forgot pass - 2
 
 export class AuthController {
   static async requestOTP(req: Request, res: Response) {
     try {
-      const { type, purpose, email, mobile } = validateRequest(
+      const { purpose, email, mobile } = validateRequest(
         req.body,
         requestOtpSchema,
       );
-      const existingUser = await AuthModel.findUserByEmailOrMobile(type);
+      const identifier = email || mobile;
+      const existingUser = await AuthModel.findUserByEmailOrMobile(identifier);
+
       if (purpose === 1 && existingUser) {
         return sendResponse(res, 400, 0, [], "User Already Exisits", []);
       }
@@ -32,7 +37,12 @@ export class AuthController {
       }
       const otp = generateOtp();
       const expiresAt = getOtpExpiry();
+
+      if (process.env.NODE_ENV === "production" && mobile) {
+        await sendSmsOTP(mobile, otp);
+      }
       await AuthModel.createOtp(email, mobile, otp, purpose, expiresAt);
+
       const result =
         process.env.NODE_ENV === "development" ? [{ otp: otp }] : [];
 
@@ -45,10 +55,12 @@ export class AuthController {
 
   static async verifyOTP(req: Request, res: Response) {
     try {
-      const { type, purpose, email, mobile, otp } = validateRequest(
+      const { purpose, email, mobile, otp } = validateRequest(
         req.body,
         verifyOtpSchema,
       );
+
+      const type = email || mobile;
 
       const otpRecord = await AuthModel.getLatestOTP(
         type,
@@ -86,18 +98,19 @@ export class AuthController {
         [],
       );
     } catch (err: any) {
+      console.log(err);
       return sendResponse(res, 500, 0, [], "Internal Server Error", []);
     }
   }
 
   static async resetPassword(req: Request, res: Response) {
     try {
-      const { type, email, mobile, password } = validateRequest(
+      const { email, mobile, password } = validateRequest(
         req.body,
         resetPasswordSchema,
       );
 
-      const identifier = type === "email" ? email : mobile;
+      const identifier = email || mobile;
 
       const user = await AuthModel.findUserByEmailOrMobile(identifier);
 
@@ -105,25 +118,7 @@ export class AuthController {
         return sendResponse(res, 400, 0, [], "User Not Found", []);
       }
 
-      const verifiedOTP = await AuthModel.getVerifiedOTP(
-        type,
-        email || null,
-        mobile || null,
-        2,
-      );
-
-      if (!verifiedOTP) {
-        return sendResponse(
-          res,
-          400,
-          0,
-          [],
-          "Please verify OTP before resetting password",
-          [],
-        );
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 12);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       await AuthModel.updatePassword(user.id, hashedPassword);
 
@@ -137,76 +132,57 @@ export class AuthController {
 
   static async signup(req: Request, res: Response) {
     try {
-      const { email, mobile, password  , confirm_password} = validateRequest(
+      const { user_name, email, mobile, password } = validateRequest(
         req.body,
         signupSchema,
       );
 
-      const normalizedEmail = email?.trim().toLowerCase() || null;
+      const existingEmail = email
+        ? await AuthModel.findUserByEmailOrMobile(email)
+        : null;
 
-      const normalizedMobile = mobile?.trim() || null;
+      const existingMobile = mobile
+        ? await AuthModel.findUserByEmailOrMobile(mobile)
+        : null;
 
-      const existingUser = await AuthModel.findUserByEmailOrMobile(
-        normalizedEmail || normalizedMobile!,
-      );
-
-      if (existingUser) {
+      if (existingEmail) {
         return sendResponse(
           res,
-          409,
+          200,
           0,
           [],
-          "User already exists with this email or mobile",
+          "User already exists with this email",
           [],
         );
       }
-
-      let verified = false;
-
-      if (normalizedEmail) {
-        const emailOtp = await AuthModel.getLatestOTP(
-          "email",
-          normalizedEmail,
-          null,
-          1,
-        );
-
-        if (emailOtp?.verified_at && !emailOtp?.consumed_at) {
-          verified = true;
-        }
-      }
-
-      if (!verified && normalizedMobile) {
-        const mobileOtp = await AuthModel.getLatestOTP(
-          "mobile",
-          null,
-          normalizedMobile,
-          1,
-        );
-
-        if (mobileOtp?.verified_at && !mobileOtp?.consumed_at) {
-          verified = true;
-        }
-      }
-
-      if (!verified) {
+      if (existingMobile) {
         return sendResponse(
           res,
-          400,
+          200,
           0,
           [],
-          "Please verify email or mobile before signup",
+          "User already exists with this Mobile",
           [],
         );
       }
 
-      const hashedPassword = await bcrypt.hash(password, 12);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       const userId = await AuthModel.createUser(
-        normalizedEmail,
-        normalizedMobile,
+        user_name,
+        email,
+        mobile,
         hashedPassword,
       );
+
+      const token = generateToken(userId);
+
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 90 * 24 * 60 * 60 * 1000,
+      });
 
       return sendResponse(
         res,
@@ -215,19 +191,75 @@ export class AuthController {
         [
           {
             id: userId,
-            email: normalizedEmail,
-            mobile: normalizedMobile,
+            user_name,
+            email,
+            mobile,
           },
         ],
         "Signup successful",
         [],
       );
     } catch (err: any) {
-      console.log(err);
+      console.log("Signup Error:", err);
 
-      return sendResponse(res, 500, 0, [], "Internal Server Error", []);
+      return sendResponse(res, 500, 0, [], "Internal Server Error", [
+        err.errors,
+      ]);
     }
   }
 
-  
+  static async login(req: Request, res: Response) {
+    try {
+      const { email, mobile, password } = validateRequest(
+        req.body,
+        loginSchema,
+      );
+
+      const type = email || mobile;
+
+      const user = await AuthModel.findUserByEmailOrMobile(type);
+
+      if (!user) {
+        return sendResponse(res, 400, 0, [], "Invalid email or mobile", []);
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (!passwordMatch) {
+        return sendResponse(res, 400, 0, [], "Invalid password", []);
+      }
+
+      const token = generateToken(user.id);
+
+      // Set JWT cookie
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [
+          {
+            id: user.id,
+            user_name: user.user_name,
+            email: user.email,
+            mobile: user.mobile,
+          },
+        ],
+        "Login successful",
+        [],
+      );
+    } catch (err: any) {
+      console.log("Login Error:", err);
+
+      return sendResponse(res, 500, 0, [], "Internal Server Error", [
+        err.errors,
+      ]);
+    }
+  }
 }

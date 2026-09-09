@@ -61,10 +61,7 @@ export const getOtpExpiry = (): Date => {
   return new Date(Date.now() + expirySeconds * 1000);
 };
 
-
-
-
-const SALT_ROUNDS = 12;
+const SALT_ROUNDS = 10;
 
 export const hashPassword = async (password: string): Promise<string> => {
   return bcrypt.hash(password, SALT_ROUNDS);
@@ -77,14 +74,8 @@ export const comparePassword = async (
   return bcrypt.compare(password, hashedPassword);
 };
 
-export const generateToken = (payload: JwtPayload): string => {
-  const secret = process.env.JWT_SECRET;
-
-  if (!secret) {
-    throw new Error("JWT_SECRET is not configured");
-  }
-
-  return jwt.sign(payload, secret, {
+export const generateToken = (userId: number) => {
+  return jwt.sign({ user_id: userId }, process.env.JWT_SECRET!, {
     expiresIn: "7d",
   });
 };

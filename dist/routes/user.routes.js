@@ -5,7 +5,7 @@ const user_controller_1 = require("../controllers/user.controller");
 const router = (0, express_1.Router)();
 router.put("/update-profile", 
 /*
-    #swagger.tags = ['2.User']
+    #swagger.tags = ['5.User']
     #swagger.summary = 'Update Profile'
     #swagger.description = 'Update user name, email, or mobile number'
 

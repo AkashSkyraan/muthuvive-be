@@ -7,7 +7,7 @@ router.put(
   "/update-profile",
 
   /*
-      #swagger.tags = ['2.User']
+      #swagger.tags = ['5.User']
       #swagger.summary = 'Update Profile'
       #swagger.description = 'Update user name, email, or mobile number'
 

@@ -4,6 +4,10 @@ import propertyRoutes from "./property.routes";
 import planRoutes from "./plan.routes";
 import testimonialRoutes from "./testimonial.routes";
 import userRoutes from "./user.routes";
+import aboutRoutes from "./about.routes";
+import galleryRoutes from "./gallery.routes";
+import enquiryRoutes from "./enquiry.routes";
+import sourceRoutes from "./src.routes";
 import { UploadController } from "../controllers/upload.controller";
 import { upload } from "../config/multer";
 const router = Router();
@@ -12,6 +16,11 @@ router.use("/property", propertyRoutes);
 router.use("/plan", planRoutes);
 router.use("/testimonial", testimonialRoutes);
 router.use("/user", userRoutes);
+router.use("/about", aboutRoutes);
+router.use("/gallery", galleryRoutes);
+router.use("/enquiry", enquiryRoutes);
+router.use("/src", sourceRoutes);
+
 router.post(
   "/upload",
 

@@ -161,4 +161,80 @@ router.get("/get-prop-highlights",
     }
 */
 source_controller_1.SourceController.getPropertyHighlights);
+// geolocation
+router.get("/get-address-by-pincode", 
+/*
+  #swagger.tags = ['9.Source']
+  #swagger.summary = 'Get Address By Pincode'
+  #swagger.description = 'Get address details by pincode and country'
+
+  #swagger.parameters['pincode'] = {
+    in: 'query',
+    required: true,
+    type: 'string',
+    example: '624601',
+    description: 'Pincode'
+  }
+
+ 
+  #swagger.responses[200] = {
+    description: 'Address fetched successfully'
+  }
+
+  #swagger.responses[400] = {
+    description: 'Invalid pincode or country'
+  }
+
+  #swagger.responses[500] = {
+    description: 'Internal Server Error'
+  }
+*/
+source_controller_1.SourceController.getAdressDetailsFromPincode);
+router.get("/get-pincode-details", 
+/*
+  #swagger.tags = ['9.Source']
+  #swagger.summary = 'Get Pincode Location Details'
+  #swagger.description = 'Get states by country, districts by state, or cities by district'
+
+  #swagger.parameters['country'] = {
+    in: 'query',
+    required: true,
+    type: 'string',
+    example: 'India',
+    description: 'Country name'
+  }
+
+  #swagger.parameters['state'] = {
+    in: 'query',
+    required: false,
+    type: 'string',
+    example: 'Tamil Nadu',
+    description: 'State name'
+  }
+
+  #swagger.parameters['district'] = {
+    in: 'query',
+    required: false,
+    type: 'string',
+    example: 'Dindigul',
+    description: 'District name'
+  }
+
+  #swagger.responses[200] = {
+    description: 'Location details fetched successfully'
+  }
+
+  #swagger.responses[400] = {
+    description: 'Country is required'
+  }
+
+  #swagger.responses[404] = {
+    description: 'Location details not found'
+  }
+
+  #swagger.responses[500] = {
+    description: 'Internal Server Error'
+  }
+*/
+source_controller_1.SourceController.getPincodeDetails);
 exports.default = router;

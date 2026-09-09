@@ -1910,6 +1910,85 @@
           }
         }
       }
+    },
+    "/src/get-address-by-pincode": {
+      "get": {
+        "tags": [
+          "9.Source"
+        ],
+        "summary": "Get Address By Pincode",
+        "description": "Get address details by pincode and country",
+        "parameters": [
+          {
+            "name": "pincode",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "example": "624601",
+            "description": "Pincode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Address fetched successfully"
+          },
+          "400": {
+            "description": "Invalid pincode or country"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/src/get-pincode-details": {
+      "get": {
+        "tags": [
+          "9.Source"
+        ],
+        "summary": "Get Pincode Location Details",
+        "description": "Get states by country, districts by state, or cities by district",
+        "parameters": [
+          {
+            "name": "country",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "example": "India",
+            "description": "Country name"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "example": "Tamil Nadu",
+            "description": "State name"
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "example": "Dindigul",
+            "description": "District name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Location details fetched successfully"
+          },
+          "400": {
+            "description": "Country is required"
+          },
+          "404": {
+            "description": "Location details not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   }
 }

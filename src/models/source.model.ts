@@ -1,9 +1,12 @@
+import axios from "axios";
 import {
   addUpdateAminities,
   getAmenities,
   getPropertyHighlights,
+  PincodeDB,
+  PincodeResult,
 } from "../types/src.types";
-import { executeQuery } from "../utils/helper";
+import { executeQuery, safeJSONParse } from "../utils/helper";
 
 export class SourceModel {
   static async insertMultipleMedia(files: any[]) {
@@ -241,5 +244,181 @@ export class SourceModel {
       return rows.length > 0 ? rows[0] : null;
     }
     return rows || [];
+  }
+
+  static async getLatLngFromPincode(
+    pincode: string,
+    icountry: string,
+  ): Promise<PincodeResult | null> {
+    try {
+      const normalize = (val: string) => val?.trim().toLowerCase();
+      const rows: PincodeDB[] = await executeQuery(
+        `SELECT * FROM pincode_details_from_pincode WHERE pincode = ?`,
+        [pincode],
+      );
+
+      if (rows.length > 0) {
+        const r = rows[0];
+
+        if (r.country?.trim().toLowerCase() !== normalize(icountry)) {
+          return null;
+        }
+        return {
+          pincode: r.pincode,
+          postcode_localities: safeJSONParse(r.postcode_localities),
+          city: r.city ? r.city : r.state ? r.state : "",
+          district: r.district ? r.district : r.state ? r.state : "",
+          state: r.state ?? "",
+          country: r.country ?? "",
+          lat: r.lat ?? 0,
+          lng: r.lng ?? 0,
+          formatted_address: r.formatted_address ?? "",
+        };
+      }
+
+      const resp = await axios.get(
+        "https://maps.googleapis.com/maps/api/geocode/json",
+        {
+          params: {
+            address: `${pincode}`,
+            key: process.env.GOOGLE_MAPS_API_KEY,
+          },
+        },
+      );
+
+      if (resp.data.status !== "OK" || !resp.data.results?.length) {
+        return null;
+      }
+
+      const result = resp.data.results[0];
+
+      const geometry = result.geometry?.location;
+      if (!geometry) return null;
+
+      let city = "";
+      let district = "";
+      let state = "";
+      let country = "";
+
+      (result.address_components || []).forEach((c: any) => {
+        if (c.types.includes("locality") || c.types.includes("postal_town"))
+          city = c.long_name;
+        if (c.types.includes("administrative_area_level_3"))
+          district = c.long_name;
+        if (c.types.includes("administrative_area_level_1"))
+          state = c.long_name;
+        if (c.types.includes("country")) country = c.long_name;
+      });
+
+      if (country.trim().toLowerCase() !== icountry.trim().toLowerCase())
+        return null;
+
+      if (!city) {
+        city = state;
+      }
+
+      if (!district) {
+        district = state;
+      }
+
+      const postcode_localities: string[] = result.postcode_localities || [];
+      const formattedAddress = result.formatted_address || "";
+
+      await executeQuery(
+        `INSERT INTO pincode_details_from_pincode
+         (pincode, postcode_localities, city, district, state, country, lat, lng, formatted_address)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          pincode,
+          JSON.stringify(postcode_localities),
+          city ? city : state,
+          district ? district : state,
+          state,
+          country,
+          geometry.lat,
+          geometry.lng,
+          formattedAddress,
+        ],
+      );
+
+      return {
+        pincode,
+        postcode_localities,
+        city,
+        district,
+        state,
+        country,
+        lat: geometry.lat,
+        lng: geometry.lng,
+        formatted_address: formattedAddress,
+      };
+    } catch (err) {
+      console.error("getLatLngFromPincode error:", err);
+      return null;
+    }
+  }
+
+  static async getPincodeDetails(
+    country: string,
+    state?: string,
+    district?: string,
+  ) {
+    try {
+      
+      if (!state && !district) {
+        return await executeQuery(
+          `
+        SELECT DISTINCT
+          state
+        FROM pincodes
+        WHERE country = ?
+          AND state IS NOT NULL
+          AND TRIM(state) != ''
+        ORDER BY state ASC
+        `,
+          [country],
+        );
+      }
+
+      
+      if (state && !district) {
+        return await executeQuery(
+          `
+        SELECT DISTINCT
+          district
+        FROM pincodes
+        WHERE country = ?
+          AND state LIKE ?
+          AND district IS NOT NULL
+          AND TRIM(district) != ''
+        ORDER BY district ASC
+        `,
+          [country, `%${state}%`],
+        );
+      }
+
+     
+      if (state && district) {
+        return await executeQuery(
+          `
+        SELECT DISTINCT
+          post AS city
+        FROM pincodes
+        WHERE country = ?
+          AND state LIKE ?
+          AND district LIKE ?
+          AND post IS NOT NULL
+          AND TRIM(post) != ''
+        ORDER BY post ASC
+        `,
+          [country, `%${state}%`, `%${district}%`],
+        );
+      }
+
+      return [];
+    } catch (error) {
+      console.error("getPincodeDetails model error:", error);
+      throw error;
+    }
   }
 }

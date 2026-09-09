@@ -165,4 +165,91 @@ export class SourceController {
       ]);
     }
   }
+
+  // geo location
+
+  static getAdressDetailsFromPincode = async (req: Request, res: Response) => {
+    try {
+      const pincode = String(req.query.pincode || "").trim();
+      if (!pincode) {
+        return sendResponse(res, 200, 0, [], "Pincode is required", []);
+      }
+      const icountry = "india";
+      const data = await SourceModel.getLatLngFromPincode(pincode, icountry);
+      if (!data) {
+        return sendResponse(res, 200, 0, [], "Pincode not found", []);
+      }
+      return sendResponse(
+        res,
+        200,
+        1,
+        [data],
+        "Address fetched successfully from pincode",
+        [],
+      );
+    } catch (err: any) {
+      return sendResponse(res, 500, 0, [], "Something went wrong", [
+        err.errors || err.message || err,
+      ]);
+    }
+  };
+
+  static getPincodeDetails = async (req: Request, res: Response) => {
+    try {
+      const country = String(req.query.country || "").trim();
+
+      const state = String(req.query.state || "").trim();
+
+      const district = String(req.query.district || "").trim();
+
+      if (!country) {
+        return sendResponse(res, 400, 0, [], "Country is required", []);
+      }
+
+      const data = await SourceModel.getPincodeDetails(
+        country,
+        state || undefined,
+        district || undefined,
+      );
+
+      if (!data || data.length === 0) {
+        return sendResponse(res, 404, 0, [], "Location details not found", []);
+      }
+
+      // COUNTRY → STATES
+      if (!state && !district) {
+        return sendResponse(
+          res,
+          200,
+          1,
+          data,
+          "States fetched successfully",
+          [],
+        );
+      }
+
+      // COUNTRY + STATE → DISTRICTS
+      if (state && !district) {
+        return sendResponse(
+          res,
+          200,
+          1,
+          data,
+          "Districts fetched successfully",
+          [],
+        );
+      }
+
+      // COUNTRY + STATE + DISTRICT → CITIES
+      return sendResponse(res, 200, 1, data, "Cities fetched successfully", []);
+    } catch (err: any) {
+      console.error("getPincodeDetails error:", err);
+
+      return sendResponse(res, 500, 0, [], "Something went wrong", [
+        err?.errors || err?.message || err,
+      ]);
+    }
+  };
+
+  
 }

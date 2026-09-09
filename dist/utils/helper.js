@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateToken = exports.comparePassword = exports.hashPassword = exports.getOtpExpiry = exports.generateOtp = exports.sendResponse = exports.validateRequest = void 0;
+exports.safeJSONParse = exports.generateToken = exports.comparePassword = exports.hashPassword = exports.getOtpExpiry = exports.generateOtp = exports.sendResponse = exports.validateRequest = void 0;
 exports.executeQuery = executeQuery;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -65,3 +65,12 @@ const generateToken = (userId) => {
     });
 };
 exports.generateToken = generateToken;
+const safeJSONParse = (value) => {
+    try {
+        return value ? JSON.parse(value) : [];
+    }
+    catch {
+        return [];
+    }
+};
+exports.safeJSONParse = safeJSONParse;

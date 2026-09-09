@@ -79,3 +79,11 @@ export const generateToken = (userId: number) => {
     expiresIn: "7d",
   });
 };
+
+export const safeJSONParse = (value: string | null): string[] => {
+  try {
+    return value ? JSON.parse(value) : [];
+  } catch {
+    return [];
+  }
+};

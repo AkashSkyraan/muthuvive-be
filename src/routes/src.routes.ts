@@ -246,6 +246,13 @@ router.get(
       example: 'Dindigul',
       description: 'District name'
     }
+    #swagger.parameters['city'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+      example: 'Palani',
+      description: 'city name'
+    }
 
     #swagger.responses[200] = {
       description: 'Location details fetched successfully'

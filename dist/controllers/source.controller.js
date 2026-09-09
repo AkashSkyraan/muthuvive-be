@@ -119,14 +119,14 @@ SourceController.getPincodeDetails = async (req, res) => {
         const country = String(req.query.country || "").trim();
         const state = String(req.query.state || "").trim();
         const district = String(req.query.district || "").trim();
+        const city = String(req.query.city || "").trim();
         if (!country) {
             return (0, helper_1.sendResponse)(res, 400, 0, [], "Country is required", []);
         }
-        const data = await source_model_1.SourceModel.getPincodeDetails(country, state || undefined, district || undefined);
+        const data = await source_model_1.SourceModel.getPincodeDetails(country, state || undefined, district || undefined, city || undefined);
         if (!data || data.length === 0) {
-            return (0, helper_1.sendResponse)(res, 404, 0, [], "Location details not found", []);
+            return (0, helper_1.sendResponse)(res, 400, 0, [], "Location details not found", []);
         }
-        // COUNTRY → STATES
         if (!state && !district) {
             return (0, helper_1.sendResponse)(res, 200, 1, data, "States fetched successfully", []);
         }

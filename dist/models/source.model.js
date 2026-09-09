@@ -276,7 +276,7 @@ class SourceModel {
             return null;
         }
     }
-    static async getPincodeDetails(country, state, district) {
+    static async getPincodeDetails(country, state, district, city) {
         try {
             if (!state && !district) {
                 return await (0, helper_1.executeQuery)(`
@@ -313,6 +313,20 @@ class SourceModel {
           AND TRIM(post) != ''
         ORDER BY post ASC
         `, [country, `%${state}%`, `%${district}%`]);
+            }
+            if (state && district && city) {
+                return await (0, helper_1.executeQuery)(`
+        SELECT DISTINCT
+          post AS city
+        FROM pincodes
+        WHERE country = ?
+          AND state LIKE ?
+          AND district LIKE ?
+          AND post LIKE ?
+          AND post IS NOT NULL
+          AND TRIM(post) != ''
+        ORDER BY post ASC
+        `, [country, `%${state}%`, `%${district}%`, `%${city}%`]);
             }
             return [];
         }

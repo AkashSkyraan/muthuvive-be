@@ -362,9 +362,9 @@ export class SourceModel {
     country: string,
     state?: string,
     district?: string,
+    city?: string,
   ) {
     try {
-      
       if (!state && !district) {
         return await executeQuery(
           `
@@ -380,7 +380,6 @@ export class SourceModel {
         );
       }
 
-      
       if (state && !district) {
         return await executeQuery(
           `
@@ -397,7 +396,6 @@ export class SourceModel {
         );
       }
 
-     
       if (state && district) {
         return await executeQuery(
           `
@@ -412,6 +410,24 @@ export class SourceModel {
         ORDER BY post ASC
         `,
           [country, `%${state}%`, `%${district}%`],
+        );
+      }
+
+      if (state && district && city) {
+        return await executeQuery(
+          `
+        SELECT DISTINCT
+          post AS city
+        FROM pincodes
+        WHERE country = ?
+          AND state LIKE ?
+          AND district LIKE ?
+          AND post LIKE ?
+          AND post IS NOT NULL
+          AND TRIM(post) != ''
+        ORDER BY post ASC
+        `,
+          [country, `%${state}%`, `%${district}%`, `%${city}%`],
         );
       }
 

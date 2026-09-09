@@ -202,6 +202,8 @@ export class SourceController {
 
       const district = String(req.query.district || "").trim();
 
+      const city = String(req.query.city || "").trim();
+
       if (!country) {
         return sendResponse(res, 400, 0, [], "Country is required", []);
       }
@@ -210,13 +212,14 @@ export class SourceController {
         country,
         state || undefined,
         district || undefined,
+        city || undefined,
       );
 
       if (!data || data.length === 0) {
-        return sendResponse(res, 404, 0, [], "Location details not found", []);
+        return sendResponse(res, 400, 0, [], "Location details not found", []);
       }
 
-      // COUNTRY → STATES
+      
       if (!state && !district) {
         return sendResponse(
           res,
@@ -250,6 +253,4 @@ export class SourceController {
       ]);
     }
   };
-
-  
 }

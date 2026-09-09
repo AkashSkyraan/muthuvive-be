@@ -1972,6 +1972,14 @@
                         "type": "string",
                         "example": "Dindigul",
                         "description": "District name"
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "example": "Palani",
+                        "description": "city name"
                     }
                 ],
                 "responses": {

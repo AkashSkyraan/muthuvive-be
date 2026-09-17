@@ -234,7 +234,7 @@ export class SourceModel {
       conditions.push("status = ?");
       values.push(data.status);
     }
-    let sql = ` SELECT id, name, status, created_at FROM prop_higs `;
+    let sql = ` SELECT id, name, status, created_at FROM prop_highs `;
     if (conditions.length > 0) {
       sql += ` WHERE ${conditions.join(" AND ")}`;
     }

@@ -1286,6 +1286,22 @@
                                 "email": {
                                     "type": "string",
                                     "example": "abc@gmail.com"
+                                },
+                                "c_yoe": {
+                                    "type": "number",
+                                    "example": 2
+                                },
+                                "c_projects": {
+                                    "type": "number",
+                                    "example": 150
+                                },
+                                "c_clients": {
+                                    "type": "number",
+                                    "example": 1500
+                                },
+                                "c_built": {
+                                    "type": "number",
+                                    "example": 50000
                                 }
                             }
                         }
@@ -1351,6 +1367,111 @@
                 "responses": {
                     "200": {
                         "description": "About Us data fetched successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/about/add-consultant": {
+            "post": {
+                "tags": [
+                    "6.About Us"
+                ],
+                "summary": "Add or Update Consultant data",
+                "description": "Create a Consultant data or update an existing consultant data",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "skyraan"
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "example": "sr. Engineer"
+                                },
+                                "image": {
+                                    "type": "string",
+                                    "example": "/uploads/image/abced"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "added or updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                                "example": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "consultants added successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/about/consultant": {
+            "get": {
+                "tags": [
+                    "6.About Us"
+                ],
+                "summary": "Get Consultants data",
+                "description": "Get all consultants data or fetch a specific record by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "description": "Consultants ID. If provided, fetches the specific record; otherwise fetches all records."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Consultants data fetched successfully"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -1994,6 +2115,896 @@
                     },
                     "500": {
                         "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/form/properties/step": {
+            "post": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "step": {
+                                    "example": "any"
+                                },
+                                "user_id": {
+                                    "example": "any"
+                                },
+                                "prop_id": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/form/get-prop-byid": {
+            "get": {
+                "tags": [
+                    "10.Form"
+                ],
+                "summary": "Get Property By ID",
+                "description": "Get complete property details including prop_form data, amenities, property highlights, media, and category-specific data",
+                "parameters": [
+                    {
+                        "name": "prop_id",
+                        "in": "query",
+                        "required": true,
+                        "type": "string",
+                        "example": "P7K2XM",
+                        "description": "Property ID"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "dtcp",
+                            "commercial",
+                            "agri"
+                        ],
+                        "example": "agri",
+                        "description": "Property category type"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property fetched successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "object"
+                                },
+                                "properties": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "integer"
+                                                },
+                                                "example": {
+                                                    "type": "number",
+                                                    "example": 1
+                                                }
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "string"
+                                                },
+                                                "example": {
+                                                    "type": "string",
+                                                    "example": "Property fetched successfully"
+                                                }
+                                            }
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "object"
+                                                },
+                                                "properties": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 15
+                                                                }
+                                                            }
+                                                        },
+                                                        "prop_id": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "P7K2XM"
+                                                                }
+                                                            }
+                                                        },
+                                                        "category": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 3
+                                                                }
+                                                            }
+                                                        },
+                                                        "sub_category": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 5
+                                                                }
+                                                            }
+                                                        },
+                                                        "country": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "India"
+                                                                }
+                                                            }
+                                                        },
+                                                        "state": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "Tamil Nadu"
+                                                                }
+                                                            }
+                                                        },
+                                                        "district": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "Coimbatore"
+                                                                }
+                                                            }
+                                                        },
+                                                        "city": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "Pollachi"
+                                                                }
+                                                            }
+                                                        },
+                                                        "user_id": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 10
+                                                                }
+                                                            }
+                                                        },
+                                                        "map": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "https://maps.google.com/..."
+                                                                }
+                                                            }
+                                                        },
+                                                        "prop_name": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "Green Farm"
+                                                                }
+                                                            }
+                                                        },
+                                                        "prop_area": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "number"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 5
+                                                                }
+                                                            }
+                                                        },
+                                                        "area_unit": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "acre"
+                                                                }
+                                                            }
+                                                        },
+                                                        "road_plan": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "East"
+                                                                }
+                                                            }
+                                                        },
+                                                        "road_length": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "number"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 40
+                                                                }
+                                                            }
+                                                        },
+                                                        "road_length_unit": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "feet"
+                                                                }
+                                                            }
+                                                        },
+                                                        "pathway": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "number"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 10
+                                                                }
+                                                            }
+                                                        },
+                                                        "length": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "number"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 100
+                                                                }
+                                                            }
+                                                        },
+                                                        "length_unit": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "feet"
+                                                                }
+                                                            }
+                                                        },
+                                                        "width": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "number"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 50
+                                                                }
+                                                            }
+                                                        },
+                                                        "width_unit": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "feet"
+                                                                }
+                                                            }
+                                                        },
+                                                        "c_well": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 1
+                                                                }
+                                                            }
+                                                        },
+                                                        "i_well": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 0
+                                                                }
+                                                            }
+                                                        },
+                                                        "electricity": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 1
+                                                                }
+                                                            }
+                                                        },
+                                                        "hp": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "number"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 5
+                                                                }
+                                                            }
+                                                        },
+                                                        "facing": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "East"
+                                                                }
+                                                            }
+                                                        },
+                                                        "construct": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 0
+                                                                }
+                                                            }
+                                                        },
+                                                        "construct_type": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "nullable": {
+                                                                    "type": "boolean",
+                                                                    "example": true
+                                                                },
+                                                                "example": {}
+                                                            }
+                                                        },
+                                                        "other_type": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "nullable": {
+                                                                    "type": "boolean",
+                                                                    "example": true
+                                                                },
+                                                                "example": {}
+                                                            }
+                                                        },
+                                                        "step": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "integer"
+                                                                },
+                                                                "example": {
+                                                                    "type": "number",
+                                                                    "example": 4
+                                                                }
+                                                            }
+                                                        },
+                                                        "status": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "string"
+                                                                },
+                                                                "example": {
+                                                                    "type": "string",
+                                                                    "example": "active"
+                                                                }
+                                                            }
+                                                        },
+                                                        "amenities": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "array"
+                                                                },
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "type": "string",
+                                                                            "example": "object"
+                                                                        },
+                                                                        "properties": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "id": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "integer"
+                                                                                        },
+                                                                                        "example": {
+                                                                                            "type": "number",
+                                                                                            "example": 1
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "name": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "string"
+                                                                                        },
+                                                                                        "example": {
+                                                                                            "type": "string",
+                                                                                            "example": "Water Facility"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "property_highs": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "array"
+                                                                },
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "type": "string",
+                                                                            "example": "object"
+                                                                        },
+                                                                        "properties": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "id": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "integer"
+                                                                                        },
+                                                                                        "example": {
+                                                                                            "type": "number",
+                                                                                            "example": 2
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "name": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "string"
+                                                                                        },
+                                                                                        "example": {
+                                                                                            "type": "string",
+                                                                                            "example": "Main Road Access"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "media": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "object"
+                                                                },
+                                                                "properties": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "cover": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "type": "string",
+                                                                                    "example": "object"
+                                                                                },
+                                                                                "nullable": {
+                                                                                    "type": "boolean",
+                                                                                    "example": true
+                                                                                },
+                                                                                "properties": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "id": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "type": {
+                                                                                                    "type": "string",
+                                                                                                    "example": "integer"
+                                                                                                },
+                                                                                                "example": {
+                                                                                                    "type": "number",
+                                                                                                    "example": 101
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        "url": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "type": {
+                                                                                                    "type": "string",
+                                                                                                    "example": "string"
+                                                                                                },
+                                                                                                "example": {
+                                                                                                    "type": "string",
+                                                                                                    "example": "https://domain.com/uploads/cover.jpg"
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "images": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "type": "string",
+                                                                                    "example": "array"
+                                                                                },
+                                                                                "items": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "object"
+                                                                                        },
+                                                                                        "properties": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "id": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "integer"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "number",
+                                                                                                            "example": 102
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "url": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "string"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "https://domain.com/uploads/image.jpg"
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "videos": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "type": "string",
+                                                                                    "example": "array"
+                                                                                },
+                                                                                "items": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "object"
+                                                                                        },
+                                                                                        "properties": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "id": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "integer"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "number",
+                                                                                                            "example": 105
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "url": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "string"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "https://domain.com/uploads/video.mp4"
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "patta": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "type": "string",
+                                                                                    "example": "array"
+                                                                                },
+                                                                                "items": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "object"
+                                                                                        },
+                                                                                        "properties": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "id": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "integer"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "number",
+                                                                                                            "example": 107
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "url": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "string"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "https://domain.com/uploads/patta.jpg"
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "documents": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "type": {
+                                                                                    "type": "string",
+                                                                                    "example": "array"
+                                                                                },
+                                                                                "items": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "type": {
+                                                                                            "type": "string",
+                                                                                            "example": "object"
+                                                                                        },
+                                                                                        "properties": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "id": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "integer"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "number",
+                                                                                                            "example": 109
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "url": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "type": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "string"
+                                                                                                        },
+                                                                                                        "example": {
+                                                                                                            "type": "string",
+                                                                                                            "example": "https://domain.com/uploads/document.pdf"
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Property ID is required"
+                    },
+                    "404": {
+                        "description": "Property not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
                     }
                 }
             }

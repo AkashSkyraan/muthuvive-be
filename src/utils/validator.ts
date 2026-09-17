@@ -168,6 +168,18 @@ export const addUpdateAboutUsSchema = Joi.object({
   email: Joi.string().required().messages({
     "any.required": "address is required",
   }),
+  c_yoe: Joi.number().required().messages({
+    "any.required": "Years Of Experience is required",
+  }),
+  c_projects: Joi.number().required().messages({
+    "any.required": "Completed Projects are required",
+  }),
+  c_clients: Joi.number().required().messages({
+    "any.required": "Clients are required",
+  }),
+  c_built: Joi.number().required().messages({
+    "any.required": "Construction are required",
+  }),
 });
 
 // Gallery
@@ -227,10 +239,23 @@ export const addUpdateSubCategorySchema = Joi.object({
   status: Joi.string().optional(),
 });
 
-
 export interface GetSubPropertyInput {
   id?: number;
   prop_id?: number;
   status?: string;
 }
 
+// consultants
+
+export const addUpdateConsultantSchema = Joi.object({
+  id: Joi.number().integer().optional(),
+  name: Joi.string().required().messages({
+    "any.required": "Name is required",
+  }),
+  role: Joi.string().required().messages({
+    "any.required": "Role is required",
+  }),
+  image: Joi.string().required().messages({
+    "any.required": "Image is required",
+  }),
+});

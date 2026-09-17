@@ -23,7 +23,7 @@ class AuthController {
             if (purpose === 2 && !existingUser) {
                 return (0, helper_1.sendResponse)(res, 400, 0, [], "User Not Found", []);
             }
-            const otp = (0, helper_1.generateOtp)();
+            const otp = process.env.NODE_ENV === "production" ? (0, helper_1.generateOtp)() : "123456";
             const expiresAt = (0, helper_1.getOtpExpiry)();
             if (process.env.NODE_ENV === "production" && mobile) {
                 await (0, sms_service_1.sendSmsOTP)(mobile, otp);

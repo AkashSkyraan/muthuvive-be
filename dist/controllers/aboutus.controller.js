@@ -36,5 +36,38 @@ class AboutUsController {
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", error.errors || []);
         }
     }
+    // c_worker
+    static async addUpdateConsultants(req, res) {
+        try {
+            const data = (0, helper_1.validateRequest)(req.body, validator_1.addUpdateConsultantSchema);
+            const result = await aboutus_model_1.AbouUsModel.addUpdateConsultants(data);
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], data.id
+                ? "Consultants updated successfully"
+                : "Consultants added successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error.errors,
+            ]);
+        }
+    }
+    static async getConsultants(req, res) {
+        try {
+            const { id } = req.query;
+            const consultantID = id ? Number(id) : undefined;
+            const consultants = await aboutus_model_1.AbouUsModel.getConsultantData({
+                id: consultantID,
+            });
+            if (consultantID && !consultants) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Consultants data not found", []);
+            }
+            return (0, helper_1.sendResponse)(res, 200, 1, consultantID ? [consultants] : consultants, "Consultants  data fetched successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error.errors,
+            ]);
+        }
+    }
 }
 exports.AboutUsController = AboutUsController;

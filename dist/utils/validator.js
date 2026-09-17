@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addUpdateSubCategorySchema = exports.addUpdatePropertyHighlightSchema = exports.addUpdateAmenitiesSchema = exports.addUpdateEnquirySchema = exports.addUpdateGallerySchema = exports.addUpdateAboutUsSchema = exports.addUpdatePropertyAreaSchema = exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
+exports.addUpdateConsultantSchema = exports.addUpdateSubCategorySchema = exports.addUpdatePropertyHighlightSchema = exports.addUpdateAmenitiesSchema = exports.addUpdateEnquirySchema = exports.addUpdateGallerySchema = exports.addUpdateAboutUsSchema = exports.addUpdatePropertyAreaSchema = exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 exports.requestOtpSchema = joi_1.default.object({
     type: joi_1.default.string().optional(),
@@ -140,6 +140,18 @@ exports.addUpdateAboutUsSchema = joi_1.default.object({
     email: joi_1.default.string().required().messages({
         "any.required": "address is required",
     }),
+    c_yoe: joi_1.default.number().required().messages({
+        "any.required": "Years Of Experience is required",
+    }),
+    c_projects: joi_1.default.number().required().messages({
+        "any.required": "Completed Projects are required",
+    }),
+    c_clients: joi_1.default.number().required().messages({
+        "any.required": "Clients are required",
+    }),
+    c_built: joi_1.default.number().required().messages({
+        "any.required": "Construction are required",
+    }),
 });
 // Gallery
 exports.addUpdateGallerySchema = joi_1.default.object({
@@ -187,4 +199,17 @@ exports.addUpdateSubCategorySchema = joi_1.default.object({
     prop_id: joi_1.default.number().integer().positive().required(),
     sub_name: joi_1.default.string().trim().required(),
     status: joi_1.default.string().optional(),
+});
+// consultants
+exports.addUpdateConsultantSchema = joi_1.default.object({
+    id: joi_1.default.number().integer().optional(),
+    name: joi_1.default.string().required().messages({
+        "any.required": "Name is required",
+    }),
+    role: joi_1.default.string().required().messages({
+        "any.required": "Role is required",
+    }),
+    image: joi_1.default.string().required().messages({
+        "any.required": "Image is required",
+    }),
 });

@@ -22,7 +22,12 @@ router.post("/add-aboutus-data",
         users : 50000,
         address : "No.5, Skyraan Building",
         mobile : "98764210",
-        email : "abc@gmail.com"
+        email : "abc@gmail.com",
+        c_yoe : 2,
+        c_projects : 150,
+        c_clients : 1500,
+        c_built : 50000
+
       }
     }
 
@@ -70,4 +75,69 @@ router.get("/about-data",
     }
 */
 aboutus_controller_1.AboutUsController.getAboutUsData);
+// c_worker
+router.post("/add-consultant", 
+/*
+    #swagger.tags = ['6.About Us']
+    #swagger.summary = 'Add or Update Consultant data'
+    #swagger.description = 'Create a Consultant  data or update an existing consultant data'
+
+    #swagger.consumes = ['application/json']
+
+    #swagger.parameters['body'] = {
+      in: 'body',
+      required: true,
+      schema: {
+        id: 1,
+        name : "skyraan",
+        role : "sr. Engineer",
+        image : "/uploads/image/abced"
+
+      }
+    }
+
+    #swagger.responses[200] = {
+      description: 'added or updated successfully',
+      schema: {
+        success: true,
+        data: [
+          {
+            id: 1
+          }
+        ],
+        message: 'consultants added successfully'
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: 'Validation Error'
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal Server Error'
+    }
+*/
+aboutus_controller_1.AboutUsController.addUpdateConsultants);
+router.get("/consultant", 
+/*
+    #swagger.tags = ['6.About Us']
+    #swagger.summary = 'Get Consultants data'
+    #swagger.description = 'Get all consultants data or fetch a specific record by ID'
+
+    #swagger.parameters['id'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      description: 'Consultants ID. If provided, fetches the specific record; otherwise fetches all records.'
+    }
+
+    #swagger.responses[200] = {
+      description: 'Consultants data fetched successfully'
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal Server Error'
+    }
+*/
+aboutus_controller_1.AboutUsController.getConsultants);
 exports.default = router;

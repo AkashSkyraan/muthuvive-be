@@ -8,6 +8,7 @@ import aboutRoutes from "./about.routes";
 import galleryRoutes from "./gallery.routes";
 import enquiryRoutes from "./enquiry.routes";
 import sourceRoutes from "./src.routes";
+import formRoutes from "./form.routes";
 import { UploadController } from "../controllers/upload.controller";
 import { upload } from "../config/multer";
 const router = Router();
@@ -20,6 +21,7 @@ router.use("/about", aboutRoutes);
 router.use("/gallery", galleryRoutes);
 router.use("/enquiry", enquiryRoutes);
 router.use("/src", sourceRoutes);
+router.use("/form", formRoutes);
 
 router.post(
   "/upload",

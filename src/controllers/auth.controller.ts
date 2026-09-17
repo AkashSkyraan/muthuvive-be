@@ -35,7 +35,7 @@ export class AuthController {
       if (purpose === 2 && !existingUser) {
         return sendResponse(res, 400, 0, [], "User Not Found", []);
       }
-      const otp = generateOtp();
+      const otp = process.env.NODE_ENV === "production" ?   generateOtp() : "123456";
       const expiresAt = getOtpExpiry();
 
       if (process.env.NODE_ENV === "production" && mobile) {

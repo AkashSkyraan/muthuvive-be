@@ -192,7 +192,7 @@ export class SourceModel {
   static async addUpdatePropertyHighlights(data: any) {
     if (data.id) {
       const sql = `
-      UPDATE prop_highs
+      UPDATE highlights
       SET
         name = ?,
         status = ?
@@ -209,7 +209,7 @@ export class SourceModel {
     }
 
     const sql = `
-    INSERT INTO prop_highs (
+    INSERT INTO highlights (
       name,
       status
     )
@@ -234,7 +234,7 @@ export class SourceModel {
       conditions.push("status = ?");
       values.push(data.status);
     }
-    let sql = ` SELECT id, name, status, created_at FROM prop_highs `;
+    let sql = ` SELECT id, name, status, created_at FROM highlights `;
     if (conditions.length > 0) {
       sql += ` WHERE ${conditions.join(" AND ")}`;
     }

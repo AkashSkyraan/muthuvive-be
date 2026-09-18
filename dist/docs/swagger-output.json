@@ -2385,7 +2385,7 @@
         "/form/properties/step": {
             "post": {
                 "tags": [
-                    "10. Form"
+                    "10.Form"
                 ],
                 "summary": "Save Property Form Step",
                 "description": "Create or update property form step 1 to 5",
@@ -2462,11 +2462,11 @@
                                 },
                                 "road_length_unit": {
                                     "type": "string",
-                                    "example": "feet"
+                                    "example": "ft"
                                 },
                                 "pathway": {
-                                    "type": "string",
-                                    "example": "North"
+                                    "type": "number",
+                                    "example": 0
                                 },
                                 "length": {
                                     "type": "number",
@@ -2482,15 +2482,15 @@
                                 },
                                 "width_unit": {
                                     "type": "string",
-                                    "example": "feet"
+                                    "example": "ft"
                                 },
                                 "c_well": {
-                                    "type": "string",
-                                    "example": "Yes"
+                                    "type": "number",
+                                    "example": 1
                                 },
                                 "i_well": {
-                                    "type": "string",
-                                    "example": "Yes"
+                                    "type": "number",
+                                    "example": 0
                                 },
                                 "electricity": {
                                     "type": "number",
@@ -2509,8 +2509,8 @@
                                     "example": 1
                                 },
                                 "construct_type": {
-                                    "type": "string",
-                                    "example": "Residential"
+                                    "type": "number",
+                                    "example": 1
                                 },
                                 "other_type": {},
                                 "min_price": {
@@ -2554,8 +2554,8 @@
                                     "example": 2
                                 },
                                 "avail_status": {
-                                    "type": "string",
-                                    "example": "Ready to Move"
+                                    "type": "number",
+                                    "example": 1
                                 },
                                 "bhk": {
                                     "type": "number",

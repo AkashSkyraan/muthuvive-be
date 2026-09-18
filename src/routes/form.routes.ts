@@ -7,7 +7,7 @@ router.post(
   "/properties/step",
 
   /*
-      #swagger.tags = ['10. Form']
+      #swagger.tags = ['10.Form']
       #swagger.summary = 'Save Property Form Step'
       #swagger.description = 'Create or update property form step 1 to 5'
       #swagger.consumes = ['application/json']
@@ -33,21 +33,20 @@ router.post(
           area_unit: "sqft",
           road_plan: "30 Feet Road",
           road_length: 30,
-          road_length_unit: "feet",
-          pathway: "North",
+          road_length_unit: "ft",
+          pathway: 0,
           length: 40,
           length_unit: "feet",
           width: 30,
-          width_unit: "feet",
-          c_well: "Yes",
-          i_well: "Yes",
+          width_unit: "ft",
+          c_well: 1,
+          i_well: 0,
           electricity: 1,
           hp: 5,
           facing: "East",
           construct: 1,
-          construct_type: "Residential",
+          construct_type: 1,
           other_type: null,
-
           min_price: 2500000,
           max_price: 3000000,
           carpet_area: 1000,
@@ -58,7 +57,7 @@ router.post(
           super_build_unit: "sqft",
           total_floor: 4,
           your_floor: 2,
-          avail_status: "Ready to Move",
+          avail_status: 1,
           bhk: 2,
 
           amenities: [1, 2, 3],

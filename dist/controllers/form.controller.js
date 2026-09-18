@@ -44,7 +44,7 @@ FormController.savePropertyStep = async (req, res) => {
             user_id,
             body: req.body,
         });
-        return (0, helper_1.sendResponse)(res, 200, 1, data, `Step ${step} saved successfully`, []);
+        return (0, helper_1.sendResponse)(res, 200, 1, data, `Property Form Data saved successfully`, []);
     }
     catch (error) {
         console.log(error);

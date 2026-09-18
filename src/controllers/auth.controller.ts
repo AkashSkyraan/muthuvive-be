@@ -35,7 +35,8 @@ export class AuthController {
       if (purpose === 2 && !existingUser) {
         return sendResponse(res, 400, 0, [], "User Not Found", []);
       }
-      const otp = process.env.NODE_ENV === "production" ?   generateOtp() : "123456";
+      const otp =
+        process.env.NODE_ENV === "production" ? generateOtp() : "123456";
       const expiresAt = getOtpExpiry();
 
       if (process.env.NODE_ENV === "production" && mobile) {
@@ -60,7 +61,7 @@ export class AuthController {
         verifyOtpSchema,
       );
 
-      const type = email || mobile;
+      const type: "email" | "mobile" = email ? "email" : "mobile";
 
       const otpRecord = await AuthModel.getLatestOTP(
         type,

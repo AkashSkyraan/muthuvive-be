@@ -103,6 +103,269 @@
                 }
             }
         },
+        "/admin/create-admin": {
+            "post": {
+                "tags": [
+                    "0.Admin"
+                ],
+                "summary": "Create / Update Admin",
+                "description": "Create a new admin when ID is not provided, or update an existing admin when ID is provided",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "example": "subadmin"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Kamalesh"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "12345678"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin updated successfully / Validation error / Admin already exists",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number",
+                                            "example": 1
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "example": "subadmin"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Kamalesh"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "active"
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Admin updated successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Admin created successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "number",
+                                            "example": 1
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "example": "admin"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Kamalesh"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "active"
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Admin created successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/admin/login-admin": {
+            "post": {
+                "tags": [
+                    "0.Admin"
+                ],
+                "summary": "Admin Login",
+                "description": "Login admin or sub admin using name and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Kamalesh"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "12345678"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIs..."
+                                        },
+                                        "admin": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number",
+                                                    "example": 1
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Kamalesh"
+                                                },
+                                                "status": {
+                                                    "type": "number",
+                                                    "example": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Login successful"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid username or password",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 0
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Invalid username or password"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Admin account is inactive",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 0
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Your account is inactive"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/auth/request-otp": {
             "post": {
                 "tags": [
@@ -2121,30 +2384,348 @@
         },
         "/form/properties/step": {
             "post": {
-                "description": "",
+                "tags": [
+                    "10. Form"
+                ],
+                "summary": "Save Property Form Step",
+                "description": "Create or update property form step 1 to 5",
+                "consumes": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "body",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "object",
                             "properties": {
                                 "step": {
-                                    "example": "any"
+                                    "type": "number",
+                                    "example": 1
                                 },
                                 "user_id": {
-                                    "example": "any"
+                                    "type": "number",
+                                    "example": 1
                                 },
                                 "prop_id": {
-                                    "example": "any"
+                                    "type": "string",
+                                    "example": "PAb12C3456"
+                                },
+                                "category": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "sub_category": {
+                                    "type": "number",
+                                    "example": 2
+                                },
+                                "country": {
+                                    "type": "string",
+                                    "example": "India"
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "example": "Tamil Nadu"
+                                },
+                                "district": {
+                                    "type": "string",
+                                    "example": "Chennai"
+                                },
+                                "city": {
+                                    "type": "string",
+                                    "example": "Chennai"
+                                },
+                                "map_link": {
+                                    "type": "string",
+                                    "example": "https://maps.google.com/?q=Chennai"
+                                },
+                                "prop_name": {
+                                    "type": "string",
+                                    "example": "Green Valley Residency"
+                                },
+                                "prop_area": {
+                                    "type": "number",
+                                    "example": 1200
+                                },
+                                "area_unit": {
+                                    "type": "string",
+                                    "example": "sqft"
+                                },
+                                "road_plan": {
+                                    "type": "string",
+                                    "example": "30 Feet Road"
+                                },
+                                "road_length": {
+                                    "type": "number",
+                                    "example": 30
+                                },
+                                "road_length_unit": {
+                                    "type": "string",
+                                    "example": "feet"
+                                },
+                                "pathway": {
+                                    "type": "string",
+                                    "example": "North"
+                                },
+                                "length": {
+                                    "type": "number",
+                                    "example": 40
+                                },
+                                "length_unit": {
+                                    "type": "string",
+                                    "example": "feet"
+                                },
+                                "width": {
+                                    "type": "number",
+                                    "example": 30
+                                },
+                                "width_unit": {
+                                    "type": "string",
+                                    "example": "feet"
+                                },
+                                "c_well": {
+                                    "type": "string",
+                                    "example": "Yes"
+                                },
+                                "i_well": {
+                                    "type": "string",
+                                    "example": "Yes"
+                                },
+                                "electricity": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "hp": {
+                                    "type": "number",
+                                    "example": 5
+                                },
+                                "facing": {
+                                    "type": "string",
+                                    "example": "East"
+                                },
+                                "construct": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "construct_type": {
+                                    "type": "string",
+                                    "example": "Residential"
+                                },
+                                "other_type": {},
+                                "min_price": {
+                                    "type": "number",
+                                    "example": 2500000
+                                },
+                                "max_price": {
+                                    "type": "number",
+                                    "example": 3000000
+                                },
+                                "carpet_area": {
+                                    "type": "number",
+                                    "example": 1000
+                                },
+                                "carp_unit": {
+                                    "type": "string",
+                                    "example": "sqft"
+                                },
+                                "build": {
+                                    "type": "number",
+                                    "example": 1200
+                                },
+                                "build_unit": {
+                                    "type": "string",
+                                    "example": "sqft"
+                                },
+                                "super_build": {
+                                    "type": "number",
+                                    "example": 1400
+                                },
+                                "super_build_unit": {
+                                    "type": "string",
+                                    "example": "sqft"
+                                },
+                                "total_floor": {
+                                    "type": "number",
+                                    "example": 4
+                                },
+                                "your_floor": {
+                                    "type": "number",
+                                    "example": 2
+                                },
+                                "avail_status": {
+                                    "type": "string",
+                                    "example": "Ready to Move"
+                                },
+                                "bhk": {
+                                    "type": "number",
+                                    "example": 2
+                                },
+                                "amenities": {
+                                    "type": "array",
+                                    "example": [
+                                        1,
+                                        2,
+                                        3
+                                    ],
+                                    "items": {
+                                        "type": "number"
+                                    }
+                                },
+                                "prop_highs": {
+                                    "type": "array",
+                                    "example": [
+                                        1,
+                                        2
+                                    ],
+                                    "items": {
+                                        "type": "number"
+                                    }
+                                },
+                                "rooms": {
+                                    "type": "number",
+                                    "example": 3
+                                },
+                                "lift": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "washroom": {
+                                    "type": "number",
+                                    "example": 2
+                                },
+                                "cover": {
+                                    "type": "number",
+                                    "example": 101
+                                },
+                                "pr_img": {
+                                    "type": "array",
+                                    "example": [
+                                        102,
+                                        103,
+                                        104
+                                    ],
+                                    "items": {
+                                        "type": "number"
+                                    }
+                                },
+                                "pr_vid": {
+                                    "type": "array",
+                                    "example": [
+                                        105,
+                                        106
+                                    ],
+                                    "items": {
+                                        "type": "number"
+                                    }
+                                },
+                                "patta": {
+                                    "type": "array",
+                                    "example": [
+                                        107
+                                    ],
+                                    "items": {
+                                        "type": "number"
+                                    }
+                                },
+                                "pr_doc": {
+                                    "type": "array",
+                                    "example": [
+                                        108,
+                                        109
+                                    ],
+                                    "items": {
+                                        "type": "number"
+                                    }
                                 }
                             }
                         }
                     }
                 ],
                 "responses": {
-                    "default": {
-                        "description": ""
+                    "200": {
+                        "description": "Property step saved successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "prop_id": {
+                                            "type": "string",
+                                            "example": "PAb12C3456"
+                                        },
+                                        "step": {
+                                            "type": "number",
+                                            "example": 1
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "example": "created"
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Step 1 saved successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid step / Property ID is required",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 0
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Invalid step"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "number",
+                                    "example": 0
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Something went wrong"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
                     }
                 }
             }

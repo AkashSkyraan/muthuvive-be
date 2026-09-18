@@ -1,54 +1,99 @@
 import { executeQuery } from "../utils/helper";
 
 export class DashboardModel {
-  static async getByUsername(name: string) {
-    const [rows]: any = await executeQuery(
-      `
-      SELECT *
-      FROM admins
-      WHERE name = ?
-      LIMIT 1
-      `,
-      [name],
-    );
+  static createAdmin = async (
+    role: string,
+    name: string,
+    password: string,
+    status: number,
+  ) => {
+    const sql = `
+    INSERT INTO admins
+    (
+      role,
+      name,
+      password,
+      status
+    )
+    VALUES (?, ?, ?, ?)
+  `;
 
-    return rows[0] || null;
-  }
-
-  static async createAdmin(name: string, password: string) {
-    const [result]: any = await executeQuery(
-      `
-      INSERT INTO admins
-      (
-        name,
-        password,
-        role,
-        status
-      )
-      VALUES (?, ?, 'admin','active')
-      `,
-      [name, password],
-    );
+    const result: any = await executeQuery(sql, [role, name, password, status]);
 
     return result.insertId;
-  }
+  };
 
-  static async getSubAdmins() {
-    const [rows]: any = await executeQuery(
-      `
-      SELECT
-        id,
-        name,
-        role,
-        status,
-        
-        created_at
-      FROM admins
-      WHERE role = 'subadmin'
-      ORDER BY id DESC
-      `,
-    );
+  static getById = async (id: number) => {
+    const sql = `
+    SELECT
+      id,
+      role,
+      name,
+      password,
+      status
+    FROM admins
+    WHERE id = ?
+    LIMIT 1
+  `;
 
-    return rows;
-  }
+    const rows: any[] = await executeQuery(sql, [id]);
+
+    return rows[0] || null;
+  };
+
+  static getByName = async (name: string) => {
+    const sql = `
+    SELECT
+      id,
+      role,
+      name,
+      password,
+      status
+    FROM admins
+    WHERE name = ?
+    LIMIT 1
+  `;
+
+    const rows: any[] = await executeQuery(sql, [name]);
+
+    return rows[0] || null;
+  };
+
+  static updateAdmin = async (
+    id: number,
+    role: string,
+    name: string,
+    password: string,
+    status: number,
+  ) => {
+    const sql = `
+    UPDATE admins
+    SET
+      role = ?,
+      name = ?,
+      password = ?,
+      status = ?
+    WHERE id = ?
+  `;
+
+    return await executeQuery(sql, [role, name, password, status, id]);
+  };
+
+  static getAdminLogin = async (name: string) => {
+    const sql = `
+    SELECT
+      id,
+      role,
+      name,
+      password,
+      status
+    FROM admins
+    WHERE name = ?
+    LIMIT 1
+  `;
+
+    const rows: any[] = await executeQuery(sql, [name]);
+
+    return rows[0] || null;
+  };
 }

@@ -3,8 +3,112 @@ import { FormController } from "../controllers/form.controller";
 
 const router = Router();
 
-router.post("/properties/step", FormController.savePropertyStep);
+router.post(
+  "/properties/step",
 
+  /*
+      #swagger.tags = ['10. Form']
+      #swagger.summary = 'Save Property Form Step'
+      #swagger.description = 'Create or update property form step 1 to 5'
+      #swagger.consumes = ['application/json']
+
+      #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+          step: 1,
+          user_id: 1,
+          prop_id: "PAb12C3456",
+
+          category: 1,
+          sub_category: 2,
+          country: "India",
+          state: "Tamil Nadu",
+          district: "Chennai",
+          city: "Chennai",
+          map_link: "https://maps.google.com/?q=Chennai",
+
+          prop_name: "Green Valley Residency",
+          prop_area: 1200,
+          area_unit: "sqft",
+          road_plan: "30 Feet Road",
+          road_length: 30,
+          road_length_unit: "feet",
+          pathway: "North",
+          length: 40,
+          length_unit: "feet",
+          width: 30,
+          width_unit: "feet",
+          c_well: "Yes",
+          i_well: "Yes",
+          electricity: 1,
+          hp: 5,
+          facing: "East",
+          construct: 1,
+          construct_type: "Residential",
+          other_type: null,
+
+          min_price: 2500000,
+          max_price: 3000000,
+          carpet_area: 1000,
+          carp_unit: "sqft",
+          build: 1200,
+          build_unit: "sqft",
+          super_build: 1400,
+          super_build_unit: "sqft",
+          total_floor: 4,
+          your_floor: 2,
+          avail_status: "Ready to Move",
+          bhk: 2,
+
+          amenities: [1, 2, 3],
+          prop_highs: [1, 2],
+          rooms: 3,
+          lift: 1,
+          washroom: 2,
+
+          cover: 101,
+          pr_img: [102, 103, 104],
+          pr_vid: [105, 106],
+          patta: [107],
+          pr_doc: [108, 109]
+        }
+      }
+
+      #swagger.responses[200] = {
+        description: 'Property step saved successfully',
+        schema: {
+          success: 1,
+          data: {
+            prop_id: "PAb12C3456",
+            step: 1,
+            action: "created"
+          },
+          message: "Step 1 saved successfully"
+        }
+      }
+
+      #swagger.responses[400] = {
+        description: 'Invalid step / Property ID is required',
+        schema: {
+          success: 0,
+          data: [],
+          message: "Invalid step"
+        }
+      }
+
+      #swagger.responses[500] = {
+        description: 'Internal Server Error',
+        schema: {
+          success: 0,
+          data: [],
+          message: "Something went wrong"
+        }
+      }
+  */
+
+  FormController.savePropertyStep,
+);
 router.get(
   "/get-prop-byid",
   /*

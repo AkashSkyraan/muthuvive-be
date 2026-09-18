@@ -18,7 +18,9 @@ exports.requestOtpSchema = joi_1.default.object({
     "object.missing": "Either email or mobile is required",
 });
 exports.verifyOtpSchema = joi_1.default.object({
-    purpose: joi_1.default.number().valid(1, 2).required(),
+    purpose: joi_1.default.number().valid(1, 2).required().messages({
+        "any.required": "Purpose is required",
+    }),
     email: joi_1.default.string().optional(),
     mobile: joi_1.default.number().optional(),
     otp: joi_1.default.string()

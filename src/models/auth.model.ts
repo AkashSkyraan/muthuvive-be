@@ -83,6 +83,8 @@ export class AuthModel {
   ) {
     const column = type === "email" ? "email" : "mobile";
     const value = type === "email" ? email : mobile;
+
+    
     const sql = `
     SELECT
       id,

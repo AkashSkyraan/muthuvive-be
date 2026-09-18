@@ -14,9 +14,13 @@ export const requestOtpSchema = Joi.object({
   });
 
 export const verifyOtpSchema = Joi.object({
-  purpose: Joi.number().valid(1, 2).required(),
+  purpose: Joi.number().valid(1, 2).required().messages({
+    "any.required": "Purpose is required",
+  }),
   email: Joi.string().optional(),
+
   mobile: Joi.number().optional(),
+
   otp: Joi.string()
     .pattern(/^[0-9]{6}$/)
     .required()

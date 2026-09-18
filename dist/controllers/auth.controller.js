@@ -40,7 +40,7 @@ class AuthController {
     static async verifyOTP(req, res) {
         try {
             const { purpose, email, mobile, otp } = (0, helper_1.validateRequest)(req.body, validator_1.verifyOtpSchema);
-            const type = email || mobile;
+            const type = email ? "email" : "mobile";
             const otpRecord = await auth_model_1.AuthModel.getLatestOTP(type, email || null, mobile || null, purpose);
             if (!otpRecord) {
                 return (0, helper_1.sendResponse)(res, 400, 0, [], "OTP Not Found", []);

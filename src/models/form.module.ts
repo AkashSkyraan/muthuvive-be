@@ -40,7 +40,7 @@ export class FormModule {
           district = ?,
           city = ?,
           map = ?,
-          step = 1
+          step = GREATEST(step, 1)
         WHERE prop_id = ?
           AND user_id = ?
         `,
@@ -181,7 +181,7 @@ export class FormModule {
       your_floor = ?,
       avail_status = ?,
       bhk = ?,
-      step = 2
+     step = GREATEST(step, 2)
     WHERE prop_id = ?
       AND user_id = ?
     `,
@@ -311,7 +311,7 @@ export class FormModule {
     SET rooms = ?,
     lift = ?,
     washroom= ? ,
-    step = 3
+    step = GREATEST(step, 3)
     WHERE prop_id = ?
       AND user_id = ?
     `,
@@ -400,7 +400,7 @@ export class FormModule {
     await executeQuery(
       `
     UPDATE prop_form
-    SET step = 4
+    SET step = GREATEST(step, 4)
     WHERE prop_id = ?
       AND user_id = ?
     `,

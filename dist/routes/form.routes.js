@@ -7,7 +7,7 @@ router.post("/properties/step",
 /*
     #swagger.tags = ['10.Form']
     #swagger.summary = 'Save Property Form Step'
-  // #swagger.description = 'Create or update property form step 1 to 5.\n\nStatus:\n\nDTCP and Formland: available, sold.\n\nOthers: inprogress, inactive, available, sold, approved, rejected, posted, expired, requested.'
+  #swagger.description = 'Create or update property form '
     #swagger.consumes = ['application/json']
 
     #swagger.parameters['body'] = {

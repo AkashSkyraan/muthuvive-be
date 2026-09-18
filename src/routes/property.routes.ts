@@ -350,4 +350,58 @@ router.get(
   PropertyController.getSubProperties,
 );
 
+// getDTCP and Formland
+
+router.get(
+  "/get-property",
+  /*
+    #swagger.tags = ['2.Property']
+    #swagger.summary = 'Get Property By ID'
+    #swagger.description = 'Get complete property details including prop_form data, amenities, property highlights, media, and category-specific data'
+
+    #swagger.parameters['status'] = {
+      in: 'query',
+      required: true,
+      type: 'string',
+      example: 'available',
+      description: 'Status for properties'
+    }
+
+    #swagger.parameters['type'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+      enum: [1,2,3,4,5],
+      example: 1,
+      description: 'Property category type number 1-dtcp , 2-farmland'
+    }
+    #swagger.parameters['location'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+     example: 'coimbatore',
+      description: 'fetch data location for fetch beside properties'
+    }
+    
+
+
+
+
+    
+
+    #swagger.responses[400] = {
+      description: 'Property ID is required'
+    }
+
+    #swagger.responses[404] = {
+      description: 'Property not found'
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal server error'
+    }
+  */
+  PropertyController.getPropertyBasedOnTypes,
+);
+
 export default router;

@@ -7,7 +7,7 @@ router.post("/properties/step",
 /*
     #swagger.tags = ['10.Form']
     #swagger.summary = 'Save Property Form Step'
-    #swagger.description = 'Create or update property form step 1 to 5'
+  // #swagger.description = 'Create or update property form step 1 to 5.\n\nStatus:\n\nDTCP and Formland: available, sold.\n\nOthers: inprogress, inactive, available, sold, approved, rejected, posted, expired, requested.'
     #swagger.consumes = ['application/json']
 
     #swagger.parameters['body'] = {
@@ -68,7 +68,8 @@ router.post("/properties/step",
         pr_img: [102, 103, 104],
         pr_vid: [105, 106],
         patta: [107],
-        pr_doc: [108, 109]
+        pr_doc: [108, 109],
+        status : "inprogress"
       }
     }
 
@@ -122,9 +123,9 @@ router.get("/get-prop-byid",
     in: 'query',
     required: false,
     type: 'string',
-    enum: ['dtcp', 'commercial', 'agri'],
-    example: 'agri',
-    description: 'Property category type'
+    enum: [1,2,3,4,5],
+    example: 1,
+    description: 'Property category type number 1-dtcp , 2-farmland'
   }
 
   #swagger.responses[200] = {

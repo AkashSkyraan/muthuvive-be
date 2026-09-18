@@ -328,7 +328,7 @@ export class FormModule {
   }
 
   static async updatePropertyStep4(data: any) {
-    const { body, user_id, prop_id } = data;
+    const { body, user_id, prop_id, status } = data;
 
     const {
       cover = null,
@@ -400,11 +400,12 @@ export class FormModule {
     await executeQuery(
       `
     UPDATE prop_form
-    SET step = GREATEST(step, 4)
+    SET step = GREATEST(step, 4),
+    status =  ? 
     WHERE prop_id = ?
       AND user_id = ?
     `,
-      [prop_id, user_id],
+      [prop_id, status, user_id],
     );
 
     return {
@@ -584,5 +585,83 @@ export class FormModule {
     );
 
     return rows;
+  }
+
+  static async getPropertyBasedOnTypes(data: any) {
+    const { status, type, location, page, limit, offset } = data;
+
+    let where = `WHERE created_at IS NOT NULL`;
+    const params: any[] = [];
+
+    if (status) {
+      where += ` AND status = ?`;
+      params.push(status);
+    }
+
+    if (type) {
+      where += ` AND category = ?`;
+      params.push(type);
+    }
+
+    if (location) {
+      where += `
+      AND (
+        city LIKE ?
+        OR district LIKE ?
+        OR state LIKE ?
+      )
+    `;
+
+      const search = `%${location}%`;
+      params.push(search, search, search);
+    }
+
+    const countResult: any = await executeQuery(
+      `
+      SELECT COUNT(*) AS total
+      FROM prop_form
+      ${where}
+    `,
+      params,
+    );
+
+    const total = Number(countResult[0]?.total || 0);
+
+    const properties: any[] = await executeQuery(
+      `
+      SELECT
+        id,
+        prop_id,
+        prop_name,
+        category,
+        sub_category,
+        country,
+        state,
+        district,
+        city,
+        prop_area,
+        area_unit,
+        min_price,
+        max_price,
+        status,
+        step,
+        created_at
+      FROM prop_form
+      ${where}
+      ORDER BY id DESC
+      LIMIT ? OFFSET ?
+    `,
+      [...params, limit, offset],
+    );
+
+    return {
+      properties,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }

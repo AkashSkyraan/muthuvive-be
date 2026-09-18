@@ -4,6 +4,7 @@ exports.PropertyController = void 0;
 const helper_1 = require("../utils/helper");
 const validator_1 = require("../utils/validator");
 const property_model_1 = require("../models/property.model");
+const form_module_1 = require("../models/form.module");
 class PropertyController {
     static async addUpdateProperty(req, res) {
         try {
@@ -194,6 +195,29 @@ class PropertyController {
         catch (error) {
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
                 error.errors,
+            ]);
+        }
+    }
+    // DTCP
+    static async getPropertyBasedOnTypes(req, res) {
+        try {
+            const { status, type, location } = req.query;
+            const page = Math.max(Number(req.query.page) || 1, 1);
+            const limit = Math.min(Number(req.query.limit) || 10, 100);
+            const offset = (page - 1) * limit;
+            const data = await form_module_1.FormModule.getPropertyBasedOnTypes({
+                status: status ? String(status) : null,
+                type: type ? String(type) : null,
+                location: location ? String(location) : null,
+                page,
+                limit,
+                offset,
+            });
+            return (0, helper_1.sendResponse)(res, 200, 1, data, "Properties fetched successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error?.message || error,
             ]);
         }
     }

@@ -7,6 +7,7 @@ import {
   addUpdateSubCategorySchema,
 } from "../utils/validator";
 import { PropertyModel } from "../models/property.model";
+import { FormModule } from "../models/form.module";
 
 export class PropertyController {
   static async addUpdateProperty(req: Request, res: Response) {
@@ -336,6 +337,40 @@ export class PropertyController {
     } catch (error: any) {
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error.errors,
+      ]);
+    }
+  }
+
+  // DTCP
+
+  static async getPropertyBasedOnTypes(req: Request, res: Response) {
+    try {
+      const { status, type, location } = req.query;
+
+      const page = Math.max(Number(req.query.page) || 1, 1);
+      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const offset = (page - 1) * limit;
+
+      const data = await FormModule.getPropertyBasedOnTypes({
+        status: status ? String(status) : null,
+        type: type ? String(type) : null,
+        location: location ? String(location) : null,
+        page,
+        limit,
+        offset,
+      });
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        data,
+        "Properties fetched successfully",
+        [],
+      );
+    } catch (error: any) {
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.message || error,
       ]);
     }
   }

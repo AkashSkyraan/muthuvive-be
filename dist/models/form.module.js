@@ -241,7 +241,7 @@ class FormModule {
         };
     }
     static async updatePropertyStep4(data) {
-        const { body, user_id, prop_id } = data;
+        const { body, user_id, prop_id, status } = data;
         const { cover = null, pr_img = [], pr_vid = [], patta = [], pr_doc = [], } = body || {};
         const property = await (0, helper_1.executeQuery)(`
     SELECT id
@@ -285,10 +285,11 @@ class FormModule {
         }
         await (0, helper_1.executeQuery)(`
     UPDATE prop_form
-    SET step = GREATEST(step, 4)
+    SET step = GREATEST(step, 4),
+    status =  ? 
     WHERE prop_id = ?
       AND user_id = ?
-    `, [prop_id, user_id]);
+    `, [prop_id, status, user_id]);
         return {
             prop_id,
             step: 4,
@@ -433,6 +434,68 @@ class FormModule {
     LIMIT 1
     `, [prop_id]);
         return rows;
+    }
+    static async getPropertyBasedOnTypes(data) {
+        const { status, type, location, page, limit, offset } = data;
+        let where = `WHERE created_at IS NOT NULL`;
+        const params = [];
+        if (status) {
+            where += ` AND status = ?`;
+            params.push(status);
+        }
+        if (type) {
+            where += ` AND category = ?`;
+            params.push(type);
+        }
+        if (location) {
+            where += `
+      AND (
+        city LIKE ?
+        OR district LIKE ?
+        OR state LIKE ?
+      )
+    `;
+            const search = `%${location}%`;
+            params.push(search, search, search);
+        }
+        const countResult = await (0, helper_1.executeQuery)(`
+      SELECT COUNT(*) AS total
+      FROM prop_form
+      ${where}
+    `, params);
+        const total = Number(countResult[0]?.total || 0);
+        const properties = await (0, helper_1.executeQuery)(`
+      SELECT
+        id,
+        prop_id,
+        prop_name,
+        category,
+        sub_category,
+        country,
+        state,
+        district,
+        city,
+        prop_area,
+        area_unit,
+        min_price,
+        max_price,
+        status,
+        step,
+        created_at
+      FROM prop_form
+      ${where}
+      ORDER BY id DESC
+      LIMIT ? OFFSET ?
+    `, [...params, limit, offset]);
+        return {
+            properties,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
     }
 }
 exports.FormModule = FormModule;

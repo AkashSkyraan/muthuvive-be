@@ -159,10 +159,15 @@ class AbouUsModel {
         }
         sql += ` ORDER BY id DESC`;
         const rows = await (0, helper_1.executeQuery)(sql, values);
+        const assetBaseUrl = process.env.ASSET_URL || "";
+        const mappedRows = (rows || []).map((row) => ({
+            ...row,
+            assetUrl: row.image ? `${assetBaseUrl}/${row.image}` : null,
+        }));
         if (data.id) {
-            return rows && rows.length > 0 ? rows[0] : null;
+            return mappedRows.length > 0 ? mappedRows[0] : null;
         }
-        return rows || [];
+        return mappedRows;
     }
 }
 exports.AbouUsModel = AbouUsModel;

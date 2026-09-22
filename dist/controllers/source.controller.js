@@ -91,6 +91,22 @@ class SourceController {
             ]);
         }
     }
+    // search alogorith,
+    static async searchPincode(req, res) {
+        try {
+            const search = String(req.query.search || "").trim();
+            if (search.length < 3) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "Search must contain at least 3 characters", []);
+            }
+            const data = await source_model_1.SourceModel.searchPincode(search);
+            return (0, helper_1.sendResponse)(res, 200, 1, data, "Pincode location fetched successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error?.message || error,
+            ]);
+        }
+    }
 }
 exports.SourceController = SourceController;
 _a = SourceController;

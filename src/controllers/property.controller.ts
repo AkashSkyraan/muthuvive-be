@@ -422,7 +422,7 @@ export class PropertyController {
         res,
         200,
         1,
-        result,
+        [result],
         "Bookmarked properties fetched successfully",
         [],
       );
@@ -432,6 +432,4 @@ export class PropertyController {
       ]);
     }
   }
-
-  
 }

@@ -767,10 +767,85 @@ export class FormModule {
 
   // bookmark
 
+  static async getPropertyCover(prop_id: string) {
+    const rows: any = await executeQuery(
+      `
+    SELECT
+      pm.media_id,
+      m.url
+    FROM prop_media pm
+    LEFT JOIN media m
+      ON m.id = pm.media_id
+    WHERE pm.prop_id = ?
+      AND pm.type = 'cover'
+    ORDER BY pm.id ASC
+    LIMIT 1
+    `,
+      [prop_id],
+    );
+
+    if (!rows.length) {
+      return null;
+    }
+
+    return {
+      id: rows[0].media_id,
+      url: `${process.env.ASSET_URL}${rows[0].url}`,
+    };
+  }
+
+  static async getPropertyOneHigh(prop_id: string) {
+    const rows: any = await executeQuery(
+      `
+    SELECT 
+      ph.high_id AS id,
+      h.name
+    FROM prop_highs ph
+    INNER JOIN highlights h
+      ON h.id = ph.high_id
+    WHERE ph.prop_id = ?
+      AND h.status = 'active'
+    ORDER BY ph.id ASC
+    LIMIT 1
+    `,
+      [prop_id],
+    );
+
+    return rows[0]
+      ? {
+          id: rows[0].id,
+          name: rows[0].name,
+        }
+      : null;
+  }
+  static async getPropOneAmenity(prop_id: string) {
+    const rows: any = await executeQuery(
+      `
+    SELECT
+      pa.amenity_id AS id,
+      a.name
+    FROM prop_amenities pa
+    INNER JOIN amenities a
+      ON a.id = pa.amenity_id
+    WHERE pa.prop_id = ?
+      AND a.status = 1
+    ORDER BY pa.id ASC
+    LIMIT 1
+    `,
+      [prop_id],
+    );
+
+    return rows[0]
+      ? {
+          id: rows[0].id,
+          name: rows[0].name,
+        }
+      : null;
+  }
+
   static async getBookmarkProperties(data: any) {
     const { user_id, page = 1, limit = 10, offset = 0 } = data;
-
-    
+   
     const countResult: any = await executeQuery(
       `
     SELECT COUNT(*) AS total
@@ -778,7 +853,6 @@ export class FormModule {
     INNER JOIN prop_form pf
       ON pf.prop_id = pb.prop_id
     WHERE pb.user_id = ?
-      AND pb.status = 1
     `,
       [user_id],
     );
@@ -859,14 +933,14 @@ export class FormModule {
       [user_id, limit, offset],
     );
 
-    
+
     
     const propertiesWithDetails = await Promise.all(
       properties.map(async (property: any) => {
         const [media, amenities, highlights] = await Promise.all([
-          this.getPropertyMedia(property.prop_id),
-          this.getPropertyAmenities(property.prop_id),
-          this.getPropertyHighs(property.prop_id),
+          this.getPropertyCover(property.prop_id),
+          this.getPropOneAmenity(property.prop_id),
+          this.getPropertyOneHigh(property.prop_id),
         ]);
 
         return {

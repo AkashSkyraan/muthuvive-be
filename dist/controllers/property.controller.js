@@ -250,7 +250,7 @@ class PropertyController {
                 limit,
                 offset,
             });
-            return (0, helper_1.sendResponse)(res, 200, 1, result, "Bookmarked properties fetched successfully", []);
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], "Bookmarked properties fetched successfully", []);
         }
         catch (err) {
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal Server Error", [

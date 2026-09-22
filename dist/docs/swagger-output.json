@@ -2761,6 +2761,68 @@
                 }
             }
         },
+        "/src/find-address": {
+            "get": {
+                "tags": [
+                    "9.Source"
+                ],
+                "summary": "Search Pincode Location",
+                "description": "Search post, district or state using minimum 3 characters",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": true,
+                        "type": "string",
+                        "example": "chennai"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pincode location fetched successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "post": {},
+                                            "district": {
+                                                "type": "string",
+                                                "example": "Chennai"
+                                            },
+                                            "state": {
+                                                "type": "string",
+                                                "example": "Tamil Nadu"
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Pincode location fetched successfully"
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Search must contain at least 3 characters"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/form/properties/step": {
             "post": {
                 "tags": [

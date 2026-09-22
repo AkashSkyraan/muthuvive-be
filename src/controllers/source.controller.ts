@@ -219,7 +219,6 @@ export class SourceController {
         return sendResponse(res, 400, 0, [], "Location details not found", []);
       }
 
-      
       if (!state && !district) {
         return sendResponse(
           res,
@@ -253,4 +252,38 @@ export class SourceController {
       ]);
     }
   };
+
+  // search alogorith,
+
+  static async searchPincode(req: Request, res: Response) {
+    try {
+      const search = String(req.query.search || "").trim();
+
+      if (search.length < 3) {
+        return sendResponse(
+          res,
+          400,
+          0,
+          [],
+          "Search must contain at least 3 characters",
+          [],
+        );
+      }
+
+      const data = await SourceModel.searchPincode(search);
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        data,
+        "Pincode location fetched successfully",
+        [],
+      );
+    } catch (error: any) {
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.message || error,
+      ]);
+    }
+  }
 }

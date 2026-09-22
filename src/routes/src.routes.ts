@@ -214,8 +214,6 @@ router.get(
   SourceController.getAdressDetailsFromPincode,
 );
 
-
-
 router.get(
   "/get-pincode-details",
   /*
@@ -273,5 +271,48 @@ router.get(
   SourceController.getPincodeDetails,
 );
 
+// search alogo
+
+router.get(
+  "/find-address",
+
+  /*
+      #swagger.tags = ['9.Source']
+      #swagger.summary = 'Search Pincode Location'
+      #swagger.description = 'Search post, district or state using minimum 3 characters'
+
+      #swagger.parameters['search'] = {
+        in: 'query',
+        required: true,
+        type: 'string',
+        example: 'chennai'
+      }
+
+      #swagger.responses[200] = {
+        description: 'Pincode location fetched successfully',
+        schema: {
+          success: true,
+          data: [
+            {
+              post: null,
+              district: 'Chennai',
+              state: 'Tamil Nadu'
+            }
+          ],
+          message: 'Pincode location fetched successfully'
+        }
+      }
+
+      #swagger.responses[400] = {
+        description: 'Search must contain at least 3 characters'
+      }
+
+      #swagger.responses[500] = {
+        description: 'Internal Server Error'
+      }
+  */
+
+  SourceController.searchPincode,
+);
 
 export default router;

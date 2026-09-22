@@ -190,10 +190,17 @@ export class AbouUsModel {
 
     const rows: any = await executeQuery(sql, values);
 
+    const assetBaseUrl = process.env.ASSET_URL || "";
+
+    const mappedRows = (rows || []).map((row: any) => ({
+      ...row,
+      assetUrl: row.image ? `${assetBaseUrl}/${row.image}` : null,
+    }));
+
     if (data.id) {
-      return rows && rows.length > 0 ? rows[0] : null;
+      return mappedRows.length > 0 ? mappedRows[0] : null;
     }
 
-    return rows || [];
+      return mappedRows;
   }
 }

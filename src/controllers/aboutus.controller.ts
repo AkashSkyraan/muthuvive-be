@@ -100,9 +100,13 @@ export class AboutUsController {
         id: consultantID,
       });
 
+
+
       if (consultantID && !consultants) {
         return sendResponse(res, 200, 0, [], "Consultants data not found", []);
       }
+
+      
 
       return sendResponse(
         res,

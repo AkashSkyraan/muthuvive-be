@@ -437,4 +437,73 @@ export class SourceModel {
       throw error;
     }
   }
+
+  static async searchPincode(search: string) {
+    const keyword = search.trim();
+
+    if (keyword.length < 3) {
+      return [];
+    }
+
+    const searchValue = `%${keyword}%`;
+
+    const rows: any[] = await executeQuery(
+      `
+      SELECT DISTINCT
+        post,
+        district,
+        state,
+
+        CASE
+          WHEN LOWER(TRIM(post)) LIKE LOWER(?) THEN 1
+          WHEN LOWER(TRIM(district)) LIKE LOWER(?) THEN 2
+          WHEN LOWER(TRIM(state)) LIKE LOWER(?) THEN 3
+          ELSE 4
+        END AS priority
+
+      FROM pincodes
+
+      WHERE
+        (
+          post IS NOT NULL
+          AND TRIM(post) != ''
+          AND LOWER(TRIM(post)) LIKE LOWER(?)
+        )
+        OR
+        (
+          district IS NOT NULL
+          AND TRIM(district) != ''
+          AND LOWER(TRIM(district)) LIKE LOWER(?)
+        )
+        OR
+        (
+          state IS NOT NULL
+          AND TRIM(state) != ''
+          AND LOWER(TRIM(state)) LIKE LOWER(?)
+        )
+
+      ORDER BY
+        priority ASC,
+        state ASC,
+        district ASC,
+        post ASC
+
+      LIMIT 20
+      `,
+      [
+        searchValue,
+        searchValue,
+        searchValue,
+        searchValue,
+        searchValue,
+        searchValue,
+      ],
+    );
+
+    return rows.map((item: any) => ({
+      post: item.post?.trim() || null,
+      district: item.district?.trim() || null,
+      state: item.state?.trim() || null,
+    }));
+  }
 }

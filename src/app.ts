@@ -8,7 +8,11 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger-output.json";
 import path from "path";
 dotenv.config();
+import cookieParser from "cookie-parser";
 const app = express();
+
+
+app.use(cookieParser());
 
 app.use(helmet());
 
@@ -32,8 +36,6 @@ app.use(
 );
 
 const PORT = process.env.PORT || 5000;
-
-
 
 app.listen(PORT, () => {
   console.log(`Server is swimming on PORT ${PORT}`);

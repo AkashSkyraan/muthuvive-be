@@ -135,5 +135,20 @@ class AuthModel {
         ]);
         return result.insertId;
     }
+    static async findUserById(user_id) {
+        const query = `
+    SELECT
+      id,
+      user_name,
+      email,
+      mobile
+    FROM users
+    WHERE id = ?
+      AND deleted_at IS NULL
+    LIMIT 1
+  `;
+        const [rows] = await (0, helper_1.executeQuery)(query, [user_id]);
+        return rows[0] || null;
+    }
 }
 exports.AuthModel = AuthModel;

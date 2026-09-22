@@ -5,6 +5,7 @@ import {
   addUpdateCategorySchema,
   addUpdatePropertyAreaSchema,
   addUpdateSubCategorySchema,
+  bookmarkSchema,
 } from "../utils/validator";
 import { PropertyModel } from "../models/property.model";
 import { FormModule } from "../models/form.module";
@@ -348,7 +349,7 @@ export class PropertyController {
       const { status, type, location } = req.query;
 
       const page = Math.max(Number(req.query.page) || 1, 1);
-      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const limit = Number(req.query.limit) || 5;
       const offset = (page - 1) * limit;
 
       const data = await FormModule.getPropertyBasedOnTypes({
@@ -374,4 +375,63 @@ export class PropertyController {
       ]);
     }
   }
+
+  static async addUpdateBookmark(req: Request, res: Response) {
+    try {
+      const data = validateRequest(req.body, bookmarkSchema);
+
+      const result = await PropertyModel.addUpdateBookmark(data);
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [result],
+        result.bookmarked
+          ? "Bookmark added successfully"
+          : "Bookmark removed successfully",
+        [],
+      );
+    } catch (err: any) {
+      return sendResponse(res, 500, 0, [], "Internal Server Error", [
+        err?.message || err,
+      ]);
+    }
+  }
+
+  static async getBookmarkProperties(req: Request, res: Response) {
+    try {
+      const user_id = Number(req.query.user_id);
+
+      const page = Math.max(Number(req.query.page) || 1, 1);
+      const limit = Number(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      if (!user_id) {
+        return sendResponse(res, 400, 0, [], "user_id is required", []);
+      }
+
+      const result = await FormModule.getBookmarkProperties({
+        user_id,
+        page,
+        limit,
+        offset,
+      });
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        result,
+        "Bookmarked properties fetched successfully",
+        [],
+      );
+    } catch (err: any) {
+      return sendResponse(res, 500, 0, [], "Internal Server Error", [
+        err?.message || err,
+      ]);
+    }
+  }
+
+  
 }

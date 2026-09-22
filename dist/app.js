@@ -13,7 +13,9 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_output_json_1 = __importDefault(require("./docs/swagger-output.json"));
 const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
+app.use((0, cookie_parser_1.default)());
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
     origin: true,

@@ -11,6 +11,22 @@ const doc = {
   host: "muthuvives.skyraantech.com",
   basePath: "/server/api",
   schemes: ["https"],
+
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
+  },
+
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
 };
 
 const outputFile = "./swagger-output.json";

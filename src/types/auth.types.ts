@@ -26,7 +26,8 @@ export interface ForgotPasswordInput {
   password: string;
 }
 
-
 export interface JwtPayload {
   id: number;
 }
+
+

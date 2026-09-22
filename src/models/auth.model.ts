@@ -84,7 +84,6 @@ export class AuthModel {
     const column = type === "email" ? "email" : "mobile";
     const value = type === "email" ? email : mobile;
 
-    
     const sql = `
     SELECT
       id,
@@ -182,6 +181,24 @@ export class AuthModel {
     ]);
 
     return result.insertId;
+  }
+
+  static async findUserById(user_id: number) {
+    const query = `
+    SELECT
+      id,
+      user_name,
+      email,
+      mobile
+    FROM users
+    WHERE id = ?
+      AND deleted_at IS NULL
+    LIMIT 1
+  `;
+
+    const [rows]: any = await executeQuery(query, [user_id]);
+
+    return rows[0] || null;
   }
   // ---------------------------------------
 }

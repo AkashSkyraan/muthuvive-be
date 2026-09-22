@@ -253,5 +253,40 @@ class PropertyModel {
         }
         return rows || [];
     }
+    static async addUpdateBookmark(data) {
+        const { user_id, prop_id } = data;
+        const existing = await (0, helper_1.executeQuery)(`
+    SELECT id
+    FROM prop_bookmarks
+    WHERE user_id = ?
+      AND prop_id = ?
+    LIMIT 1
+    `, [user_id, prop_id]);
+        if (existing.length > 0) {
+            await (0, helper_1.executeQuery)(`
+      DELETE FROM prop_bookmarks
+      WHERE user_id = ?
+        AND prop_id = ?
+      `, [user_id, prop_id]);
+            return {
+                user_id,
+                prop_id,
+                bookmarked: false,
+                message: "Bookmark removed successfully",
+            };
+        }
+        await (0, helper_1.executeQuery)(`
+    INSERT INTO prop_bookmarks
+      (user_id, prop_id)
+    VALUES
+      (?, ?)
+    `, [user_id, prop_id]);
+        return {
+            user_id,
+            prop_id,
+            bookmarked: true,
+            message: "Property bookmarked successfully",
+        };
+    }
 }
 exports.PropertyModel = PropertyModel;

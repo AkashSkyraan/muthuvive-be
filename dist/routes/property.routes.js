@@ -358,4 +358,146 @@ router.get("/get-property",
   }
 */
 property_controller_1.PropertyController.getPropertyBasedOnTypes);
+router.post("/add-bookmark", 
+/*
+    #swagger.tags = ['2.Property']
+    #swagger.summary = 'Add or Remove Property Bookmark'
+    #swagger.description = 'Bookmark a property for a user on first click and remove the bookmark on the next click using user_id and prop_id'
+
+    #swagger.consumes = ['application/json']
+
+    #swagger.parameters['body'] = {
+      in: 'body',
+      required: true,
+      schema: {
+        user_id: 1,
+        prop_id: 'PABC123'
+      }
+    }
+
+    #swagger.responses[200] = {
+      description: 'Bookmark added or removed successfully',
+      schema: {
+        success: true,
+        data: [
+          {
+            user_id: 1,
+            prop_id: 'PABC123',
+            bookmarked: true,
+            message: 'Property bookmarked successfully'
+          }
+        ],
+        message: 'Bookmark added successfully'
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: 'Validation Error'
+    }
+
+    #swagger.responses[404] = {
+      description: 'Property not found'
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal Server Error'
+    }
+*/
+property_controller_1.PropertyController.addUpdateBookmark);
+router.get("/get-bookmarks", 
+/*
+    #swagger.tags = ['2.Property']
+    #swagger.summary = 'Get User Bookmarked Properties'
+    #swagger.description = 'Get all active bookmarked properties for a user using user_id'
+
+    #swagger.consumes = ['application/json']
+
+    #swagger.parameters['user_id'] = {
+      in: 'query',
+      required: true,
+      type: 'integer',
+      example: 1
+    }
+
+    #swagger.parameters['page'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      example: 1
+    }
+
+    #swagger.parameters['limit'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      example: 10
+    }
+
+    #swagger.responses[200] = {
+      description: 'Bookmarked properties fetched successfully',
+      schema: {
+        success: true,
+        data: {
+          properties: [
+            {
+              id: 1,
+              prop_id: 'PABC123',
+              prop_name: 'Green Villa',
+              category: 1,
+              category_name: 'DTCP',
+              sub_category: 2,
+              sub_category_name: 'Residential',
+              country: 'India',
+              state: 'Tamil Nadu',
+              district: 'Chennai',
+              city: 'Adyar',
+              user_id: 10,
+              prop_area: 1200,
+              area_unit: 'sq.ft',
+              status: 'available',
+              is_bookmarked: 1,
+              media: {
+                cover: {
+                  id: 1,
+                  url: 'https://example.com/cover.jpg'
+                },
+                images: [],
+                videos: [],
+                patta: [],
+                documents: []
+              },
+              amenities: [
+                {
+                  id: 1,
+                  name: 'Parking'
+                }
+              ],
+              highlights: [
+                {
+                  id: 1,
+                  name: 'Near School'
+                }
+              ]
+            }
+          ],
+          pagination: {
+            total: 1,
+            page: 1,
+            limit: 10,
+            totalPages: 1
+          }
+        },
+        message: 'Bookmarked properties fetched successfully'
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: 'user_id is required'
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal Server Error'
+    }
+*/
+property_controller_1.PropertyController.getBookmarkProperties);
 exports.default = router;

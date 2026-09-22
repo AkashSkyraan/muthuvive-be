@@ -203,7 +203,7 @@ class PropertyController {
         try {
             const { status, type, location } = req.query;
             const page = Math.max(Number(req.query.page) || 1, 1);
-            const limit = Math.min(Number(req.query.limit) || 10, 100);
+            const limit = Number(req.query.limit) || 5;
             const offset = (page - 1) * limit;
             const data = await form_module_1.FormModule.getPropertyBasedOnTypes({
                 status: status ? String(status) : null,
@@ -218,6 +218,43 @@ class PropertyController {
         catch (error) {
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
                 error?.message || error,
+            ]);
+        }
+    }
+    static async addUpdateBookmark(req, res) {
+        try {
+            const data = (0, helper_1.validateRequest)(req.body, validator_1.bookmarkSchema);
+            const result = await property_model_1.PropertyModel.addUpdateBookmark(data);
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], result.bookmarked
+                ? "Bookmark added successfully"
+                : "Bookmark removed successfully", []);
+        }
+        catch (err) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal Server Error", [
+                err?.message || err,
+            ]);
+        }
+    }
+    static async getBookmarkProperties(req, res) {
+        try {
+            const user_id = Number(req.query.user_id);
+            const page = Math.max(Number(req.query.page) || 1, 1);
+            const limit = Number(req.query.limit) || 10;
+            const offset = (page - 1) * limit;
+            if (!user_id) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "user_id is required", []);
+            }
+            const result = await form_module_1.FormModule.getBookmarkProperties({
+                user_id,
+                page,
+                limit,
+                offset,
+            });
+            return (0, helper_1.sendResponse)(res, 200, 1, result, "Bookmarked properties fetched successfully", []);
+        }
+        catch (err) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal Server Error", [
+                err?.message || err,
             ]);
         }
     }

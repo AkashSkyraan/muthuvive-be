@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addUpdateConsultantSchema = exports.addUpdateSubCategorySchema = exports.addUpdatePropertyHighlightSchema = exports.addUpdateAmenitiesSchema = exports.addUpdateEnquirySchema = exports.addUpdateGallerySchema = exports.addUpdateAboutUsSchema = exports.addUpdatePropertyAreaSchema = exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
+exports.bookmarkSchema = exports.addUpdateConsultantSchema = exports.addUpdateSubCategorySchema = exports.addUpdatePropertyHighlightSchema = exports.addUpdateAmenitiesSchema = exports.addUpdateEnquirySchema = exports.addUpdateGallerySchema = exports.addUpdateAboutUsSchema = exports.addUpdatePropertyAreaSchema = exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 exports.requestOtpSchema = joi_1.default.object({
     type: joi_1.default.string().optional(),
@@ -214,4 +214,8 @@ exports.addUpdateConsultantSchema = joi_1.default.object({
     image: joi_1.default.string().required().messages({
         "any.required": "Image is required",
     }),
+});
+exports.bookmarkSchema = joi_1.default.object({
+    user_id: joi_1.default.number().required(),
+    prop_id: joi_1.default.string().trim().required(),
 });

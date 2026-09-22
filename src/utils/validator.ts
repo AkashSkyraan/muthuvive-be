@@ -263,3 +263,9 @@ export const addUpdateConsultantSchema = Joi.object({
     "any.required": "Image is required",
   }),
 });
+
+
+export const bookmarkSchema = Joi.object({
+  user_id: Joi.number().required(),
+  prop_id: Joi.string().trim().required(),
+});

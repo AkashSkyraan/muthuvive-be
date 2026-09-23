@@ -405,7 +405,7 @@ export class FormModule {
     WHERE prop_id = ?
       AND user_id = ?
     `,
-      [prop_id, status, user_id],
+      [status , prop_id,  user_id],
     );
 
     return {

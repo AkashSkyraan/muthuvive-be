@@ -269,6 +269,8 @@ class PropertyController {
     static async getBookmarkProperties(req, res) {
         try {
             const user_id = Number(req.query.user_id);
+            const type = Number(req.query.type);
+            const search = String(req.query.search);
             const page = Math.max(Number(req.query.page) || 1, 1);
             const limit = Number(req.query.limit) || 10;
             const offset = (page - 1) * limit;
@@ -276,6 +278,8 @@ class PropertyController {
                 return (0, helper_1.sendResponse)(res, 400, 0, [], "user_id is required", []);
             }
             const result = await form_module_1.FormModule.getBookmarkProperties({
+                search,
+                type,
                 user_id,
                 page,
                 limit,

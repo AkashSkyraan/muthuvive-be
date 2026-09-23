@@ -9,6 +9,7 @@ import {
 } from "../utils/validator";
 import { PropertyModel } from "../models/property.model";
 import { FormModule } from "../models/form.module";
+import { string } from "joi";
 
 export class PropertyController {
   static async addUpdateProperty(req: Request, res: Response) {
@@ -438,6 +439,9 @@ export class PropertyController {
   static async getBookmarkProperties(req: Request, res: Response) {
     try {
       const user_id = Number(req.query.user_id);
+      const type = Number(req.query.type);
+      const search = String(req.query.search);
+
 
       const page = Math.max(Number(req.query.page) || 1, 1);
       const limit = Number(req.query.limit) || 10;
@@ -448,6 +452,8 @@ export class PropertyController {
       }
 
       const result = await FormModule.getBookmarkProperties({
+        search,
+        type,
         user_id,
         page,
         limit,

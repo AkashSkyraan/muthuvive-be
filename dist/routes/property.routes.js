@@ -422,6 +422,19 @@ router.get("/get-bookmarks",
       example: 1
     }
 
+    #swagger.parameters['type'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      example: 1
+    }
+    #swagger.parameters['search'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+      example: "Muthu Vive"
+    }
+
     #swagger.parameters['page'] = {
       in: 'query',
       required: false,

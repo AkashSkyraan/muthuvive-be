@@ -867,15 +867,138 @@ class FormModule {
             }
             : null;
     }
+    // static async getBookmarkProperties(data: any) {
+    //   const { user_id, page = 1, limit = 10, offset = 0, type, search } = data;
+    //   const countResult: any = await executeQuery(
+    //     `
+    //   SELECT COUNT(*) AS total
+    //   FROM prop_bookmarks pb
+    //   INNER JOIN prop_form pf
+    //     ON pf.prop_id = pb.prop_id
+    //   WHERE pb.user_id = ?
+    //   `,
+    //     [user_id],
+    //   );
+    //   const total = Number(countResult[0]?.total || 0);
+    //   const properties: any[] = await executeQuery(
+    //     `
+    //   SELECT
+    //     pf.id,
+    //     pf.prop_id,
+    //     pf.category,
+    //     pc.name AS category_name,
+    //     pf.sub_category,
+    //     psc.sub_name AS sub_category_name,
+    //     pf.country,
+    //     pf.state,
+    //     pf.district,
+    //     pf.city,
+    //     pf.user_id,
+    //     pf.map,
+    //     pf.prop_name,
+    //     pf.prop_area,
+    //     pf.area_unit,
+    //     pf.road_plan,
+    //     pf.road_length,
+    //     pf.road_length_unit,
+    //     pf.path_way,
+    //     pf.length,
+    //     pf.length_unit,
+    //     pf.width,
+    //     pf.width_unit,
+    //     pf.c_well,
+    //     pf.i_well,
+    //     pf.electricity,
+    //     pf.hp,
+    //     pf.facing,
+    //     pf.construct,
+    //     pf.construct_type,
+    //     pf.other_type,
+    //     pf.step,
+    //     pf.status,
+    //     pf.created_at,
+    //     pf.updated_at,
+    //     pb.created_at AS bookmarked_at
+    //   FROM prop_bookmarks pb
+    //   INNER JOIN prop_form pf
+    //     ON pf.prop_id = pb.prop_id
+    //   LEFT JOIN property pc
+    //     ON pc.id = pf.category
+    //   LEFT JOIN prop_sub_category psc
+    //     ON psc.id = pf.sub_category
+    //   WHERE pb.user_id = ?
+    //   ORDER BY pb.id DESC
+    //   LIMIT ? OFFSET ?
+    //   `,
+    //     [user_id, limit, offset],
+    //   );
+    //   const propertiesWithDetails = await Promise.all(
+    //     properties.map(async (property: any) => {
+    //       const [media, amenities, highlights] = await Promise.all([
+    //         this.getPropertyCover(property.prop_id),
+    //         this.getPropOneAmenity(property.prop_id),
+    //         this.getPropertyOneHigh(property.prop_id),
+    //       ]);
+    //       return {
+    //         ...property,
+    //         is_bookmarked: 1,
+    //         media,
+    //         amenities,
+    //         highlights,
+    //       };
+    //     }),
+    //   );
+    //   return {
+    //     properties: propertiesWithDetails,
+    //     pagination: {
+    //       total,
+    //       page,
+    //       limit,
+    //       totalPages: Math.ceil(total / limit),
+    //     },
+    //   };
+    // }
     static async getBookmarkProperties(data) {
-        const { user_id, page = 1, limit = 10, offset = 0 } = data;
+        const { user_id, page = 1, limit = 10, offset = 0, type, search } = data;
+        let filterWhere = `
+    WHERE pb.user_id = ?
+  `;
+        const filterParams = [user_id];
+        if (type) {
+            filterWhere += `
+      AND pf.category = ?
+    `;
+            filterParams.push(type);
+        }
+        // ------------------------------------------
+        // SEARCH
+        // country / state / district / city
+        // ------------------------------------------
+        if (search) {
+            filterWhere += `
+      AND (
+        pf.country LIKE ?
+        OR pf.state LIKE ?
+        OR pf.district LIKE ?
+        OR pf.city LIKE ? OR pf.prop_name LIKE ?
+      )
+    `;
+            const searchValue = `%${String(search).trim()}%`;
+            filterParams.push(searchValue, searchValue, searchValue, searchValue, searchValue);
+        }
+        // ==========================================
+        // COUNT
+        // ==========================================
         const countResult = await (0, helper_1.executeQuery)(`
     SELECT COUNT(*) AS total
+
     FROM prop_bookmarks pb
+
     INNER JOIN prop_form pf
       ON pf.prop_id = pb.prop_id
-    WHERE pb.user_id = ?
-    `, [user_id]);
+
+    ${filterWhere}
+    `, filterParams);
         const total = Number(countResult[0]?.total || 0);
         const properties = await (0, helper_1.executeQuery)(`
     SELECT
@@ -941,12 +1064,15 @@ class FormModule {
     LEFT JOIN prop_sub_category psc
       ON psc.id = pf.sub_category
 
-    WHERE pb.user_id = ?
-    
+    ${filterWhere}
+
     ORDER BY pb.id DESC
 
     LIMIT ? OFFSET ?
-    `, [user_id, limit, offset]);
+    `, [...filterParams, limit, offset]);
+        // ==========================================
+        // MEDIA / AMENITIES / HIGHLIGHTS
+        // ==========================================
         const propertiesWithDetails = await Promise.all(properties.map(async (property) => {
             const [media, amenities, highlights] = await Promise.all([
                 this.getPropertyCover(property.prop_id),
@@ -961,6 +1087,9 @@ class FormModule {
                 highlights,
             };
         }));
+        // ==========================================
+        // RESPONSE
+        // ==========================================
         return {
             properties: propertiesWithDetails,
             pagination: {

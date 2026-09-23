@@ -58,9 +58,6 @@ DashController.createAdmin = async (req, res) => {
         if (!role || !name || status === undefined) {
             return (0, helper_1.sendResponse)(res, 200, 0, [], "Role, name and status are required", []);
         }
-        // =====================================================
-        // UPDATE
-        // =====================================================
         if (id) {
             // Check admin exists
             const existingAdmin = await dashboard_model_1.DashboardModel.getById(Number(id));
@@ -73,11 +70,18 @@ DashController.createAdmin = async (req, res) => {
                 return (0, helper_1.sendResponse)(res, 200, 0, [], "Admin name already exists", []);
             }
             // Keep old password if password is not provided
-            let hashedPassword = existingAdmin.password;
+            let finalPassword = existingAdmin.password;
             if (password) {
-                hashedPassword = await bcryptjs_1.default.hash(password, 10);
+                if (role === "admin") {
+                    // Admin → bcrypt
+                    finalPassword = await bcryptjs_1.default.hash(password, 10);
+                }
+                else if (role === "subadmin") {
+                    // Sub Admin → direct password
+                    finalPassword = password;
+                }
             }
-            await dashboard_model_1.DashboardModel.updateAdmin(Number(id), role, name, hashedPassword, status);
+            await dashboard_model_1.DashboardModel.updateAdmin(Number(id), role, name, finalPassword, status);
             return (0, helper_1.sendResponse)(res, 200, 1, {
                 id: Number(id),
                 role,
@@ -98,9 +102,14 @@ DashController.createAdmin = async (req, res) => {
             return (0, helper_1.sendResponse)(res, 200, 0, [], "Admin name already exists", []);
         }
         // Hash password
-        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
-        // Create admin
-        const adminId = await dashboard_model_1.DashboardModel.createAdmin(role, name, hashedPassword, status);
+        let finalPassword = password;
+        if (role === "admin") {
+            finalPassword = await bcryptjs_1.default.hash(password, 10);
+        }
+        else if (role === "subadmin") {
+            finalPassword = password;
+        }
+        const adminId = await dashboard_model_1.DashboardModel.createAdmin(role, name, finalPassword, status);
         return (0, helper_1.sendResponse)(res, 201, 1, {
             id: adminId,
             role,
@@ -202,14 +211,52 @@ DashController.logoutAdmin = async (req, res) => {
 };
 DashController.getSUbAdmin = async (req, res) => {
     try {
-        const name = req.query.name ? String(req.query.name).trim() : null;
-        const status = req.query.status && String(req.query.status) !== "all"
+        const name = req.query.name
+            ? String(req.query.name).trim()
+            : null;
+        const id = req.query.id
+            ? Number(req.query.id)
+            : null;
+        const status = req.query.status &&
+            String(req.query.status) !== "all"
             ? String(req.query.status)
             : null;
+        // ==========================================
+        // GET BY ID
+        // ==========================================
+        if (id) {
+            const result = await dashboard_model_1.DashboardModel.getSUbAdmin({
+                id,
+                name: null,
+                status: null,
+                limit: 1,
+                offset: 0,
+            });
+            if (!result.data.length) {
+                return res.status(200).json({
+                    success: 0,
+                    data: [],
+                    total: 0,
+                    message: "Sub admin not found",
+                    error: [],
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                data: result.data,
+                total: 1,
+                message: "Sub admin fetched successfully",
+                error: [],
+            });
+        }
+        // ==========================================
+        // LIST
+        // ==========================================
         const page = Math.max(Number(req.query.page) || 1, 1);
         const limit = Math.max(Number(req.query.limit) || 10, 1);
         const offset = (page - 1) * limit;
         const result = await dashboard_model_1.DashboardModel.getSUbAdmin({
+            id: null,
             name,
             status,
             limit,

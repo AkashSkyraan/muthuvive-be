@@ -187,11 +187,13 @@ export class DashboardModel {
   }
 
   static async getSUbAdmin({
+    id,
     name,
     status,
     limit,
     offset,
   }: {
+    id: number | null;
     name: string | null;
     status: string | null;
     limit: number;
@@ -203,28 +205,51 @@ export class DashboardModel {
 
     const params: any[] = [];
 
+    // ID filter
+    if (id) {
+      whereQuery += `
+      AND id = ?
+    `;
+
+      params.push(id);
+    }
+
+    // Name filter
     if (name) {
-      whereQuery += ` AND name LIKE ?`;
+      whereQuery += `
+      AND name LIKE ?
+    `;
+
       params.push(`%${name}%`);
     }
 
+    // Status filter
     if (status) {
-      whereQuery += ` AND status = ?`;
+      whereQuery += `
+      AND status = ?
+    `;
+
       params.push(status);
     }
 
-    // TOTAL RECORDS
+    // ==========================================
+    // COUNT
+    // ==========================================
+
     const countQuery = `
     SELECT COUNT(*) AS total
     FROM admins
     ${whereQuery}
   `;
 
-    const countResult = await executeQuery(countQuery, params);
+    const countResult: any[] = await executeQuery(countQuery, params);
 
     const total = Number(countResult[0]?.total || 0);
 
-    // PAGINATED DATA
+    // ==========================================
+    // DATA
+    // ==========================================
+
     const dataQuery = `
     SELECT
       id,
@@ -237,7 +262,7 @@ export class DashboardModel {
     LIMIT ? OFFSET ?
   `;
 
-    const dataResult = await executeQuery(dataQuery, [
+    const dataResult: any[] = await executeQuery(dataQuery, [
       ...params,
       limit,
       offset,

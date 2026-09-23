@@ -86,7 +86,7 @@ export class FormModule {
         step,
         status
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'active')
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'inprogress')
       `,
       [
         newPropId,
@@ -570,6 +570,8 @@ export class FormModule {
       length_unit,
       width,
       width_unit,
+      min_price,
+      max_price,
       c_well,
       i_well,
       electricity,

@@ -74,20 +74,35 @@ class DashboardModel {
         const admins = rows;
         return admins.length > 0 ? admins[0] : null;
     }
-    static async getSUbAdmin({ name, status, limit, offset, }) {
+    static async getSUbAdmin({ id, name, status, limit, offset, }) {
         let whereQuery = `
     WHERE role = 'subadmin'
   `;
         const params = [];
+        // ID filter
+        if (id) {
+            whereQuery += `
+      AND id = ?
+    `;
+            params.push(id);
+        }
+        // Name filter
         if (name) {
-            whereQuery += ` AND name LIKE ?`;
+            whereQuery += `
+      AND name LIKE ?
+    `;
             params.push(`%${name}%`);
         }
+        // Status filter
         if (status) {
-            whereQuery += ` AND status = ?`;
+            whereQuery += `
+      AND status = ?
+    `;
             params.push(status);
         }
-        // TOTAL RECORDS
+        // ==========================================
+        // COUNT
+        // ==========================================
         const countQuery = `
     SELECT COUNT(*) AS total
     FROM admins
@@ -95,7 +110,9 @@ class DashboardModel {
   `;
         const countResult = await (0, helper_1.executeQuery)(countQuery, params);
         const total = Number(countResult[0]?.total || 0);
-        // PAGINATED DATA
+        // ==========================================
+        // DATA
+        // ==========================================
         const dataQuery = `
     SELECT
       id,

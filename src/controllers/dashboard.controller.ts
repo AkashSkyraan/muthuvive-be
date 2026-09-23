@@ -22,9 +22,6 @@ export class DashController {
         );
       }
 
-      // =====================================================
-      // UPDATE
-      // =====================================================
       if (id) {
         // Check admin exists
         const existingAdmin = await DashboardModel.getById(Number(id));
@@ -41,17 +38,22 @@ export class DashController {
         }
 
         // Keep old password if password is not provided
-        let hashedPassword = existingAdmin.password;
+        let finalPassword = existingAdmin.password;
 
         if (password) {
-          hashedPassword = await bcrypt.hash(password, 10);
+          if (role === "admin") {
+            // Admin → bcrypt
+            finalPassword = await bcrypt.hash(password, 10);
+          } else if (role === "subadmin") {
+            // Sub Admin → direct password
+            finalPassword = password;
+          }
         }
-
         await DashboardModel.updateAdmin(
           Number(id),
           role,
           name,
-          hashedPassword,
+          finalPassword,
           status,
         );
 
@@ -87,13 +89,18 @@ export class DashController {
       }
 
       // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      let finalPassword = password;
 
-      // Create admin
+      if (role === "admin") {
+        finalPassword = await bcrypt.hash(password, 10);
+      } else if (role === "subadmin") {
+        finalPassword = password;
+      }
+
       const adminId = await DashboardModel.createAdmin(
         role,
         name,
-        hashedPassword,
+        finalPassword,
         status,
       );
 
@@ -265,47 +272,97 @@ export class DashController {
     }
   };
 
-  static getSUbAdmin = async (req: Request, res: Response) => {
-    try {
-      const name = req.query.name ? String(req.query.name).trim() : null;
+ static getSUbAdmin = async (req: Request, res: Response) => {
+  try {
+    const name = req.query.name
+      ? String(req.query.name).trim()
+      : null;
 
-      const status =
-        req.query.status && String(req.query.status) !== "all"
-          ? String(req.query.status)
-          : null;
+    const id = req.query.id
+      ? Number(req.query.id)
+      : null;
 
-      const page = Math.max(Number(req.query.page) || 1, 1);
+    const status =
+      req.query.status &&
+      String(req.query.status) !== "all"
+        ? String(req.query.status)
+        : null;
 
-      const limit = Math.max(Number(req.query.limit) || 10, 1);
+    // ==========================================
+    // GET BY ID
+    // ==========================================
 
-      const offset = (page - 1) * limit;
-
+    if (id) {
       const result = await DashboardModel.getSUbAdmin({
-        name,
-        status,
-        limit,
-        offset,
+        id,
+        name: null,
+        status: null,
+        limit: 1,
+        offset: 0,
       });
+
+      if (!result.data.length) {
+        return res.status(200).json({
+          success: 0,
+          data: [],
+          total: 0,
+          message: "Sub admin not found",
+          error: [],
+        });
+      }
 
       return res.status(200).json({
         success: 1,
         data: result.data,
-        total: result.total,
-        message: "Sub admins fetched successfully",
-        error: [],
-      });
-    } catch (err: any) {
-      console.error("Get Sub Admin Error:", err);
-
-      return res.status(500).json({
-        success: 0,
-        data: [],
-        total: 0,
-        message: "Internal server error",
+        total: 1,
+        message: "Sub admin fetched successfully",
         error: [],
       });
     }
-  };
+
+    // ==========================================
+    // LIST
+    // ==========================================
+
+    const page = Math.max(
+      Number(req.query.page) || 1,
+      1,
+    );
+
+    const limit = Math.max(
+      Number(req.query.limit) || 10,
+      1,
+    );
+
+    const offset = (page - 1) * limit;
+
+    const result = await DashboardModel.getSUbAdmin({
+      id: null,
+      name,
+      status,
+      limit,
+      offset,
+    });
+
+    return res.status(200).json({
+      success: 1,
+      data: result.data,
+      total: result.total,
+      message: "Sub admins fetched successfully",
+      error: [],
+    });
+  } catch (err: any) {
+    console.error("Get Sub Admin Error:", err);
+
+    return res.status(500).json({
+      success: 0,
+      data: [],
+      total: 0,
+      message: "Internal server error",
+      error: [],
+    });
+  }
+};
 
   // prperty
 

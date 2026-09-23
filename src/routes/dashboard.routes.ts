@@ -125,6 +125,10 @@ router.get("/auth/me", DashController.getCurrentAdmin);
 
 router.post("/logout", DashController.logoutAdmin);
 
+router.get("/sub-admins", DashController.getSUbAdmin);
+
+// prop
+
 router.put(
   "/status",
   /*
@@ -155,4 +159,5 @@ router.put(
   */
   DashController.updatePropertyStatus,
 );
+
 export default router;

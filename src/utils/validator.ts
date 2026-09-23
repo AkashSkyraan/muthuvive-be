@@ -214,7 +214,7 @@ export const addUpdateEnquirySchema = Joi.object({
   regarding: Joi.string().required().messages({
     "any.required": "Regarding is required",
   }),
-  property_id: Joi.number().optional(),
+  property_id: Joi.string().optional(),
   status: Joi.string().optional(),
 });
 

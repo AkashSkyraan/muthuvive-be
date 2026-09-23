@@ -113,6 +113,8 @@ router.post("/login-admin",
 dashboard_controller_1.DashController.loginAdmin);
 router.get("/auth/me", dashboard_controller_1.DashController.getCurrentAdmin);
 router.post("/logout", dashboard_controller_1.DashController.logoutAdmin);
+router.get("/sub-admins", dashboard_controller_1.DashController.getSUbAdmin);
+// prop
 router.put("/status", 
 /*
   #swagger.tags = ['Admin']

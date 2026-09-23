@@ -74,6 +74,49 @@ class DashboardModel {
         const admins = rows;
         return admins.length > 0 ? admins[0] : null;
     }
+    static async getSUbAdmin({ name, status, limit, offset, }) {
+        let whereQuery = `
+    WHERE role = 'subadmin'
+  `;
+        const params = [];
+        if (name) {
+            whereQuery += ` AND name LIKE ?`;
+            params.push(`%${name}%`);
+        }
+        if (status) {
+            whereQuery += ` AND status = ?`;
+            params.push(status);
+        }
+        // TOTAL RECORDS
+        const countQuery = `
+    SELECT COUNT(*) AS total
+    FROM admins
+    ${whereQuery}
+  `;
+        const countResult = await (0, helper_1.executeQuery)(countQuery, params);
+        const total = Number(countResult[0]?.total || 0);
+        // PAGINATED DATA
+        const dataQuery = `
+    SELECT
+      id,
+      name,
+      role,
+      status
+    FROM admins
+    ${whereQuery}
+    ORDER BY id DESC
+    LIMIT ? OFFSET ?
+  `;
+        const dataResult = await (0, helper_1.executeQuery)(dataQuery, [
+            ...params,
+            limit,
+            offset,
+        ]);
+        return {
+            data: dataResult,
+            total,
+        };
+    }
 }
 exports.DashboardModel = DashboardModel;
 _a = DashboardModel;

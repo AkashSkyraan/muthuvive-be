@@ -179,7 +179,7 @@ exports.addUpdateEnquirySchema = joi_1.default.object({
     regarding: joi_1.default.string().required().messages({
         "any.required": "Regarding is required",
     }),
-    property_id: joi_1.default.number().optional(),
+    property_id: joi_1.default.string().optional(),
     status: joi_1.default.string().optional(),
 });
 exports.addUpdateAmenitiesSchema = joi_1.default.object({

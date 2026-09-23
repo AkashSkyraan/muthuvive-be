@@ -26,7 +26,7 @@ router.post("/add-enquiry",
       message: "I am interested in this property",
       regarding: "Property Enquiry",
       status : "pending",
-      property_id: 1
+      property_id: "pSDF1234"
     }
   }
 
@@ -81,7 +81,7 @@ router.get("/get-enquiries",
   #swagger.parameters['property_id'] = {
     in: 'query',
     required: false,
-    type: 'integer',
+    type: 'string',
     description: 'Filter enquiries by property ID'
   }
 

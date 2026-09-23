@@ -185,4 +185,67 @@ export class DashboardModel {
 
     return admins.length > 0 ? admins[0] : null;
   }
+
+  static async getSUbAdmin({
+    name,
+    status,
+    limit,
+    offset,
+  }: {
+    name: string | null;
+    status: string | null;
+    limit: number;
+    offset: number;
+  }) {
+    let whereQuery = `
+    WHERE role = 'subadmin'
+  `;
+
+    const params: any[] = [];
+
+    if (name) {
+      whereQuery += ` AND name LIKE ?`;
+      params.push(`%${name}%`);
+    }
+
+    if (status) {
+      whereQuery += ` AND status = ?`;
+      params.push(status);
+    }
+
+    // TOTAL RECORDS
+    const countQuery = `
+    SELECT COUNT(*) AS total
+    FROM admins
+    ${whereQuery}
+  `;
+
+    const countResult = await executeQuery(countQuery, params);
+
+    const total = Number(countResult[0]?.total || 0);
+
+    // PAGINATED DATA
+    const dataQuery = `
+    SELECT
+      id,
+      name,
+      role,
+      status
+    FROM admins
+    ${whereQuery}
+    ORDER BY id DESC
+    LIMIT ? OFFSET ?
+  `;
+
+    const dataResult = await executeQuery(dataQuery, [
+      ...params,
+      limit,
+      offset,
+    ]);
+
+    return {
+      data: dataResult,
+      total,
+    };
+  }
 }

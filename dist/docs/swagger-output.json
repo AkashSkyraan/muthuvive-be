@@ -386,6 +386,41 @@
                 }
             }
         },
+        "/admin/sub-admins": {
+            "get": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/admin/status": {
             "put": {
                 "tags": [
@@ -2506,8 +2541,8 @@
                                     "example": "pending"
                                 },
                                 "property_id": {
-                                    "type": "number",
-                                    "example": 1
+                                    "type": "string",
+                                    "example": "pSDF1234"
                                 }
                             }
                         }
@@ -2589,7 +2624,7 @@
                         "name": "property_id",
                         "in": "query",
                         "required": false,
-                        "type": "integer",
+                        "type": "string",
                         "description": "Filter enquiries by property ID"
                     },
                     {

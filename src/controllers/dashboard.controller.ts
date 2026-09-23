@@ -246,7 +246,7 @@ export class DashController {
     } catch (error) {
       console.error("Get Current Admin Error:", error);
 
-      return sendResponse(res, 401, 0, [], "Invalid or expired session", []);
+      return sendResponse(res, 500, 0, [], "Invalid or expired session", []);
     }
   };
 
@@ -262,6 +262,48 @@ export class DashController {
       return sendResponse(res, 200, 1, [], "Logout successful", []);
     } catch (error) {
       return sendResponse(res, 500, 0, [], "Internal server error", []);
+    }
+  };
+
+  static getSUbAdmin = async (req: Request, res: Response) => {
+    try {
+      const name = req.query.name ? String(req.query.name).trim() : null;
+
+      const status =
+        req.query.status && String(req.query.status) !== "all"
+          ? String(req.query.status)
+          : null;
+
+      const page = Math.max(Number(req.query.page) || 1, 1);
+
+      const limit = Math.max(Number(req.query.limit) || 10, 1);
+
+      const offset = (page - 1) * limit;
+
+      const result = await DashboardModel.getSUbAdmin({
+        name,
+        status,
+        limit,
+        offset,
+      });
+
+      return res.status(200).json({
+        success: 1,
+        data: result.data,
+        total: result.total,
+        message: "Sub admins fetched successfully",
+        error: [],
+      });
+    } catch (err: any) {
+      console.error("Get Sub Admin Error:", err);
+
+      return res.status(500).json({
+        success: 0,
+        data: [],
+        total: 0,
+        message: "Internal server error",
+        error: [],
+      });
     }
   };
 

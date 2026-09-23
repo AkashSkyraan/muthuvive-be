@@ -23,7 +23,7 @@ class EnquiryController {
         try {
             const { id, status, regarding, property_id, mobile, email } = req.query;
             const enquiryId = id ? Number(id) : undefined;
-            const propertyId = property_id ? Number(property_id) : undefined;
+            const propertyId = property_id ? String(property_id) : undefined;
             const enquiries = await enquiry_model_1.EnquiryModel.getEnquiry({
                 id: enquiryId,
                 status: status ? String(status) : undefined,

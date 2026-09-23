@@ -415,7 +415,7 @@ export class FormModule {
   }
 
   static async getProperty(data: any) {
-    const { prop_id, type } = data;
+    const { prop_id, type, user_id } = data;
 
     const property = await this.getPropertyData(prop_id);
 
@@ -428,6 +428,10 @@ export class FormModule {
     const property_highs = await this.getPropertyHighs(prop_id);
 
     const media = await this.getPropertyMedia(prop_id);
+    let is_bookmarked = 0;
+    if (user_id) {
+      is_bookmarked = await this.getPropertyBookmarkStatus(user_id, prop_id);
+    }
 
     let categoryData = {};
 
@@ -437,6 +441,7 @@ export class FormModule {
       amenities,
       property_highs,
       media,
+      is_bookmarked,
     };
   }
 
@@ -891,7 +896,20 @@ export class FormModule {
       pf.expired_at,
       pf.sold_at,
       pf.purchase_plan,
-      pf.created_at
+      pf.created_at,
+
+
+    CASE
+      WHEN ? IS NOT NULL
+        AND EXISTS (
+          SELECT 1
+          FROM prop_bookmarks pb
+          WHERE pb.user_id = ?
+            AND pb.prop_id = pf.prop_id
+        )
+      THEN 1
+      ELSE 0
+    END AS is_bookmarked
 
     FROM prop_form pf
 
@@ -936,7 +954,12 @@ export class FormModule {
     LIMIT ? OFFSET ?
   `;
 
-    const dataParams: any[] = [...baseParams, ...locationParams];
+    const dataParams: any[] = [
+      user_id || null,
+      user_id || null,
+      ...baseParams,
+      ...locationParams,
+    ];
 
     // ORDER BY CASE parameters
     if (city && district && state) {
@@ -1173,9 +1196,19 @@ export class FormModule {
     };
   }
 
+  static async getPropertyBookmarkStatus(user_id: number, prop_id: string) {
+    const query = `
+    SELECT 1
+    FROM prop_bookmarks
+    WHERE user_id = ?
+      AND prop_id = ?
+    LIMIT 1
+  `;
+
+    const result = await executeQuery(query, [user_id, prop_id]);
+
+    return result.length > 0 ? 1 : 0;
+  }
 
   // Update accpeted , rejected ,  sold status
-
-  
-
 }

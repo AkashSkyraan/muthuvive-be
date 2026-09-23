@@ -133,6 +133,13 @@ router.get(
       description: 'Property category type number 1-dtcp , 2-farmland'
     }
 
+     #swagger.parameters['user_id'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      example: 1,
+      description: 'User ID'
+    }
     #swagger.responses[200] = {
       description: 'Property fetched successfully',
       schema: {
@@ -417,6 +424,8 @@ router.get(
   */
   FormController.getProperty,
 );
+
+
 
 router.get(
   "/get-prop-bylocation",
@@ -726,7 +735,5 @@ router.get(
   */
   FormController.getProperty,
 );
-
-
 
 export default router;

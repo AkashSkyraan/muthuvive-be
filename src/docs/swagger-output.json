@@ -3425,6 +3425,14 @@
             ],
             "example": 1,
             "description": "Property category type number 1-dtcp , 2-farmland"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "example": 1,
+            "description": "User ID"
           }
         ],
         "responses": {
@@ -4265,6 +4273,11 @@
         "summary": "Get Property By ID",
         "description": "Get complete property details including prop_form data, amenities, property highlights, media, and category-specific data",
         "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "prop_id",
             "in": "query",

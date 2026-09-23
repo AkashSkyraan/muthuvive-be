@@ -41,7 +41,7 @@ export class FormController {
 
   static async getProperty(req: Request, res: Response) {
     try {
-      const { prop_id, type } = req.query;
+      const { prop_id, type, user_id } = req.query;
 
       if (!prop_id) {
         return sendResponse(res, 400, 0, [], "Property ID is required", []);
@@ -50,6 +50,7 @@ export class FormController {
       const data = await FormModule.getProperty({
         prop_id: String(prop_id),
         type: type ? String(type) : null,
+        user_id: Number(user_id) || null,
       });
 
       return sendResponse(
@@ -68,6 +69,4 @@ export class FormController {
       ]);
     }
   }
-
-  
 }

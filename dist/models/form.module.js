@@ -296,7 +296,7 @@ class FormModule {
         };
     }
     static async getProperty(data) {
-        const { prop_id, type } = data;
+        const { prop_id, type, user_id } = data;
         const property = await this.getPropertyData(prop_id);
         if (!property.length) {
             throw new Error("Property not found");
@@ -304,6 +304,10 @@ class FormModule {
         const amenities = await this.getPropertyAmenities(prop_id);
         const property_highs = await this.getPropertyHighs(prop_id);
         const media = await this.getPropertyMedia(prop_id);
+        let is_bookmarked = 0;
+        if (user_id) {
+            is_bookmarked = await this.getPropertyBookmarkStatus(user_id, prop_id);
+        }
         let categoryData = {};
         return {
             ...property[0],
@@ -311,6 +315,7 @@ class FormModule {
             amenities,
             property_highs,
             media,
+            is_bookmarked,
         };
     }
     static async getPropertyMedia(prop_id) {
@@ -693,7 +698,20 @@ class FormModule {
       pf.expired_at,
       pf.sold_at,
       pf.purchase_plan,
-      pf.created_at
+      pf.created_at,
+
+
+    CASE
+      WHEN ? IS NOT NULL
+        AND EXISTS (
+          SELECT 1
+          FROM prop_bookmarks pb
+          WHERE pb.user_id = ?
+            AND pb.prop_id = pf.prop_id
+        )
+      THEN 1
+      ELSE 0
+    END AS is_bookmarked
 
     FROM prop_form pf
 
@@ -735,7 +753,12 @@ class FormModule {
 
     LIMIT ? OFFSET ?
   `;
-        const dataParams = [...baseParams, ...locationParams];
+        const dataParams = [
+            user_id || null,
+            user_id || null,
+            ...baseParams,
+            ...locationParams,
+        ];
         // ORDER BY CASE parameters
         if (city && district && state) {
             dataParams.push(city, district, state, district, state, state);
@@ -930,6 +953,17 @@ class FormModule {
                 totalPages: Math.ceil(total / limit),
             },
         };
+    }
+    static async getPropertyBookmarkStatus(user_id, prop_id) {
+        const query = `
+    SELECT 1
+    FROM prop_bookmarks
+    WHERE user_id = ?
+      AND prop_id = ?
+    LIMIT 1
+  `;
+        const result = await (0, helper_1.executeQuery)(query, [user_id, prop_id]);
+        return result.length > 0 ? 1 : 0;
     }
 }
 exports.FormModule = FormModule;

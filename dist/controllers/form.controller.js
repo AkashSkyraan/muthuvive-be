@@ -7,13 +7,14 @@ const form_module_1 = require("../models/form.module");
 class FormController {
     static async getProperty(req, res) {
         try {
-            const { prop_id, type } = req.query;
+            const { prop_id, type, user_id } = req.query;
             if (!prop_id) {
                 return (0, helper_1.sendResponse)(res, 400, 0, [], "Property ID is required", []);
             }
             const data = await form_module_1.FormModule.getProperty({
                 prop_id: String(prop_id),
                 type: type ? String(type) : null,
+                user_id: Number(user_id) || null,
             });
             return (0, helper_1.sendResponse)(res, 200, 1, data, "Property fetched successfully", []);
         }

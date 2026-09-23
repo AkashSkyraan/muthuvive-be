@@ -149,7 +149,6 @@ export class DashController {
         return sendResponse(res, 200, 0, [], "Your account is inactive", []);
       }
 
-      // Compare password
       const isPasswordValid = await bcrypt.compare(password, admin.password);
 
       if (!isPasswordValid) {
@@ -163,7 +162,6 @@ export class DashController {
         );
       }
 
-      // Create JWT
       const token = jwt.sign(
         {
           id: admin.id,
@@ -176,18 +174,24 @@ export class DashController {
         },
       );
 
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 90 * 24 * 60 * 60 * 1000,
+        path: "/",
+      });
+
       return sendResponse(
         res,
         200,
         1,
         [
           {
-            
             id: admin.id,
             role: admin.role,
             name: admin.name,
             status: admin.status,
-            token,
           },
         ],
         "Login successful",
@@ -199,4 +203,132 @@ export class DashController {
       return sendResponse(res, 500, 0, [], "Internal server error", []);
     }
   };
+
+  static getCurrentAdmin = async (req: Request, res: Response) => {
+    try {
+      const token = req.cookies?.access_token;
+
+      if (!token) {
+        return sendResponse(res, 401, 0, [], "Authentication required", []);
+      }
+
+      const decoded = jwt.verify(token, process.env.TOKEN_SECRET as string) as {
+        id: number;
+        role: string;
+        name: string;
+      };
+
+      const admin = await DashboardModel.getAdminById(decoded.id);
+
+      if (!admin) {
+        return sendResponse(res, 401, 0, [], "User not found", []);
+      }
+
+      if (admin.status !== "active") {
+        return sendResponse(res, 401, 0, [], "Your account is inactive", []);
+      }
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [
+          {
+            id: admin.id,
+            role: admin.role,
+            name: admin.name,
+            status: admin.status,
+          },
+        ],
+        "User fetched successfully",
+        [],
+      );
+    } catch (error) {
+      console.error("Get Current Admin Error:", error);
+
+      return sendResponse(res, 401, 0, [], "Invalid or expired session", []);
+    }
+  };
+
+  static logoutAdmin = async (req: Request, res: Response) => {
+    try {
+      res.clearCookie("access_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        path: "/",
+      });
+
+      return sendResponse(res, 200, 1, [], "Logout successful", []);
+    } catch (error) {
+      return sendResponse(res, 500, 0, [], "Internal server error", []);
+    }
+  };
+
+  // prperty
+
+  static async updatePropertyStatus(req: Request, res: Response) {
+    try {
+      const { prop_id, status, rejected_reason } = req.body;
+
+      if (!prop_id) {
+        return sendResponse(res, 400, 0, [], "Property ID is required", []);
+      }
+
+      if (!status) {
+        return sendResponse(res, 400, 0, [], "Status is required", []);
+      }
+
+      const allowedStatuses = ["approved", "rejected", "sold"];
+
+      if (!allowedStatuses.includes(status)) {
+        return sendResponse(
+          res,
+          400,
+          0,
+          [],
+          "Invalid status. Allowed: approved, rejected, sold",
+          [],
+        );
+      }
+
+      if (status === "rejected" && !rejected_reason?.trim()) {
+        return sendResponse(
+          res,
+          400,
+          0,
+          [],
+          "Rejection reason is required",
+          [],
+        );
+      }
+
+      const data = await DashboardModel.updatePropertyStatus({
+        prop_id: String(prop_id),
+        status: String(status),
+        rejection_reason: rejected_reason
+          ? String(rejected_reason).trim()
+          : null,
+      });
+
+      if (!data) {
+        return sendResponse(res, 404, 0, [], "Property not found", []);
+      }
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        data,
+        "Property status updated successfully",
+        [],
+      );
+    } catch (error: any) {
+      console.error("updatePropertyStatus error:", error);
+
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.message || error,
+      ]);
+    }
+  }
 }

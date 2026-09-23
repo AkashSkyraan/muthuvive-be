@@ -325,7 +325,6 @@ export class PropertyModel {
   static async addUpdateBookmark(data: any) {
     const { user_id, prop_id } = data;
 
-    
     const existing: any = await executeQuery(
       `
     SELECT id
@@ -337,7 +336,6 @@ export class PropertyModel {
       [user_id, prop_id],
     );
 
-    
     if (existing.length > 0) {
       await executeQuery(
         `
@@ -356,7 +354,6 @@ export class PropertyModel {
       };
     }
 
-   
     await executeQuery(
       `
     INSERT INTO prop_bookmarks
@@ -375,8 +372,31 @@ export class PropertyModel {
     };
   }
 
-  
+  static getPropertyPriceRange = async (
+    prop_type: number,
+    status: string | null,
+  ) => {
+    const query = `
+    SELECT
+      MIN(min_price) AS minPrice,
+      MAX(max_price) AS maxPrice
+    FROM prop_form
+    WHERE category = ?
+      AND status != 'deleted'
+            ${status ? "AND status = ?" : ""}
+  `;
 
+    const params: any[] = [prop_type];
 
-  
+    if (status) {
+      params.push(status);
+    }
+
+    const result: any[] = await executeQuery(query, params);
+
+    return {
+      minPrice: Number(result[0]?.minPrice || 0),
+      maxPrice: Number(result[0]?.maxPrice || 0),
+    };
+  };
 }

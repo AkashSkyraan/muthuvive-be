@@ -361,7 +361,7 @@ router.get(
 
     #swagger.parameters['status'] = {
       in: 'query',
-      required: true,
+      required: false,
       type: 'string',
       example: 'available',
       description: 'Status for properties'
@@ -383,10 +383,13 @@ router.get(
       description: 'fetch data location for fetch beside properties'
     }
     
-
-
-
-
+ #swagger.parameters['user_id'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      example: 1,
+      description: 'user_id for users'
+    }
     
 
     #swagger.responses[400] = {
@@ -403,7 +406,6 @@ router.get(
   */
   PropertyController.getPropertyBasedOnTypes,
 );
-
 
 router.post(
   "/add-bookmark",
@@ -455,8 +457,6 @@ router.post(
 
   PropertyController.addUpdateBookmark,
 );
-
-
 
 router.get(
   "/get-bookmarks",
@@ -559,8 +559,63 @@ router.get(
   PropertyController.getBookmarkProperties,
 );
 
+router.get(
+  "/price-range",
+  /*
+    #swagger.tags = ['2.Property']
 
+    #swagger.summary = 'Get Property Price Range'
 
+    #swagger.description = 'Get minimum and maximum property price based on property type and status. When status is available, sold properties are excluded and all other statuses are considered available.'
 
+    #swagger.parameters['type'] = {
+      in: 'query',
+      required: true,
+      type: 'integer',
+      description: 'Property type ID',
+      example: 1
+    }
+
+    #swagger.parameters['status'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+      description: 'Property status. Use available to exclude sold properties, or provide a specific status.',
+      enum: ['available', 'sold'],
+      example: 'available'
+    }
+
+    #swagger.responses[200] = {
+      description: 'Property price range fetched successfully',
+      schema: {
+        success: true,
+        data: {
+          minPrice: 500000,
+          maxPrice: 2500000
+        },
+        message: 'Property price range fetched successfully'
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: 'Property type is required',
+      schema: {
+        success: false,
+        data: [],
+        message: 'Property type is required'
+      }
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal server error',
+      schema: {
+        success: false,
+        data: [],
+        message: 'Internal server error'
+      }
+    }
+  */
+  PropertyController.getPropertyPriceRange,
+);
 
 export default router;

@@ -12,6 +12,42 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 class DashController {
+    // prperty
+    static async updatePropertyStatus(req, res) {
+        try {
+            const { prop_id, status, rejected_reason } = req.body;
+            if (!prop_id) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "Property ID is required", []);
+            }
+            if (!status) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "Status is required", []);
+            }
+            const allowedStatuses = ["approved", "rejected", "sold"];
+            if (!allowedStatuses.includes(status)) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "Invalid status. Allowed: approved, rejected, sold", []);
+            }
+            if (status === "rejected" && !rejected_reason?.trim()) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "Rejection reason is required", []);
+            }
+            const data = await dashboard_model_1.DashboardModel.updatePropertyStatus({
+                prop_id: String(prop_id),
+                status: String(status),
+                rejection_reason: rejected_reason
+                    ? String(rejected_reason).trim()
+                    : null,
+            });
+            if (!data) {
+                return (0, helper_1.sendResponse)(res, 404, 0, [], "Property not found", []);
+            }
+            return (0, helper_1.sendResponse)(res, 200, 1, data, "Property status updated successfully", []);
+        }
+        catch (error) {
+            console.error("updatePropertyStatus error:", error);
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error?.message || error,
+            ]);
+        }
+    }
 }
 exports.DashController = DashController;
 _a = DashController;
@@ -90,12 +126,10 @@ DashController.loginAdmin = async (req, res) => {
         if (admin.status !== "active") {
             return (0, helper_1.sendResponse)(res, 200, 0, [], "Your account is inactive", []);
         }
-        // Compare password
         const isPasswordValid = await bcryptjs_1.default.compare(password, admin.password);
         if (!isPasswordValid) {
             return (0, helper_1.sendResponse)(res, 200, 0, [], "Invalid username or password", []);
         }
-        // Create JWT
         const token = jsonwebtoken_1.default.sign({
             id: admin.id,
             role: admin.role,
@@ -103,18 +137,66 @@ DashController.loginAdmin = async (req, res) => {
         }, process.env.TOKEN_SECRET, {
             expiresIn: "90d",
         });
+        res.cookie("access_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 90 * 24 * 60 * 60 * 1000,
+            path: "/",
+        });
         return (0, helper_1.sendResponse)(res, 200, 1, [
             {
                 id: admin.id,
                 role: admin.role,
                 name: admin.name,
                 status: admin.status,
-                token,
             },
         ], "Login successful", []);
     }
     catch (error) {
         console.error("Admin Login Error:", error);
+        return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", []);
+    }
+};
+DashController.getCurrentAdmin = async (req, res) => {
+    try {
+        const token = req.cookies?.access_token;
+        if (!token) {
+            return (0, helper_1.sendResponse)(res, 401, 0, [], "Authentication required", []);
+        }
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        const admin = await dashboard_model_1.DashboardModel.getAdminById(decoded.id);
+        if (!admin) {
+            return (0, helper_1.sendResponse)(res, 401, 0, [], "User not found", []);
+        }
+        if (admin.status !== "active") {
+            return (0, helper_1.sendResponse)(res, 401, 0, [], "Your account is inactive", []);
+        }
+        return (0, helper_1.sendResponse)(res, 200, 1, [
+            {
+                id: admin.id,
+                role: admin.role,
+                name: admin.name,
+                status: admin.status,
+            },
+        ], "User fetched successfully", []);
+    }
+    catch (error) {
+        console.error("Get Current Admin Error:", error);
+        return (0, helper_1.sendResponse)(res, 401, 0, [], "Invalid or expired session", []);
+    }
+};
+DashController.logoutAdmin = async (req, res) => {
+    try {
+        res.clearCookie("access_token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            path: "/",
+        });
+        return (0, helper_1.sendResponse)(res, 200, 1, [], "Logout successful", []);
+    }
+    catch (error) {
         return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", []);
     }
 };

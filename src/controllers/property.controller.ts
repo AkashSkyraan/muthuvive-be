@@ -344,18 +344,52 @@ export class PropertyController {
 
   // DTCP
 
+  // static async getPropertyBasedOnTypes(req: Request, res: Response) {
+  //   try {
+  //     const { status, type, location } = req.query;
+
+  //     const page = Number(req.query.page) ||  1;
+  //     const limit = Number(req.query.limit) || 5;
+  //     const offset = (page - 1) * limit;
+
+  //     const data = await FormModule.getPropertyBasedOnTypes({
+  //       status: status ? String(status) : null,
+  //       type: type ? String(type) : null,
+  //       location: location ? String(location) : null,
+  //       page,
+  //       limit,
+  //       offset,
+  //     });
+
+  //     return sendResponse(
+  //       res,
+  //       200,
+  //       1,
+  //       data,
+  //       "Properties fetched successfully",
+  //       [],
+  //     );
+  //   } catch (error: any) {
+  //     return sendResponse(res, 500, 0, [], "Internal server error", [
+  //       error?.message || error,
+  //     ]);
+  //   }
+  // }
+
   static async getPropertyBasedOnTypes(req: Request, res: Response) {
     try {
-      const { status, type, location } = req.query;
+      const { status, type, location, user_id } = req.query;
 
       const page = Math.max(Number(req.query.page) || 1, 1);
-      const limit = Number(req.query.limit) || 5;
+      const limit = Math.max(Number(req.query.limit) || 5, 1);
+
       const offset = (page - 1) * limit;
 
       const data = await FormModule.getPropertyBasedOnTypes({
         status: status ? String(status) : null,
         type: type ? String(type) : null,
         location: location ? String(location) : null,
+        user_id: user_id ? Number(user_id) : null,
         page,
         limit,
         offset,
@@ -370,6 +404,8 @@ export class PropertyController {
         [],
       );
     } catch (error: any) {
+      console.error("getPropertyBasedOnTypes error:", error);
+
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error?.message || error,
       ]);
@@ -432,4 +468,32 @@ export class PropertyController {
       ]);
     }
   }
+
+  static getPropertyPriceRange = async (req: Request, res: Response) => {
+    try {
+      const prop_type = Number(req.query.type);
+      const status = req.query.status ? String(req.query.status) : null;
+
+      if (!prop_type) {
+        return sendResponse(res, 400, 0, [], "Property type is required", []);
+      }
+
+      const data = await PropertyModel.getPropertyPriceRange(prop_type, status);
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [data],
+        "Property price range fetched successfully",
+        [],
+      );
+    } catch (error: any) {
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.message || error,
+      ]);
+    }
+  };
+
+  
 }

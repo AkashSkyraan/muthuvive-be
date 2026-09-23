@@ -106,7 +106,7 @@
     "/admin/create-admin": {
       "post": {
         "tags": [
-          "0.Admin"
+          "Admin"
         ],
         "summary": "Create / Update Admin",
         "description": "Create a new admin when ID is not provided, or update an existing admin when ID is provided",
@@ -235,7 +235,7 @@
     "/admin/login-admin": {
       "post": {
         "tags": [
-          "0.Admin"
+          "Admin"
         ],
         "summary": "Admin Login",
         "description": "Login admin or sub admin using name and password",
@@ -362,6 +362,70 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/auth/me": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/logout": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/status": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Update Property Status",
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prop_id": {
+                  "type": "string",
+                  "example": "PABCDE123"
+                },
+                "status": {
+                  "type": "string",
+                  "example": "accepted"
+                },
+                "rejected_reason": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property status updated successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "404": {
+            "description": "Property not found"
           }
         }
       }
@@ -1202,7 +1266,7 @@
           {
             "name": "status",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "string",
             "example": "available",
             "description": "Status for properties"
@@ -1229,6 +1293,14 @@
             "type": "string",
             "example": "coimbatore",
             "description": "fetch data location for fetch beside properties"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "example": 1,
+            "description": "user_id for users"
           }
         ],
         "responses": {
@@ -1556,6 +1628,119 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/property/price-range": {
+      "get": {
+        "tags": [
+          "2.Property"
+        ],
+        "summary": "Get Property Price Range",
+        "description": "Get minimum and maximum property price based on property type and status. When status is available, sold properties are excluded and all other statuses are considered available.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "description": "Property type ID",
+            "example": 1
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Property status. Use available to exclude sold properties, or provide a specific status.",
+            "enum": [
+              "available",
+              "sold"
+            ],
+            "example": "available"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property price range fetched successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "minPrice": {
+                      "type": "number",
+                      "example": 500000
+                    },
+                    "maxPrice": {
+                      "type": "number",
+                      "example": 2500000
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Property price range fetched successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Property type is required",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "data": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Property type is required"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "data": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }

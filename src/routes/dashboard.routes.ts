@@ -7,7 +7,7 @@ router.post(
   "/create-admin",
 
   /*
-      #swagger.tags = ['0.Admin']
+      #swagger.tags = ['Admin']
       #swagger.summary = 'Create / Update Admin'
       #swagger.description = 'Create a new admin when ID is not provided, or update an existing admin when ID is provided'
       #swagger.consumes = ['application/json']
@@ -64,7 +64,7 @@ router.post(
   "/login-admin",
 
   /*
-      #swagger.tags = ['0.Admin']
+      #swagger.tags = ['Admin']
       #swagger.summary = 'Admin Login'
       #swagger.description = 'Login admin or sub admin using name and password'
       #swagger.consumes = ['application/json']
@@ -121,4 +121,38 @@ router.post(
   DashController.loginAdmin,
 );
 
+router.get("/auth/me", DashController.getCurrentAdmin);
+
+router.post("/logout", DashController.logoutAdmin);
+
+router.put(
+  "/status",
+  /*
+    #swagger.tags = ['Admin']
+    #swagger.summary = 'Update Property Status'
+
+    #swagger.parameters['body'] = {
+      in: 'body',
+      required: true,
+      schema: {
+        prop_id: "PABCDE123",
+        status: "accepted",
+        rejected_reason: ""
+      }
+    }
+
+    #swagger.responses[200] = {
+      description: 'Property status updated successfully'
+    }
+
+    #swagger.responses[400] = {
+      description: 'Invalid request'
+    }
+
+    #swagger.responses[404] = {
+      description: 'Property not found'
+    }
+  */
+  DashController.updatePropertyStatus,
+);
 export default router;

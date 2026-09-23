@@ -5,7 +5,7 @@ const dashboard_controller_1 = require("../controllers/dashboard.controller");
 const router = (0, express_1.Router)();
 router.post("/create-admin", 
 /*
-    #swagger.tags = ['0.Admin']
+    #swagger.tags = ['Admin']
     #swagger.summary = 'Create / Update Admin'
     #swagger.description = 'Create a new admin when ID is not provided, or update an existing admin when ID is provided'
     #swagger.consumes = ['application/json']
@@ -57,7 +57,7 @@ router.post("/create-admin",
 dashboard_controller_1.DashController.createAdmin);
 router.post("/login-admin", 
 /*
-    #swagger.tags = ['0.Admin']
+    #swagger.tags = ['Admin']
     #swagger.summary = 'Admin Login'
     #swagger.description = 'Login admin or sub admin using name and password'
     #swagger.consumes = ['application/json']
@@ -111,4 +111,34 @@ router.post("/login-admin",
     }
 */
 dashboard_controller_1.DashController.loginAdmin);
+router.get("/auth/me", dashboard_controller_1.DashController.getCurrentAdmin);
+router.post("/logout", dashboard_controller_1.DashController.logoutAdmin);
+router.put("/status", 
+/*
+  #swagger.tags = ['Admin']
+  #swagger.summary = 'Update Property Status'
+
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      prop_id: "PABCDE123",
+      status: "accepted",
+      rejected_reason: ""
+    }
+  }
+
+  #swagger.responses[200] = {
+    description: 'Property status updated successfully'
+  }
+
+  #swagger.responses[400] = {
+    description: 'Invalid request'
+  }
+
+  #swagger.responses[404] = {
+    description: 'Property not found'
+  }
+*/
+dashboard_controller_1.DashController.updatePropertyStatus);
 exports.default = router;

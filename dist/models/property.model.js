@@ -1,4 +1,5 @@
 "use strict";
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PropertyModel = void 0;
 const helper_1 = require("../utils/helper");
@@ -290,3 +291,24 @@ class PropertyModel {
     }
 }
 exports.PropertyModel = PropertyModel;
+_a = PropertyModel;
+PropertyModel.getPropertyPriceRange = async (prop_type, status) => {
+    const query = `
+    SELECT
+      MIN(min_price) AS minPrice,
+      MAX(max_price) AS maxPrice
+    FROM prop_form
+    WHERE category = ?
+      AND status != 'deleted'
+            ${status ? "AND status = ?" : ""}
+  `;
+    const params = [prop_type];
+    if (status) {
+        params.push(status);
+    }
+    const result = await (0, helper_1.executeQuery)(query, params);
+    return {
+        minPrice: Number(result[0]?.minPrice || 0),
+        maxPrice: Number(result[0]?.maxPrice || 0),
+    };
+};

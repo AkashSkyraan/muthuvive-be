@@ -241,8 +241,8 @@ class FormModule {
         };
     }
     static async updatePropertyStep4(data) {
-        const { body, user_id, prop_id, status } = data;
-        const { cover = null, pr_img = [], pr_vid = [], patta = [], pr_doc = [], } = body || {};
+        const { body, user_id, prop_id } = data;
+        const { cover = null, pr_img = [], pr_vid = [], patta = [], pr_doc = [], status, requested_at, approved_at, } = body || {};
         const property = await (0, helper_1.executeQuery)(`
     SELECT id
     FROM prop_form
@@ -283,13 +283,28 @@ class FormModule {
       VALUES ?
       `, [mediaValues]);
         }
+        const updateFields = [];
+        const updateParams = [];
+        if (status !== undefined) {
+            updateFields.push("status = ?");
+            updateParams.push(status);
+        }
+        if (requested_at !== undefined) {
+            updateFields.push("requested_at = ?");
+            updateParams.push(requested_at);
+        }
+        if (approved_at !== undefined) {
+            updateFields.push("approved_at = ?");
+            updateParams.push(approved_at);
+        }
+        updateFields.push("step = GREATEST(step, 4)");
         await (0, helper_1.executeQuery)(`
     UPDATE prop_form
-    SET step = GREATEST(step, 4),
-    status =  ? 
+    
+      SET ${updateFields.join(", ")}
     WHERE prop_id = ?
       AND user_id = ?
-    `, [status, prop_id, user_id]);
+    `, [...updateParams, prop_id, user_id]);
         return {
             prop_id,
             step: 4,

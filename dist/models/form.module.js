@@ -1171,7 +1171,7 @@ class FormModule {
         pf.max_price,
 
         pf.status,
-
+        pf.purchase_plan,
         pf.created_at,
         pf.updated_at
 

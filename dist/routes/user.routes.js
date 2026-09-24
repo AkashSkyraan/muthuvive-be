@@ -39,4 +39,5 @@ router.put("/update-profile",
     }
 */
 user_controller_1.UserController.updateProfile);
+router.get("/get-user", user_controller_1.UserController.getUser);
 exports.default = router;

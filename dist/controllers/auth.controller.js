@@ -2,6 +2,7 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const helper_1 = require("../utils/helper");
@@ -159,3 +160,19 @@ class AuthController {
     }
 }
 exports.AuthController = AuthController;
+_a = AuthController;
+AuthController.logout = async (req, res) => {
+    try {
+        res.clearCookie("access_token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/",
+        });
+        return (0, helper_1.sendResponse)(res, 200, 1, [], "Logout successful", []);
+    }
+    catch (error) {
+        console.error("Logout Error:", error);
+        return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", []);
+    }
+};

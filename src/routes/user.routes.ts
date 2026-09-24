@@ -44,4 +44,5 @@ router.put(
   UserController.updateProfile,
 );
 
+router.get("/get-user", UserController.getUser);
 export default router;

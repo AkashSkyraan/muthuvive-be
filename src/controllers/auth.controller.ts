@@ -263,4 +263,21 @@ export class AuthController {
       ]);
     }
   }
+
+  static logout = async (req: Request, res: Response) => {
+    try {
+      res.clearCookie("access_token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      });
+
+      return sendResponse(res, 200, 1, [], "Logout successful", []);
+    } catch (error) {
+      console.error("Logout Error:", error);
+
+      return sendResponse(res, 500, 0, [], "Internal server error", []);
+    }
+  };
 }

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { executeQuery, sendResponse, validateRequest } from "../utils/helper";
 import { updateProfileSchema } from "../utils/validator";
 import { UserModel } from "../models/user.model";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export class UserController {
   static async updateProfile(req: Request, res: Response) {
@@ -76,4 +77,56 @@ export class UserController {
       );
     }
   }
+
+  // get-user
+
+  static getUser = async (req: Request, res: Response) => {
+    try {
+      const token = req.cookies?.access_token;
+
+      console.log(token);
+
+      if (!token) {
+        return sendResponse(res, 401, 0, [], "Authentication required", []);
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+        user_id: number;
+      };
+
+      // ---------------------------------------
+      // Get user
+      // ---------------------------------------
+
+      const user = await UserModel.getUserById(decoded.user_id);
+
+      if (!user) {
+        return sendResponse(res, 401, 0, [], "User not found", []);
+      }
+
+      // ---------------------------------------
+      // Return user
+      // ---------------------------------------
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [
+          {
+            id: user.id,
+            user_name: user.user_name,
+            email: user.email,
+            mobile: user.mobile,
+          },
+        ],
+        "User fetched successfully",
+        [],
+      );
+    } catch (error) {
+      console.error("Get User Error:", error);
+
+      return sendResponse(res, 401, 0, [], "Invalid or expired session", []);
+    }
+  };
 }

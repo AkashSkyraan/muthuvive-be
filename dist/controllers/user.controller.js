@@ -1,9 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const helper_1 = require("../utils/helper");
 const validator_1 = require("../utils/validator");
 const user_model_1 = require("../models/user.model");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class UserController {
     static async updateProfile(req, res) {
         try {
@@ -45,3 +50,37 @@ class UserController {
     }
 }
 exports.UserController = UserController;
+_a = UserController;
+// get-user
+UserController.getUser = async (req, res) => {
+    try {
+        const token = req.cookies?.access_token;
+        console.log(token);
+        if (!token) {
+            return (0, helper_1.sendResponse)(res, 401, 0, [], "Authentication required", []);
+        }
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        // ---------------------------------------
+        // Get user
+        // ---------------------------------------
+        const user = await user_model_1.UserModel.getUserById(decoded.user_id);
+        if (!user) {
+            return (0, helper_1.sendResponse)(res, 401, 0, [], "User not found", []);
+        }
+        // ---------------------------------------
+        // Return user
+        // ---------------------------------------
+        return (0, helper_1.sendResponse)(res, 200, 1, [
+            {
+                id: user.id,
+                user_name: user.user_name,
+                email: user.email,
+                mobile: user.mobile,
+            },
+        ], "User fetched successfully", []);
+    }
+    catch (error) {
+        console.error("Get User Error:", error);
+        return (0, helper_1.sendResponse)(res, 401, 0, [], "Invalid or expired session", []);
+    }
+};

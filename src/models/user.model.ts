@@ -44,4 +44,21 @@ export class UserModel {
       id: data.user_id,
     };
   }
+
+  static async getUserById(user_id: number) {
+    const query = `
+    SELECT
+      id,
+      user_name,
+      email,
+      mobile
+    FROM users
+    WHERE id = ?
+    LIMIT 1
+  `;
+
+    const result: any[] = await executeQuery(query, [user_id]);
+
+    return result.length > 0 ? result[0] : null;
+  }
 }

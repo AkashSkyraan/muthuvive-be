@@ -450,7 +450,8 @@ class FormModule {
       step,
       status,
       created_at,
-      updated_at
+      updated_at,
+      purchase_plan
     FROM prop_form
     WHERE prop_id = ?
     LIMIT 1
@@ -1265,7 +1266,7 @@ class FormModule {
             ]);
             return {
                 ...property,
-                media,
+                cover_image: media,
                 amenities,
                 highlights,
             };

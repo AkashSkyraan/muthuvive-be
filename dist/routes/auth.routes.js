@@ -206,4 +206,5 @@ router.post("/reset-password",
   }
 */
 auth_controller_1.AuthController.resetPassword);
+router.post("/logout", auth_controller_1.AuthController.logout);
 exports.default = router;

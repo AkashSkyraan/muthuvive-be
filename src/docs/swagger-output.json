@@ -838,6 +838,16 @@
         }
       }
     },
+    "/auth/logout": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/property/add-property": {
       "post": {
         "tags": [
@@ -2863,6 +2873,16 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/user/get-user": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/about/add-aboutus-data": {

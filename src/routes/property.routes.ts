@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { PropertyController } from "../controllers/property.controller";
+import { FormController } from "../controllers/form.controller";
 
 const router = Router();
 
@@ -629,6 +630,297 @@ router.get(
     }
   */
   PropertyController.getPropertyPriceRange,
+);
+
+// nearby
+
+router.get(
+  "/getNearbyProperties",
+  /*
+    #swagger.tags = ['2.Property']
+    #swagger.summary = 'Get Nearby Properties'
+    #swagger.description = 'Get up to 6 nearby properties related to the given property. Only properties with the same category are returned. Location priority is same city, same district, same state, and same country.'
+
+    #swagger.parameters['prop_id'] = {
+      in: 'query',
+      required: true,
+      type: 'string',
+      example: 'P7K2XM',
+      description: 'Property ID used to find nearby properties'
+    }
+
+    #swagger.responses[200] = {
+      description: 'Nearby properties fetched successfully',
+      schema: {
+        type: 'object',
+        properties: {
+          status: {
+            type: 'integer',
+            example: 1
+          },
+
+          message: {
+            type: 'string',
+            example: 'Nearby properties fetched successfully'
+          },
+
+          data: {
+            type: 'array',
+            maxItems: 6,
+            items: {
+              type: 'object',
+              properties: {
+
+                id: {
+                  type: 'integer',
+                  example: 15
+                },
+
+                prop_id: {
+                  type: 'string',
+                  example: 'P8K3XM'
+                },
+
+                category: {
+                  type: 'integer',
+                  example: 3
+                },
+
+                category_name: {
+                  type: 'string',
+                  example: 'Agriculture Land'
+                },
+
+                sub_category: {
+                  type: 'integer',
+                  nullable: true,
+                  example: 5
+                },
+
+                sub_category_name: {
+                  type: 'string',
+                  nullable: true,
+                  example: 'Farm Land'
+                },
+
+                prop_name: {
+                  type: 'string',
+                  example: 'Green Farm'
+                },
+
+                country: {
+                  type: 'string',
+                  example: 'India'
+                },
+
+                state: {
+                  type: 'string',
+                  example: 'Tamil Nadu'
+                },
+
+                district: {
+                  type: 'string',
+                  example: 'Coimbatore'
+                },
+
+                city: {
+                  type: 'string',
+                  example: 'Pollachi'
+                },
+
+                user_id: {
+                  type: 'integer',
+                  example: 10
+                },
+
+                map: {
+                  type: 'string',
+                  nullable: true,
+                  example: 'https://maps.google.com/...'
+                },
+
+                prop_area: {
+                  type: 'number',
+                  example: 5
+                },
+
+                area_unit: {
+                  type: 'string',
+                  example: 'acre'
+                },
+
+                min_price: {
+                  type: 'number',
+                  nullable: true,
+                  example: 1500000
+                },
+
+                max_price: {
+                  type: 'number',
+                  nullable: true,
+                  example: 1800000
+                },
+
+                status: {
+                  type: 'string',
+                  example: 'available'
+                },
+
+                created_at: {
+                  type: 'string',
+                  format: 'date-time',
+                  example: '2026-09-24T10:30:00.000Z'
+                },
+
+                updated_at: {
+                  type: 'string',
+                  format: 'date-time',
+                  example: '2026-09-24T10:30:00.000Z'
+                },
+
+                media: {
+                  type: 'object',
+                  nullable: true,
+                  properties: {
+
+                    cover: {
+                      type: 'object',
+                      nullable: true,
+                      properties: {
+                        id: {
+                          type: 'integer',
+                          example: 101
+                        },
+                        url: {
+                          type: 'string',
+                          example: 'https://domain.com/uploads/cover.jpg'
+                        }
+                      }
+                    },
+
+                    images: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: {
+                            type: 'integer',
+                            example: 102
+                          },
+                          url: {
+                            type: 'string',
+                            example: 'https://domain.com/uploads/image.jpg'
+                          }
+                        }
+                      }
+                    },
+
+                    videos: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: {
+                            type: 'integer',
+                            example: 105
+                          },
+                          url: {
+                            type: 'string',
+                            example: 'https://domain.com/uploads/video.mp4'
+                          }
+                        }
+                      }
+                    },
+
+                    patta: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: {
+                            type: 'integer',
+                            example: 107
+                          },
+                          url: {
+                            type: 'string',
+                            example: 'https://domain.com/uploads/patta.jpg'
+                          }
+                        }
+                      }
+                    },
+
+                    documents: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: {
+                            type: 'integer',
+                            example: 109
+                          },
+                          url: {
+                            type: 'string',
+                            example: 'https://domain.com/uploads/document.pdf'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+
+                amenities: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: {
+                        type: 'integer',
+                        example: 1
+                      },
+                      name: {
+                        type: 'string',
+                        example: 'Water Facility'
+                      }
+                    }
+                  }
+                },
+
+                highlights: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: {
+                        type: 'integer',
+                        example: 2
+                      },
+                      name: {
+                        type: 'string',
+                        example: 'Main Road Access'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: 'Property ID is required'
+    }
+
+    #swagger.responses[404] = {
+      description: 'Property not found'
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal server error'
+    }
+  */
+  FormController.getNearbyProperties,
 );
 
 export default router;

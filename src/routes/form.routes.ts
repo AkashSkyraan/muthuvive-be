@@ -424,9 +424,6 @@ router.get(
   */
   FormController.getProperty,
 );
-
-
-
 router.get(
   "/get-prop-bylocation",
   /*

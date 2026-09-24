@@ -69,4 +69,33 @@ export class FormController {
       ]);
     }
   }
+
+  // near by
+
+  static getNearbyProperties = async (req: Request, res: Response) => {
+    try {
+      const prop_id = req.query.prop_id
+        ? String(req.query.prop_id).trim()
+        : null;
+
+      if (!prop_id) {
+        return sendResponse(res, 200, 0, [], "Property ID is required", []);
+      }
+
+      const properties = await FormModule.getNearbyProperties(prop_id);
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        properties,
+        "Nearby properties fetched successfully",
+        [],
+      );
+    } catch (error: any) {
+      console.error("Get Nearby Properties Error:", error);
+
+      return sendResponse(res, 500, 0, [], "Internal server error", []);
+    }
+  };
 }

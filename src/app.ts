@@ -37,7 +37,7 @@ app.use(morgan("dev"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(
-  "/uploads/images",
+  "/src/uploads/images",
   express.static(path.join(process.cwd(), "src", "uploads", "images")),
 );
 

@@ -9,15 +9,15 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
-        let folder = "uploads/others";
+        let folder = "src/uploads/others";
         if (file.mimetype.startsWith("image/")) {
-            folder = "uploads/images";
+            folder = "src/uploads/images";
         }
         else if (file.mimetype.startsWith("video/")) {
-            folder = "uploads/videos";
+            folder = "src/uploads/videos";
         }
         else if (file.mimetype === "application/pdf") {
-            folder = "uploads/documents";
+            folder = "src/uploads/documents";
         }
         fs_1.default.mkdirSync(folder, { recursive: true });
         cb(null, folder);

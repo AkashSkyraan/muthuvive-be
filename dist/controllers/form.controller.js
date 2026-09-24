@@ -54,3 +54,20 @@ FormController.savePropertyStep = async (req, res) => {
         ]);
     }
 };
+// near by
+FormController.getNearbyProperties = async (req, res) => {
+    try {
+        const prop_id = req.query.prop_id
+            ? String(req.query.prop_id).trim()
+            : null;
+        if (!prop_id) {
+            return (0, helper_1.sendResponse)(res, 200, 0, [], "Property ID is required", []);
+        }
+        const properties = await form_module_1.FormModule.getNearbyProperties(prop_id);
+        return (0, helper_1.sendResponse)(res, 200, 1, properties, "Nearby properties fetched successfully", []);
+    }
+    catch (error) {
+        console.error("Get Nearby Properties Error:", error);
+        return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", []);
+    }
+};

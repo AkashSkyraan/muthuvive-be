@@ -214,7 +214,7 @@ export class DashboardModel {
       params.push(id);
     }
 
-    // Name filter
+    
     if (name) {
       whereQuery += `
       AND name LIKE ?
@@ -223,7 +223,7 @@ export class DashboardModel {
       params.push(`%${name}%`);
     }
 
-    // Status filter
+   
     if (status) {
       whereQuery += `
       AND status = ?
@@ -255,7 +255,8 @@ export class DashboardModel {
       id,
       name,
       role,
-      status
+      status,
+      password
     FROM admins
     ${whereQuery}
     ORDER BY id DESC

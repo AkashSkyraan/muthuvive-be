@@ -4,14 +4,14 @@ import fs from "fs";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let folder = "uploads/others";
+    let folder = "src/uploads/others";
 
     if (file.mimetype.startsWith("image/")) {
-      folder = "uploads/images";
+      folder = "src/uploads/images";
     } else if (file.mimetype.startsWith("video/")) {
-      folder = "uploads/videos";
+      folder = "src/uploads/videos";
     } else if (file.mimetype === "application/pdf") {
-      folder = "uploads/documents";
+      folder = "src/uploads/documents";
     }
 
     fs.mkdirSync(folder, { recursive: true });

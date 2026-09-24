@@ -1224,28 +1224,19 @@ export class FormModule {
   static async getBookmarkProperties(data: any) {
     const { user_id, page = 1, limit = 10, offset = 0, type, search } = data;
 
-   
-
     let filterWhere = `
     WHERE pb.user_id = ?
   `;
 
     const filterParams: any[] = [user_id];
 
-   
-
     if (type) {
       filterWhere += `
       AND pf.category = ?
     `;
 
-      filterParams.push(type);
+      filterParams.push(Number(type));
     }
-
-    // ------------------------------------------
-    // SEARCH
-    // country / state / district / city
-    // ------------------------------------------
 
     if (search) {
       filterWhere += `
@@ -1259,12 +1250,14 @@ export class FormModule {
 
       const searchValue = `%${String(search).trim()}%`;
 
-      filterParams.push(searchValue, searchValue, searchValue, searchValue, searchValue);
+      filterParams.push(
+        searchValue,
+        searchValue,
+        searchValue,
+        searchValue,
+        searchValue,
+      );
     }
-
-    // ==========================================
-    // COUNT
-    // ==========================================
 
     const countResult: any = await executeQuery(
       `
@@ -1281,8 +1274,6 @@ export class FormModule {
     );
 
     const total = Number(countResult[0]?.total || 0);
-
-    
 
     const properties: any[] = await executeQuery(
       `
@@ -1358,10 +1349,6 @@ export class FormModule {
       [...filterParams, limit, offset],
     );
 
-    // ==========================================
-    // MEDIA / AMENITIES / HIGHLIGHTS
-    // ==========================================
-
     const propertiesWithDetails = await Promise.all(
       properties.map(async (property: any) => {
         const [media, amenities, highlights] = await Promise.all([
@@ -1412,5 +1399,220 @@ export class FormModule {
     return result.length > 0 ? 1 : 0;
   }
 
-  // Update accpeted , rejected ,  sold status
+  // get nearby
+
+  static async getNearbyProperties(prop_id: string) {
+    // ==========================================
+    // CURRENT PROPERTY
+    // ==========================================
+
+    const currentResult: any[] = await executeQuery(
+      `
+    SELECT
+      prop_id,
+      category,
+      country,
+      state,
+      district,
+      city
+    FROM prop_form
+    WHERE prop_id = ?
+    LIMIT 1
+    `,
+      [prop_id],
+    );
+
+    if (!currentResult.length) {
+      throw new Error("Property not found");
+    }
+
+    const currentProperty = currentResult[0];
+
+    const { category, country, state, district, city } = currentProperty;
+
+    // ==========================================
+    // STRICT CATEGORY CHECK
+    // ==========================================
+
+    if (!category) {
+      return [];
+    }
+
+    // ==========================================
+    // FETCH MAX 6
+    // ==========================================
+
+    const nearbyProperties: any[] = [];
+    const addedPropIds = new Set<string>();
+
+    // ==========================================
+    // HELPER
+    // ==========================================
+
+    const getProperties = async (
+      locationField: string,
+      locationValue: string,
+    ) => {
+      if (!locationValue) {
+        return [];
+      }
+
+      const query = `
+      SELECT
+        pf.id,
+        pf.prop_id,
+
+        pf.category,
+        pc.name AS category_name,
+
+        pf.sub_category,
+        psc.sub_name AS sub_category_name,
+
+        pf.prop_name,
+
+        pf.country,
+        pf.state,
+        pf.district,
+        pf.city,
+
+        pf.user_id,
+
+        pf.map,
+
+        pf.prop_area,
+        pf.area_unit,
+
+        pf.min_price,
+        pf.max_price,
+
+        pf.status,
+
+        pf.created_at,
+        pf.updated_at
+
+      FROM prop_form pf
+
+      LEFT JOIN property pc
+        ON pc.id = pf.category
+
+      LEFT JOIN prop_sub_category psc
+        ON psc.id = pf.sub_category
+
+      WHERE pf.category = ?
+
+        AND pf.${locationField} = ?
+
+        AND pf.prop_id != ?
+
+      ORDER BY pf.id DESC
+
+      LIMIT 6
+    `;
+
+      return await executeQuery(query, [category, locationValue, prop_id]);
+    };
+
+    // ==========================================
+    // 1. SAME CITY
+    // ==========================================
+
+    if (city) {
+      const cityProperties = await getProperties("city", city);
+
+      for (const property of cityProperties) {
+        if (nearbyProperties.length >= 6) {
+          break;
+        }
+
+        if (!addedPropIds.has(property.prop_id)) {
+          nearbyProperties.push(property);
+
+          addedPropIds.add(property.prop_id);
+        }
+      }
+    }
+
+    // ==========================================
+    // 2. SAME DISTRICT
+    // ==========================================
+
+    if (nearbyProperties.length < 6 && district) {
+      const districtProperties = await getProperties("district", district);
+
+      for (const property of districtProperties) {
+        if (nearbyProperties.length >= 6) {
+          break;
+        }
+
+        if (!addedPropIds.has(property.prop_id)) {
+          nearbyProperties.push(property);
+
+          addedPropIds.add(property.prop_id);
+        }
+      }
+    }
+
+    // ==========================================
+    // 3. SAME STATE
+    // ==========================================
+
+    if (nearbyProperties.length < 6 && state) {
+      const stateProperties = await getProperties("state", state);
+
+      for (const property of stateProperties) {
+        if (nearbyProperties.length >= 6) {
+          break;
+        }
+
+        if (!addedPropIds.has(property.prop_id)) {
+          nearbyProperties.push(property);
+
+          addedPropIds.add(property.prop_id);
+        }
+      }
+    }
+
+    // ==========================================
+    // 4. SAME COUNTRY
+    // ==========================================
+
+    if (nearbyProperties.length < 6 && country) {
+      const countryProperties = await getProperties("country", country);
+
+      for (const property of countryProperties) {
+        if (nearbyProperties.length >= 6) {
+          break;
+        }
+
+        if (!addedPropIds.has(property.prop_id)) {
+          nearbyProperties.push(property);
+
+          addedPropIds.add(property.prop_id);
+        }
+      }
+    }
+
+    // ==========================================
+    // GET DETAILS
+    // ==========================================
+
+    const propertiesWithDetails = await Promise.all(
+      nearbyProperties.map(async (property: any) => {
+        const [media, amenities, highlights] = await Promise.all([
+          this.getPropertyCover(property.prop_id),
+          this.getPropOneAmenity(property.prop_id),
+          this.getPropertyOneHigh(property.prop_id),
+        ]);
+
+        return {
+          ...property,
+          media,
+          amenities,
+          highlights,
+        };
+      }),
+    );
+
+    return propertiesWithDetails;
+  }
 }

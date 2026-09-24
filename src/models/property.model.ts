@@ -399,4 +399,8 @@ export class PropertyModel {
       maxPrice: Number(result[0]?.maxPrice || 0),
     };
   };
+
+  // nearby
+
+
 }

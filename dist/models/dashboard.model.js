@@ -86,14 +86,12 @@ class DashboardModel {
     `;
             params.push(id);
         }
-        // Name filter
         if (name) {
             whereQuery += `
       AND name LIKE ?
     `;
             params.push(`%${name}%`);
         }
-        // Status filter
         if (status) {
             whereQuery += `
       AND status = ?
@@ -118,7 +116,8 @@ class DashboardModel {
       id,
       name,
       role,
-      status
+      status,
+      password
     FROM admins
     ${whereQuery}
     ORDER BY id DESC

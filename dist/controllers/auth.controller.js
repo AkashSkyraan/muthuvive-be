@@ -10,6 +10,7 @@ const validator_1 = require("../utils/validator");
 const auth_model_1 = require("../models/auth.model");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const sms_service_1 = require("../services/sms.service");
+const user_model_1 = require("../models/user.model");
 // signup - 1
 //forgot pass - 2
 class AuthController {
@@ -156,6 +157,25 @@ class AuthController {
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal Server Error", [
                 err.errors,
             ]);
+        }
+    }
+    static async verifyPassword(req, res) {
+        try {
+            const { user_id, password } = req.body;
+            if (!user_id || !password) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "user_id and password are required", []);
+            }
+            const result = await user_model_1.UserModel.verifyPassword({
+                user_id: Number(user_id),
+                password: String(password),
+            });
+            if (!result) {
+                return (0, helper_1.sendResponse)(res, 200, 0, [], "Current password is incorrect", []);
+            }
+            return (0, helper_1.sendResponse)(res, 200, 1, [], "Password verified successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [error]);
         }
     }
 }

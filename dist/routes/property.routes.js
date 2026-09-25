@@ -860,4 +860,490 @@ router.get("/getNearbyProperties",
   }
 */
 form_controller_1.FormController.getNearbyProperties);
+router.get("/recent-views", 
+/*
+  #swagger.tags = ['2.Property']
+  #swagger.summary = 'Get Recently Viewed Properties'
+  #swagger.description = 'Get the latest 30 recently viewed properties for a specific user with pagination. Recently viewed properties are ordered by the latest viewed time.'
+
+  #swagger.parameters['user_id'] = {
+    in: 'query',
+    required: true,
+    type: 'integer',
+    example: 3,
+    description: 'User ID used to fetch recently viewed properties'
+  }
+
+  #swagger.parameters['page'] = {
+    in: 'query',
+    required: false,
+    type: 'integer',
+    minimum: 1,
+    default: 1,
+    example: 1,
+    description: 'Page number'
+  }
+
+  #swagger.parameters['limit'] = {
+    in: 'query',
+    required: false,
+    type: 'integer',
+    minimum: 1,
+    maximum: 30,
+    default: 10,
+    example: 10,
+    description: 'Number of recently viewed properties per page. Maximum 30.'
+  }
+
+  #swagger.responses[200] = {
+    description: 'Recently viewed properties fetched successfully',
+    schema: {
+      type: 'object',
+      properties: {
+
+        status: {
+          type: 'integer',
+          example: 1
+        },
+
+        message: {
+          type: 'string',
+          example: 'Recent views fetched successfully'
+        },
+
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+
+              id: {
+                type: 'integer',
+                example: 15
+              },
+
+              prop_id: {
+                type: 'string',
+                example: 'P8K3XM'
+              },
+
+              category: {
+                type: 'integer',
+                example: 3
+              },
+
+              category_name: {
+                type: 'string',
+                example: 'Agriculture Land'
+              },
+
+              sub_category: {
+                type: 'integer',
+                nullable: true,
+                example: 5
+              },
+
+              sub_category_name: {
+                type: 'string',
+                nullable: true,
+                example: 'Farm Land'
+              },
+
+              country: {
+                type: 'string',
+                example: 'India'
+              },
+
+              state: {
+                type: 'string',
+                example: 'Tamil Nadu'
+              },
+
+              district: {
+                type: 'string',
+                example: 'Coimbatore'
+              },
+
+              city: {
+                type: 'string',
+                example: 'Pollachi'
+              },
+
+              user_id: {
+                type: 'integer',
+                example: 10
+              },
+
+              map: {
+                type: 'string',
+                nullable: true,
+                example: 'https://maps.google.com/?q=10.6627,77.0067'
+              },
+
+              prop_name: {
+                type: 'string',
+                example: 'Green Farm'
+              },
+
+              prop_area: {
+                type: 'number',
+                example: 5
+              },
+
+              area_unit: {
+                type: 'string',
+                example: 'acre'
+              },
+
+              road_plan: {
+                type: 'string',
+                nullable: true,
+                example: '30 Feet Road'
+              },
+
+              road_length: {
+                type: 'number',
+                nullable: true,
+                example: 100
+              },
+
+              road_length_unit: {
+                type: 'string',
+                nullable: true,
+                example: 'feet'
+              },
+
+              path_way: {
+                type: 'string',
+                nullable: true,
+                example: 'Available'
+              },
+
+              length: {
+                type: 'number',
+                nullable: true,
+                example: 100
+              },
+
+              length_unit: {
+                type: 'string',
+                nullable: true,
+                example: 'feet'
+              },
+
+              width: {
+                type: 'number',
+                nullable: true,
+                example: 50
+              },
+
+              width_unit: {
+                type: 'string',
+                nullable: true,
+                example: 'feet'
+              },
+
+              min_price: {
+                type: 'number',
+                nullable: true,
+                example: 1500000
+              },
+
+              max_price: {
+                type: 'number',
+                nullable: true,
+                example: 1800000
+              },
+
+              c_well: {
+                type: 'integer',
+                nullable: true,
+                example: 1
+              },
+
+              i_well: {
+                type: 'integer',
+                nullable: true,
+                example: 0
+              },
+
+              electricity: {
+                type: 'integer',
+                nullable: true,
+                example: 1
+              },
+
+              hp: {
+                type: 'number',
+                nullable: true,
+                example: 5
+              },
+
+              facing: {
+                type: 'string',
+                nullable: true,
+                example: 'East'
+              },
+
+              construct: {
+                type: 'integer',
+                nullable: true,
+                example: 0
+              },
+
+              construct_type: {
+                type: 'string',
+                nullable: true,
+                example: 'Residential'
+              },
+
+              other_type: {
+                type: 'string',
+                nullable: true,
+                example: null
+              },
+
+              step: {
+                type: 'integer',
+                example: 5
+              },
+
+              status: {
+                type: 'string',
+                example: 'available'
+              },
+
+              purchase_plan: {
+                type: 'string',
+                nullable: true,
+                example: 'installment'
+              },
+
+              created_at: {
+                type: 'string',
+                format: 'date-time',
+                example: '2026-09-20T10:30:00.000Z'
+              },
+
+              updated_at: {
+                type: 'string',
+                format: 'date-time',
+                example: '2026-09-24T10:30:00.000Z'
+              },
+
+              viewed_at: {
+                type: 'string',
+                format: 'date-time',
+                example: '2026-09-24T17:30:00.000Z'
+              },
+
+              media: {
+                type: 'object',
+                nullable: true,
+                properties: {
+
+                  cover: {
+                    type: 'object',
+                    nullable: true,
+                    properties: {
+                      id: {
+                        type: 'integer',
+                        example: 101
+                      },
+                      url: {
+                        type: 'string',
+                        example: 'https://domain.com/uploads/cover.jpg'
+                      }
+                    }
+                  },
+
+                  images: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'integer',
+                          example: 102
+                        },
+                        url: {
+                          type: 'string',
+                          example: 'https://domain.com/uploads/image.jpg'
+                        }
+                      }
+                    }
+                  },
+
+                  videos: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'integer',
+                          example: 105
+                        },
+                        url: {
+                          type: 'string',
+                          example: 'https://domain.com/uploads/video.mp4'
+                        }
+                      }
+                    }
+                  },
+
+                  patta: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'integer',
+                          example: 107
+                        },
+                        url: {
+                          type: 'string',
+                          example: 'https://domain.com/uploads/patta.jpg'
+                        }
+                      }
+                    }
+                  },
+
+                  documents: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'integer',
+                          example: 109
+                        },
+                        url: {
+                          type: 'string',
+                          example: 'https://domain.com/uploads/document.pdf'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+
+              amenities: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      example: 1
+                    },
+                    name: {
+                      type: 'string',
+                      example: 'Water Facility'
+                    }
+                  }
+                }
+              },
+
+              highlights: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      example: 2
+                    },
+                    name: {
+                      type: 'string',
+                      example: 'Main Road Access'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        pagination: {
+          type: 'object',
+          properties: {
+
+            page: {
+              type: 'integer',
+              example: 1
+            },
+
+            limit: {
+              type: 'integer',
+              example: 10
+            },
+
+            total: {
+              type: 'integer',
+              example: 30
+            },
+
+            totalPages: {
+              type: 'integer',
+              example: 3
+            },
+
+            hasNextPage: {
+              type: 'boolean',
+              example: true
+            },
+
+            hasPreviousPage: {
+              type: 'boolean',
+              example: false
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #swagger.responses[400] = {
+    description: 'User ID is required',
+    schema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'integer',
+          example: 0
+        },
+        message: {
+          type: 'string',
+          example: 'User ID is required'
+        },
+        data: {
+          type: 'array',
+          example: []
+        }
+      }
+    }
+  }
+
+  #swagger.responses[500] = {
+    description: 'Internal server error',
+    schema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'integer',
+          example: 0
+        },
+        message: {
+          type: 'string',
+          example: 'Internal server error'
+        },
+        data: {
+          type: 'array',
+          example: []
+        }
+      }
+    }
+  }
+*/
+property_controller_1.PropertyController.getRecentViews);
 exports.default = router;

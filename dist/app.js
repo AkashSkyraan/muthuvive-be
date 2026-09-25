@@ -23,7 +23,7 @@ app.use((0, cors_1.default)({
 }));
 // app.use(
 //   cors({
-//     origin: "http://localhost:5173",
+//     origin: "http://localhost:5175",
 //     credentials: true,
 //   }),
 // );

@@ -16,6 +16,7 @@ import {
 import { AuthModel } from "../models/auth.model";
 import bcrypt from "bcryptjs";
 import { sendSmsOTP } from "../services/sms.service";
+import { UserModel } from "../models/user.model";
 // signup - 1
 //forgot pass - 2
 
@@ -280,4 +281,48 @@ export class AuthController {
       return sendResponse(res, 500, 0, [], "Internal server error", []);
     }
   };
+
+  static async verifyPassword(req: Request, res: Response) {
+    try {
+      const { user_id, password } = req.body;
+
+      if (!user_id || !password) {
+        return sendResponse(
+          res,
+          400,
+          0,
+          [],
+          "user_id and password are required",
+          [],
+        );
+      }
+
+      const result = await UserModel.verifyPassword({
+        user_id: Number(user_id),
+        password: String(password),
+      });
+
+      if (!result) {
+        return sendResponse(
+          res,
+          200,
+          0,
+          [],
+          "Current password is incorrect",
+          [],
+        );
+      }
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [],
+        "Password verified successfully",
+        [],
+      );
+    } catch (error) {
+      return sendResponse(res, 500, 0, [], "Internal server error", [error]);
+    }
+  }
 }

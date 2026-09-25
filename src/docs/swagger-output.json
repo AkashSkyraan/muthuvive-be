@@ -848,6 +848,76 @@
         }
       }
     },
+    "/auth/verify-password": {
+      "post": {
+        "tags": [
+          "1.Auth"
+        ],
+        "summary": "Verify Current Password",
+        "description": "Verify whether the provided password matches the user current password",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "number",
+                  "example": 123
+                },
+                "password": {
+                  "type": "string",
+                  "example": "Skyraan@123"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password verified successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Password verified successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "User ID and password are required"
+          },
+          "401": {
+            "description": "Current password is incorrect"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/property/add-property": {
       "post": {
         "tags": [
@@ -2552,6 +2622,1289 @@
           },
           "500": {
             "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/property/recent-views": {
+      "get": {
+        "tags": [
+          "2.Property"
+        ],
+        "summary": "Get Recently Viewed Properties",
+        "description": "Get the latest 30 recently viewed properties for a specific user with pagination. Recently viewed properties are ordered by the latest viewed time.",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "example": 3,
+            "description": "User ID used to fetch recently viewed properties"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "example": 1,
+            "description": "Page number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30,
+            "default": 10,
+            "example": 10,
+            "description": "Number of recently viewed properties per page. Maximum 30."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recently viewed properties fetched successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "integer"
+                        },
+                        "example": {
+                          "type": "number",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "Recent views fetched successfully"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "object"
+                            },
+                            "properties": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 15
+                                    }
+                                  }
+                                },
+                                "prop_id": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "P8K3XM"
+                                    }
+                                  }
+                                },
+                                "category": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 3
+                                    }
+                                  }
+                                },
+                                "category_name": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Agriculture Land"
+                                    }
+                                  }
+                                },
+                                "sub_category": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 5
+                                    }
+                                  }
+                                },
+                                "sub_category_name": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Farm Land"
+                                    }
+                                  }
+                                },
+                                "country": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "India"
+                                    }
+                                  }
+                                },
+                                "state": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Tamil Nadu"
+                                    }
+                                  }
+                                },
+                                "district": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Coimbatore"
+                                    }
+                                  }
+                                },
+                                "city": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Pollachi"
+                                    }
+                                  }
+                                },
+                                "user_id": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 10
+                                    }
+                                  }
+                                },
+                                "map": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "https://maps.google.com/?q=10.6627,77.0067"
+                                    }
+                                  }
+                                },
+                                "prop_name": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Green Farm"
+                                    }
+                                  }
+                                },
+                                "prop_area": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "number"
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 5
+                                    }
+                                  }
+                                },
+                                "area_unit": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "acre"
+                                    }
+                                  }
+                                },
+                                "road_plan": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "30 Feet Road"
+                                    }
+                                  }
+                                },
+                                "road_length": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "number"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 100
+                                    }
+                                  }
+                                },
+                                "road_length_unit": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "feet"
+                                    }
+                                  }
+                                },
+                                "path_way": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Available"
+                                    }
+                                  }
+                                },
+                                "length": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "number"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 100
+                                    }
+                                  }
+                                },
+                                "length_unit": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "feet"
+                                    }
+                                  }
+                                },
+                                "width": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "number"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 50
+                                    }
+                                  }
+                                },
+                                "width_unit": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "feet"
+                                    }
+                                  }
+                                },
+                                "min_price": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "number"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 1500000
+                                    }
+                                  }
+                                },
+                                "max_price": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "number"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 1800000
+                                    }
+                                  }
+                                },
+                                "c_well": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 1
+                                    }
+                                  }
+                                },
+                                "i_well": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 0
+                                    }
+                                  }
+                                },
+                                "electricity": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 1
+                                    }
+                                  }
+                                },
+                                "hp": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "number"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 5
+                                    }
+                                  }
+                                },
+                                "facing": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "East"
+                                    }
+                                  }
+                                },
+                                "construct": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 0
+                                    }
+                                  }
+                                },
+                                "construct_type": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "Residential"
+                                    }
+                                  }
+                                },
+                                "other_type": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {}
+                                  }
+                                },
+                                "step": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "integer"
+                                    },
+                                    "example": {
+                                      "type": "number",
+                                      "example": 5
+                                    }
+                                  }
+                                },
+                                "status": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "available"
+                                    }
+                                  }
+                                },
+                                "purchase_plan": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "installment"
+                                    }
+                                  }
+                                },
+                                "created_at": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "format": {
+                                      "type": "string",
+                                      "example": "date-time"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "2026-09-20T10:30:00.000Z"
+                                    }
+                                  }
+                                },
+                                "updated_at": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "format": {
+                                      "type": "string",
+                                      "example": "date-time"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "2026-09-24T10:30:00.000Z"
+                                    }
+                                  }
+                                },
+                                "viewed_at": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "string"
+                                    },
+                                    "format": {
+                                      "type": "string",
+                                      "example": "date-time"
+                                    },
+                                    "example": {
+                                      "type": "string",
+                                      "example": "2026-09-24T17:30:00.000Z"
+                                    }
+                                  }
+                                },
+                                "media": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "object"
+                                    },
+                                    "nullable": {
+                                      "type": "boolean",
+                                      "example": true
+                                    },
+                                    "properties": {
+                                      "type": "object",
+                                      "properties": {
+                                        "cover": {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "type": "string",
+                                              "example": "object"
+                                            },
+                                            "nullable": {
+                                              "type": "boolean",
+                                              "example": true
+                                            },
+                                            "properties": {
+                                              "type": "object",
+                                              "properties": {
+                                                "id": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "integer"
+                                                    },
+                                                    "example": {
+                                                      "type": "number",
+                                                      "example": 101
+                                                    }
+                                                  }
+                                                },
+                                                "url": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string",
+                                                      "example": "string"
+                                                    },
+                                                    "example": {
+                                                      "type": "string",
+                                                      "example": "https://domain.com/uploads/cover.jpg"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "images": {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "type": "string",
+                                              "example": "array"
+                                            },
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "object"
+                                                },
+                                                "properties": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "integer"
+                                                        },
+                                                        "example": {
+                                                          "type": "number",
+                                                          "example": 102
+                                                        }
+                                                      }
+                                                    },
+                                                    "url": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        },
+                                                        "example": {
+                                                          "type": "string",
+                                                          "example": "https://domain.com/uploads/image.jpg"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "videos": {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "type": "string",
+                                              "example": "array"
+                                            },
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "object"
+                                                },
+                                                "properties": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "integer"
+                                                        },
+                                                        "example": {
+                                                          "type": "number",
+                                                          "example": 105
+                                                        }
+                                                      }
+                                                    },
+                                                    "url": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        },
+                                                        "example": {
+                                                          "type": "string",
+                                                          "example": "https://domain.com/uploads/video.mp4"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "patta": {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "type": "string",
+                                              "example": "array"
+                                            },
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "object"
+                                                },
+                                                "properties": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "integer"
+                                                        },
+                                                        "example": {
+                                                          "type": "number",
+                                                          "example": 107
+                                                        }
+                                                      }
+                                                    },
+                                                    "url": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        },
+                                                        "example": {
+                                                          "type": "string",
+                                                          "example": "https://domain.com/uploads/patta.jpg"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "documents": {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "type": "string",
+                                              "example": "array"
+                                            },
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "object"
+                                                },
+                                                "properties": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "id": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "integer"
+                                                        },
+                                                        "example": {
+                                                          "type": "number",
+                                                          "example": 109
+                                                        }
+                                                      }
+                                                    },
+                                                    "url": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "example": "string"
+                                                        },
+                                                        "example": {
+                                                          "type": "string",
+                                                          "example": "https://domain.com/uploads/document.pdf"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "amenities": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "array"
+                                    },
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "example": "object"
+                                        },
+                                        "properties": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "integer"
+                                                },
+                                                "example": {
+                                                  "type": "number",
+                                                  "example": 1
+                                                }
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "Water Facility"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "highlights": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "example": "array"
+                                    },
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "example": "object"
+                                        },
+                                        "properties": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "integer"
+                                                },
+                                                "example": {
+                                                  "type": "number",
+                                                  "example": 2
+                                                }
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "example": "string"
+                                                },
+                                                "example": {
+                                                  "type": "string",
+                                                  "example": "Main Road Access"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "object"
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "integer"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 1
+                                }
+                              }
+                            },
+                            "limit": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "integer"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 10
+                                }
+                              }
+                            },
+                            "total": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "integer"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 30
+                                }
+                              }
+                            },
+                            "totalPages": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "integer"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 3
+                                }
+                              }
+                            },
+                            "hasNextPage": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "boolean"
+                                },
+                                "example": {
+                                  "type": "boolean",
+                                  "example": true
+                                }
+                              }
+                            },
+                            "hasPreviousPage": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "boolean"
+                                },
+                                "example": {
+                                  "type": "boolean",
+                                  "example": false
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "User ID is required",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "integer"
+                        },
+                        "example": {
+                          "type": "number",
+                          "example": 0
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "User ID is required"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "example": {
+                          "type": "array",
+                          "example": [],
+                          "items": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "integer"
+                        },
+                        "example": {
+                          "type": "number",
+                          "example": 0
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "Internal server error"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "example": {
+                          "type": "array",
+                          "example": [],
+                          "items": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }

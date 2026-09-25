@@ -207,4 +207,47 @@ router.post("/reset-password",
 */
 auth_controller_1.AuthController.resetPassword);
 router.post("/logout", auth_controller_1.AuthController.logout);
+router.post("/verify-password", 
+/*
+  #swagger.tags = ['1.Auth']
+  #swagger.summary = 'Verify Current Password'
+  #swagger.description = 'Verify whether the provided password matches the user current password'
+
+  #swagger.consumes = ['application/json']
+
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      user_id: 123,
+      password: "Skyraan@123"
+    }
+  }
+
+  #swagger.responses[200] = {
+    description: 'Password verified successfully',
+    schema: {
+      success: true,
+      data: [],
+      message: "Password verified successfully"
+    }
+  }
+
+  #swagger.responses[400] = {
+    description: 'User ID and password are required'
+  }
+
+  #swagger.responses[401] = {
+    description: 'Current password is incorrect'
+  }
+
+  #swagger.responses[404] = {
+    description: 'User not found'
+  }
+
+  #swagger.responses[500] = {
+    description: 'Internal Server Error'
+  }
+*/
+auth_controller_1.AuthController.verifyPassword);
 exports.default = router;

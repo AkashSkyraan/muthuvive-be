@@ -1,6 +1,6 @@
 import { UpdateProfileInput } from "../types/user.types";
 import { executeQuery } from "../utils/helper";
-
+import bcrypt from "bcryptjs";
 export class UserModel {
   static async updateProfile(data: UpdateProfileInput) {
     const fields: string[] = [];
@@ -60,5 +60,33 @@ export class UserModel {
     const result: any[] = await executeQuery(query, [user_id]);
 
     return result.length > 0 ? result[0] : null;
+  }
+
+  static async verifyPassword({
+    user_id,
+    password,
+  }: {
+    user_id: number;
+    password: string;
+  }) {
+    const rows: any = await executeQuery(
+      `
+      SELECT password
+      FROM users
+      WHERE id = ?
+      LIMIT 1
+    `,
+      [user_id],
+    );
+
+    if (!rows.length) {
+      return false;
+    }
+
+    const hashedPassword = rows[0].password;
+
+    const isValid = await bcrypt.compare(password, hashedPassword);
+
+    return isValid;
   }
 }

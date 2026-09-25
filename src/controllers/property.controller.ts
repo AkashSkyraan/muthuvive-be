@@ -442,7 +442,6 @@ export class PropertyController {
       const type = Number(req.query.type);
       const search = String(req.query.search);
 
-
       const page = Math.max(Number(req.query.page) || 1, 1);
       const limit = Number(req.query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -501,5 +500,38 @@ export class PropertyController {
     }
   };
 
-  
+  // recnet
+
+  static async getRecentViews(req: Request, res: Response) {
+    try {
+      const { user_id } = req.query;
+
+      const page = Math.max(Number(req.query.page) || 1, 1);
+
+      const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 30);
+
+      if (!user_id) {
+        return sendResponse(res, 400, 0, [], "User ID is required", []);
+      }
+
+      const result = await FormModule.getRecentViews({
+        user_id: Number(user_id),
+        page,
+        limit,
+      });
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [result],
+        "Recent views fetched successfully",
+        [],
+      );
+    } catch (error) {
+      console.error("Get Recent Views Error:", error);
+
+      return sendResponse(res, 500, 0, [], "Internal server error", []);
+    }
+  }
 }

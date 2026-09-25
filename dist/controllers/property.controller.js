@@ -293,6 +293,27 @@ class PropertyController {
             ]);
         }
     }
+    // recnet
+    static async getRecentViews(req, res) {
+        try {
+            const { user_id } = req.query;
+            const page = Math.max(Number(req.query.page) || 1, 1);
+            const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 30);
+            if (!user_id) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "User ID is required", []);
+            }
+            const result = await form_module_1.FormModule.getRecentViews({
+                user_id: Number(user_id),
+                page,
+                limit,
+            });
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], "Recent views fetched successfully", []);
+        }
+        catch (error) {
+            console.error("Get Recent Views Error:", error);
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", []);
+        }
+    }
 }
 exports.PropertyController = PropertyController;
 _a = PropertyController;

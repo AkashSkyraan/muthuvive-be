@@ -322,6 +322,9 @@ class FormModule {
         let is_bookmarked = 0;
         if (user_id) {
             is_bookmarked = await this.getPropertyBookmarkStatus(user_id, prop_id);
+            if (prop_id) {
+                await this.addRecentView(user_id, prop_id);
+            }
         }
         let categoryData = {};
         return {
@@ -457,6 +460,114 @@ class FormModule {
     LIMIT 1
     `, [prop_id]);
         return rows;
+    }
+    // recent
+    static async addRecentView(user_id, prop_id) {
+        await (0, helper_1.executeQuery)(`
+    INSERT INTO recent_views (
+      user_id,
+      prop_id,
+      created_at
+    )
+    VALUES (?, ?, NOW())
+    ON DUPLICATE KEY UPDATE
+      created_at = NOW()
+    `, [user_id, prop_id]);
+        // Keep only latest 30 recent views for this user
+        await (0, helper_1.executeQuery)(`
+    DELETE FROM recent_views
+    WHERE user_id = ?
+      AND id NOT IN (
+        SELECT id
+        FROM (
+          SELECT id
+          FROM recent_views
+          WHERE user_id = ?
+          ORDER BY created_at DESC, id DESC
+          LIMIT 30
+        ) AS latest_views
+      )
+    `, [user_id, user_id]);
+        return true;
+    }
+    static async getRecentViews(data) {
+        const { user_id } = data;
+        const page = Math.max(Number(data.page) || 1, 1);
+        const limit = Math.min(Math.max(Number(data.limit) || 10, 1), 30);
+        const offset = (page - 1) * limit;
+        if (!user_id) {
+            throw new Error("User ID is required");
+        }
+        // Total recent views
+        const countRows = await (0, helper_1.executeQuery)(`
+    SELECT COUNT(*) AS total
+    FROM recent_views
+    WHERE user_id = ?
+    `, [user_id]);
+        const total = Number(countRows?.[0]?.total || 0);
+        // Get recent view records
+        const recentViews = await (0, helper_1.executeQuery)(`
+    SELECT
+      id,
+      user_id,
+      prop_id,
+      created_at
+    FROM recent_views
+    WHERE user_id = ?
+    ORDER BY created_at DESC, id DESC
+    LIMIT ? OFFSET ?
+    `, [user_id, limit, offset]);
+        const properties = [];
+        for (const recent of recentViews) {
+            // Get property basic data
+            const property = await this.getPropertyData(recent.prop_id);
+            if (!property?.length) {
+                continue;
+            }
+            // Bookmark status
+            const is_bookmarked = await this.getPropertyBookmarkStatus(user_id, recent.prop_id);
+            // Get media
+            const media = await this.getPropertyMedia(recent.prop_id);
+            // Cover image only
+            let cover_image = null;
+            if (media) {
+                // If getPropertyMedia returns object structure
+                if (media.cover) {
+                    cover_image = media.cover;
+                }
+                // If getPropertyMedia returns array
+                if (Array.isArray(media)) {
+                    const cover = media.find((item) => item.is_cover === 1 ||
+                        item.type === "cover" ||
+                        item.media_type === "cover");
+                    if (cover) {
+                        cover_image = cover;
+                    }
+                }
+            }
+            // Amenities
+            const amenities = await this.getPropertyAmenities(recent.prop_id);
+            // Highlights
+            const property_highs = await this.getPropertyHighs(recent.prop_id);
+            properties.push({
+                ...property[0],
+                viewed_at: recent.created_at,
+                is_bookmarked,
+                cover_image,
+                amenities,
+                property_highs,
+            });
+        }
+        const limitedTotal = Math.min(total, 30);
+        return {
+            properties: properties,
+            pagination: {
+                page,
+                limit,
+                total: limitedTotal,
+                totalPages: Math.ceil(limitedTotal / limit),
+            },
+        };
     }
     // static async getPropertyBasedOnTypes(data: any) {
     //   const { status, type, location, page, limit, offset } = data;

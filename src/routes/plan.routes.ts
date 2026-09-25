@@ -114,4 +114,55 @@ router.delete(
 
   PlanController.deletePlan,
 );
+
+router.get(
+  "/get-property-plan",
+
+  /*
+      #swagger.tags = ['3.Plan']
+      #swagger.summary = 'Get Property Plan'
+      #swagger.description = 'Get plans purchased by a user for a specific property using user ID and property ID'
+
+      #swagger.parameters['user_id'] = {
+        in: 'query',
+        required: true,
+        type: 'integer',
+        example: 1,
+        description: 'User ID'
+      }
+
+      #swagger.parameters['prop_id'] = {
+        in: 'query',
+        required: true,
+        type: 'string',
+        example: 'PC5QZo055',
+        description: 'Property ID'
+      }
+
+      #swagger.responses[200] = {
+        description: 'Property plan fetched successfully',
+        schema: {
+          success: true,
+          data: [],
+          message: "Property plan fetched successfully",
+          error: []
+        }
+      }
+
+      #swagger.responses[400] = {
+        description: 'user_id and prop_id are required'
+      }
+
+      #swagger.responses[404] = {
+        description: 'Property plan not found'
+      }
+
+      #swagger.responses[500] = {
+        description: 'Internal Server Error'
+      }
+  */
+
+  PlanController.getPropertyPlan,
+);
+
 export default router;

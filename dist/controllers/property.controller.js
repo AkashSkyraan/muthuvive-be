@@ -202,14 +202,15 @@ class PropertyController {
     // DTCP
     // static async getPropertyBasedOnTypes(req: Request, res: Response) {
     //   try {
-    //     const { status, type, location } = req.query;
-    //     const page = Number(req.query.page) ||  1;
-    //     const limit = Number(req.query.limit) || 5;
+    //     const { status, type, location, user_id } = req.query;
+    //     const page = Math.max(Number(req.query.page) || 1, 1);
+    //     const limit = Math.max(Number(req.query.limit) || 5, 1);
     //     const offset = (page - 1) * limit;
     //     const data = await FormModule.getPropertyBasedOnTypes({
     //       status: status ? String(status) : null,
     //       type: type ? String(type) : null,
     //       location: location ? String(location) : null,
+    //       user_id: user_id ? Number(user_id) : null,
     //       page,
     //       limit,
     //       offset,
@@ -223,6 +224,7 @@ class PropertyController {
     //       [],
     //     );
     //   } catch (error: any) {
+    //     console.error("getPropertyBasedOnTypes error:", error);
     //     return sendResponse(res, 500, 0, [], "Internal server error", [
     //       error?.message || error,
     //     ]);
@@ -230,15 +232,53 @@ class PropertyController {
     // }
     static async getPropertyBasedOnTypes(req, res) {
         try {
-            const { status, type, location, user_id } = req.query;
+            const { status, type, location, user_id, min_price, max_price, amenities, prop_highlights, } = req.query;
             const page = Math.max(Number(req.query.page) || 1, 1);
             const limit = Math.max(Number(req.query.limit) || 5, 1);
             const offset = (page - 1) * limit;
+            // ---------------------------------------
+            // STATUS ARRAY
+            // available,sold
+            // ---------------------------------------
+            const statusArray = status
+                ? String(status)
+                    .split(",")
+                    .map((item) => item.trim())
+                    .filter(Boolean)
+                : [];
+            // ---------------------------------------
+            // AMENITIES ARRAY
+            // 1,2,5
+            // ---------------------------------------
+            const amenitiesArray = amenities
+                ? String(amenities)
+                    .split(",")
+                    .map(Number)
+                    .filter((id) => Number.isInteger(id) && id > 0)
+                : [];
+            // ---------------------------------------
+            // PROPERTY HIGHLIGHTS ARRAY
+            // 1,3,4
+            // ---------------------------------------
+            const propHighlightsArray = prop_highlights
+                ? String(prop_highlights)
+                    .split(",")
+                    .map(Number)
+                    .filter((id) => Number.isInteger(id) && id > 0)
+                : [];
             const data = await form_module_1.FormModule.getPropertyBasedOnTypes({
-                status: status ? String(status) : null,
+                status: statusArray,
                 type: type ? String(type) : null,
                 location: location ? String(location) : null,
                 user_id: user_id ? Number(user_id) : null,
+                min_price: min_price !== undefined && min_price !== ""
+                    ? Number(min_price)
+                    : null,
+                max_price: max_price !== undefined && max_price !== ""
+                    ? Number(max_price)
+                    : null,
+                amenities: amenitiesArray,
+                prop_highlights: propHighlightsArray,
                 page,
                 limit,
                 offset,
@@ -247,9 +287,7 @@ class PropertyController {
         }
         catch (error) {
             console.error("getPropertyBasedOnTypes error:", error);
-            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
-                error?.message || error,
-            ]);
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [error?.message || error]);
         }
     }
     static async addUpdateBookmark(req, res) {

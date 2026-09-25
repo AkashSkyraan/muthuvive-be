@@ -1370,41 +1370,24 @@
                 "tags": [
                     "2.Property"
                 ],
-                "summary": "Get Property By ID",
-                "description": "Get complete property details including prop_form data, amenities, property highlights, media, and category-specific data",
+                "summary": "Get Property By Filters",
+                "description": "Get properties using status, property type, location, price range, amenities, property highlights and user filters",
                 "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "type": "string"
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "type": "string"
-                    },
                     {
                         "name": "status",
                         "in": "query",
                         "required": false,
                         "type": "string",
-                        "example": "available",
-                        "description": "Status for properties"
+                        "example": "available,sold",
+                        "description": "Filter by multiple property statuses. Example: available,sold"
                     },
                     {
                         "name": "type",
                         "in": "query",
                         "required": false,
                         "type": "string",
-                        "enum": [
-                            1,
-                            2,
-                            3,
-                            4,
-                            5
-                        ],
-                        "example": 1,
-                        "description": "Property category type number 1-dtcp , 2-farmland"
+                        "example": "1",
+                        "description": "Property category ID. Example: 1"
                     },
                     {
                         "name": "location",
@@ -1412,7 +1395,7 @@
                         "required": false,
                         "type": "string",
                         "example": "coimbatore",
-                        "description": "fetch data location for fetch beside properties"
+                        "description": "Fetch properties based on location"
                     },
                     {
                         "name": "user_id",
@@ -1420,12 +1403,115 @@
                         "required": false,
                         "type": "integer",
                         "example": 1,
-                        "description": "user_id for users"
+                        "description": "User ID for bookmark status or user-specific properties"
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "required": false,
+                        "type": "number",
+                        "example": 100000,
+                        "description": "Minimum property price"
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "required": false,
+                        "type": "number",
+                        "example": 5000000,
+                        "description": "Maximum property price"
+                    },
+                    {
+                        "name": "amenities",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "example": "1,2,5",
+                        "description": "Comma-separated amenity IDs. Example: 1,2,5"
+                    },
+                    {
+                        "name": "prop_highlights",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "example": "1,3,4",
+                        "description": "Comma-separated property highlight IDs. Example: 1,3,4"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "Page number"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "example": 5,
+                        "description": "Number of properties per page"
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Properties fetched successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "properties": {
+                                            "type": "array",
+                                            "example": [],
+                                            "items": {}
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "total": {
+                                                    "type": "number",
+                                                    "example": 0
+                                                },
+                                                "page": {
+                                                    "type": "number",
+                                                    "example": 1
+                                                },
+                                                "limit": {
+                                                    "type": "number",
+                                                    "example": 5
+                                                },
+                                                "totalPages": {
+                                                    "type": "number",
+                                                    "example": 0
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Properties fetched successfully"
+                                },
+                                "error": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
                     "400": {
-                        "description": "Property ID is required"
+                        "description": "Invalid filter parameters"
                     },
                     "404": {
                         "description": "Property not found"
@@ -4036,6 +4122,73 @@
                     },
                     "404": {
                         "description": "Plan not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/plan/get-property-plan": {
+            "get": {
+                "tags": [
+                    "3.Plan"
+                ],
+                "summary": "Get Property Plan",
+                "description": "Get plans purchased by a user for a specific property using user ID and property ID",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "User ID"
+                    },
+                    {
+                        "name": "prop_id",
+                        "in": "query",
+                        "required": true,
+                        "type": "string",
+                        "example": "PC5QZo055",
+                        "description": "Property ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property plan fetched successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Property plan fetched successfully"
+                                },
+                                "error": {
+                                    "type": "array",
+                                    "example": [],
+                                    "items": {}
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "user_id and prop_id are required"
+                    },
+                    "404": {
+                        "description": "Property plan not found"
                     },
                     "500": {
                         "description": "Internal Server Error"

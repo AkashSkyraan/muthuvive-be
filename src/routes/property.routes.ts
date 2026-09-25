@@ -353,48 +353,169 @@ router.get(
 
 // getDTCP and Formland
 
+// router.get(
+//   "/get-property",
+//   /*
+//     #swagger.tags = ['2.Property']
+//     #swagger.summary = 'Get Property By ID'
+//     #swagger.description = 'Get complete property details including prop_form data, amenities, property highlights, media, and category-specific data'
+
+//     #swagger.parameters['status'] = {
+//       in: 'query',
+//       required: false,
+//       type: 'string',
+//       example: 'available',
+//       description: 'Status for properties'
+//     }
+
+//     #swagger.parameters['type'] = {
+//       in: 'query',
+//       required: false,
+//       type: 'string',
+//       enum: [1,2,3,4,5],
+//       example: 1,
+//       description: 'Property category type number 1-dtcp , 2-farmland'
+//     }
+//     #swagger.parameters['location'] = {
+//       in: 'query',
+//       required: false,
+//       type: 'string',
+//      example: 'coimbatore',
+//       description: 'fetch data location for fetch beside properties'
+//     }
+    
+//  #swagger.parameters['user_id'] = {
+//       in: 'query',
+//       required: false,
+//       type: 'integer',
+//       example: 1,
+//       description: 'user_id for users'
+//     }
+    
+
+//     #swagger.responses[400] = {
+//       description: 'Property ID is required'
+//     }
+
+//     #swagger.responses[404] = {
+//       description: 'Property not found'
+//     }
+
+//     #swagger.responses[500] = {
+//       description: 'Internal server error'
+//     }
+//   */
+//   PropertyController.getPropertyBasedOnTypes,
+// );
+
+
 router.get(
   "/get-property",
   /*
     #swagger.tags = ['2.Property']
-    #swagger.summary = 'Get Property By ID'
-    #swagger.description = 'Get complete property details including prop_form data, amenities, property highlights, media, and category-specific data'
+    #swagger.summary = 'Get Property By Filters'
+    #swagger.description = 'Get properties using status, property type, location, price range, amenities, property highlights and user filters'
 
     #swagger.parameters['status'] = {
       in: 'query',
       required: false,
       type: 'string',
-      example: 'available',
-      description: 'Status for properties'
+      example: 'available,sold',
+      description: 'Filter by multiple property statuses. Example: available,sold'
     }
 
     #swagger.parameters['type'] = {
       in: 'query',
       required: false,
       type: 'string',
-      enum: [1,2,3,4,5],
-      example: 1,
-      description: 'Property category type number 1-dtcp , 2-farmland'
+      example: '1',
+      description: 'Property category ID. Example: 1'
     }
+
     #swagger.parameters['location'] = {
       in: 'query',
       required: false,
       type: 'string',
-     example: 'coimbatore',
-      description: 'fetch data location for fetch beside properties'
+      example: 'coimbatore',
+      description: 'Fetch properties based on location'
     }
-    
- #swagger.parameters['user_id'] = {
+
+    #swagger.parameters['user_id'] = {
       in: 'query',
       required: false,
       type: 'integer',
       example: 1,
-      description: 'user_id for users'
+      description: 'User ID for bookmark status or user-specific properties'
     }
-    
+
+    #swagger.parameters['min_price'] = {
+      in: 'query',
+      required: false,
+      type: 'number',
+      example: 100000,
+      description: 'Minimum property price'
+    }
+
+    #swagger.parameters['max_price'] = {
+      in: 'query',
+      required: false,
+      type: 'number',
+      example: 5000000,
+      description: 'Maximum property price'
+    }
+
+    #swagger.parameters['amenities'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+      example: '1,2,5',
+      description: 'Comma-separated amenity IDs. Example: 1,2,5'
+    }
+
+    #swagger.parameters['prop_highlights'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+      example: '1,3,4',
+      description: 'Comma-separated property highlight IDs. Example: 1,3,4'
+    }
+
+    #swagger.parameters['page'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      example: 1,
+      description: 'Page number'
+    }
+
+    #swagger.parameters['limit'] = {
+      in: 'query',
+      required: false,
+      type: 'integer',
+      example: 5,
+      description: 'Number of properties per page'
+    }
+
+    #swagger.responses[200] = {
+      description: 'Properties fetched successfully',
+      schema: {
+        success: true,
+        data: {
+          properties: [],
+          pagination: {
+            total: 0,
+            page: 1,
+            limit: 5,
+            totalPages: 0
+          }
+        },
+        message: "Properties fetched successfully",
+        error: []
+      }
+    }
 
     #swagger.responses[400] = {
-      description: 'Property ID is required'
+      description: 'Invalid filter parameters'
     }
 
     #swagger.responses[404] = {

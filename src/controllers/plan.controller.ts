@@ -19,7 +19,6 @@ export class PlanController {
         [],
       );
     } catch (error: any) {
-      
       return sendResponse(
         res,
         error.status || 500,
@@ -58,7 +57,7 @@ export class PlanController {
         [],
       );
     } catch (error: any) {
-        console.log(error);
+      console.log(error);
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error.errors,
       ]);
@@ -91,6 +90,41 @@ export class PlanController {
     } catch (error: any) {
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error.errors,
+      ]);
+    }
+  }
+
+  static async getPropertyPlan(req: Request, res: Response) {
+    try {
+      const { user_id, prop_id } = req.query;
+
+      if (!user_id || !prop_id) {
+        return sendResponse(
+          res,
+          400,
+          0,
+          [],
+          "user_id and prop_id are required",
+          [],
+        );
+      }
+
+      const data = await PlanModel.getPropertyPlan({
+        user_id: Number(user_id),
+        prop_id: String(prop_id),
+      });
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        data,
+        "Property plan fetched successfully",
+        [],
+      );
+    } catch (error: any) {
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.message || error,
       ]);
     }
   }

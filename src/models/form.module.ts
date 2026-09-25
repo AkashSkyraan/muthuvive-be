@@ -769,7 +769,7 @@ export class FormModule {
     const limitedTotal = Math.min(total, 30);
 
     return {
-      properties : properties,
+      properties: properties,
 
       pagination: {
         page,
@@ -780,192 +780,27 @@ export class FormModule {
     };
   }
 
-  // static async getPropertyBasedOnTypes(data: any) {
-  //   const { status, type, location, page, limit, offset } = data;
-
-  //   let baseWhere = `WHERE pf.created_at IS NOT NULL`;
-  //   const baseParams: any[] = [];
-
-  //   if (status) {
-  //     baseWhere += ` AND pf.status = ?`;
-  //     baseParams.push(status);
-  //   }
-
-  //   if (type) {
-  //     baseWhere += ` AND pf.category = ?`;
-  //     baseParams.push(type);
-  //   }
-
-  //   let city: string | null = null;
-  //   let district: string | null = null;
-  //   let state: string | null = null;
-
-  //   if (location) {
-  //     const locationParts = String(location)
-  //       .split(",")
-  //       .map((item) => item.trim())
-  //       .filter(Boolean);
-
-  //     city = locationParts[0] || null;
-  //     district = locationParts[1] || null;
-  //     state = locationParts[2] || null;
-  //   }
-
-  //   const fetchProperties = async (
-  //     locationWhere: string,
-  //     locationParams: any[],
-  //     fetchLimit: number,
-  //   ) => {
-  //     if (fetchLimit <= 0) {
-  //       return [];
-  //     }
-
-  //     return await executeQuery(
-  //       `
-  //     SELECT
-  //       pf.id,
-  //       pf.prop_id,
-  //       pf.prop_name,
-
-  //       pf.category,
-  //       pc.name AS category_name,
-
-  //       pf.sub_category,
-  //       psc.sub_name AS sub_category_name,
-
-  //       pf.country,
-  //       pf.state,
-  //       pf.district,
-  //       pf.city,
-  //       pf.prop_area,
-  //       pf.area_unit,
-  //       pf.min_price,
-  //       pf.max_price,
-  //       pf.status,
-
-  //       pf.created_at
-
-  //     FROM prop_form pf
-
-  //     LEFT JOIN property pc
-  //       ON pc.id = pf.category
-
-  //     LEFT JOIN prop_sub_category psc
-  //       ON psc.id = pf.sub_category
-
-  //     ${baseWhere}
-  //     ${locationWhere}
-
-  //     ORDER BY pf.id DESC
-  //     LIMIT ?
-  //     `,
-  //       [...baseParams, ...locationParams, fetchLimit],
-  //     );
-  //   };
-
-  //   // ---------------------------------------
-  //   // LOCATION BUCKET
-  //   // ---------------------------------------
-  //   let properties: any[] = [];
-
-  //   if (city && district && state) {
-  //     // -----------------------------------
-  //     // 1. CITY + DISTRICT + STATE
-  //     // -----------------------------------
-  //     properties = await fetchProperties(
-  //       `
-  //     AND LOWER(TRIM(pf.city)) = LOWER(TRIM(?))
-  //     AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-  //     AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-  //     `,
-  //       [city, district, state],
-  //       limit,
-  //     );
-
-  //     // -----------------------------------
-  //     // 2. DISTRICT + STATE
-  //     // Only if first bucket < limit
-  //     // -----------------------------------
-  //     if (properties.length < limit) {
-  //       const remaining = limit - properties.length;
-
-  //       const districtProperties = await fetchProperties(
-  //         `
-  //       AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-  //       AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-  //       `,
-  //         [district, state],
-  //         remaining,
-  //       );
-
-  //       properties = [...properties, ...districtProperties];
-  //     }
-
-  //     // -----------------------------------
-  //     // 3. STATE ONLY
-  //     // Only if still < limit
-  //     // -----------------------------------
-  //     if (properties.length < limit) {
-  //       const remaining = limit - properties.length;
-
-  //       const stateProperties = await fetchProperties(
-  //         `
-  //       AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-  //       `,
-  //         [state],
-  //         remaining,
-  //       );
-
-  //       properties = [...properties, ...stateProperties];
-  //     }
-  //   } else {
-  //     // No valid location supplied
-  //     properties = await fetchProperties("", [], limit);
-  //   }
-
-  //   // ---------------------------------------
-  //   // PAGINATION
-  //   // ---------------------------------------
-  //   // Since location bucket is max 5, apply
-  //   // pagination after bucket selection.
-  //   // ---------------------------------------
-  //   const total = properties.length;
-
-  //   const paginatedProperties = properties.slice(offset, offset + limit);
-
-  //   // ---------------------------------------
-  //   // COVER IMAGE
-  //   // ---------------------------------------
-  //   const propertiesWithCover = await Promise.all(
-  //     paginatedProperties.map(async (property: any) => {
-  //       const media = await this.getPropertyMedia(property.prop_id);
-
-  //       return {
-  //         ...property,
-  //         cover_image: media.cover,
-  //       };
-  //     }),
-  //   );
-
-  //   return {
-  //     properties: propertiesWithCover,
-  //     pagination: {
-  //       total,
-  //       page,
-  //       limit,
-  //       totalPages: Math.ceil(total / limit),
-  //     },
-  //   };
-  // }
-
-  // bookmark
-
   static async getPropertyBasedOnTypes(data: any) {
-    const { status, type, location, user_id, page, limit, offset } = data;
+    const {
+      status,
+      type,
+      location,
+      user_id,
+      min_price,
+      max_price,
+      amenities,
+      prop_highlights,
+      page,
+      limit,
+      offset,
+    } = data;
 
     let baseWhere = `WHERE pf.created_at IS NOT NULL`;
     const baseParams: any[] = [];
 
+    // ---------------------------------------
+    // USER
+    // ---------------------------------------
     if (user_id) {
       baseWhere += ` AND pf.user_id = ?`;
       baseParams.push(user_id);
@@ -974,9 +809,12 @@ export class FormModule {
     // ---------------------------------------
     // STATUS
     // ---------------------------------------
-    if (status) {
-      baseWhere += ` AND pf.status = ?`;
-      baseParams.push(status);
+    if (Array.isArray(status) && status.length > 0) {
+      const placeholders = status.map(() => "?").join(",");
+
+      baseWhere += ` AND pf.status IN (${placeholders})`;
+
+      baseParams.push(...status);
     }
 
     // ---------------------------------------
@@ -985,6 +823,58 @@ export class FormModule {
     if (type) {
       baseWhere += ` AND pf.category = ?`;
       baseParams.push(type);
+    }
+
+    // ---------------------------------------
+    // MIN PRICE
+    // ---------------------------------------
+    if (min_price !== null && min_price !== undefined) {
+      baseWhere += ` AND pf.min_price >= ?`;
+      baseParams.push(min_price);
+    }
+
+    // ---------------------------------------
+    // MAX PRICE
+    // ---------------------------------------
+    if (max_price !== null && max_price !== undefined) {
+      baseWhere += ` AND pf.max_price <= ?`;
+      baseParams.push(max_price);
+    }
+
+    // ---------------------------------------
+    // AMENITIES
+    // ---------------------------------------
+    if (Array.isArray(amenities) && amenities.length > 0) {
+      const placeholders = amenities.map(() => "?").join(",");
+
+      baseWhere += `
+      AND EXISTS (
+        SELECT 1
+        FROM prop_amenities pa_filter
+        WHERE pa_filter.prop_id = pf.prop_id
+        AND pa_filter.amenity_id IN (${placeholders})
+      )
+    `;
+
+      baseParams.push(...amenities);
+    }
+
+    // ---------------------------------------
+    // PROPERTY HIGHLIGHTS
+    // ---------------------------------------
+    if (Array.isArray(prop_highlights) && prop_highlights.length > 0) {
+      const placeholders = prop_highlights.map(() => "?").join(",");
+
+      baseWhere += `
+      AND EXISTS (
+        SELECT 1
+        FROM prop_highs ph_filter
+        WHERE ph_filter.prop_id = pf.prop_id
+        AND ph_filter.high_id IN (${placeholders})
+      )
+    `;
+
+      baseParams.push(...prop_highlights);
     }
 
     // ---------------------------------------
@@ -1086,18 +976,17 @@ export class FormModule {
       pf.purchase_plan,
       pf.created_at,
 
-
-    CASE
-      WHEN ? IS NOT NULL
-        AND EXISTS (
-          SELECT 1
-          FROM prop_bookmarks pb
-          WHERE pb.user_id = ?
-            AND pb.prop_id = pf.prop_id
-        )
-      THEN 1
-      ELSE 0
-    END AS is_bookmarked
+      CASE
+        WHEN ? IS NOT NULL
+          AND EXISTS (
+            SELECT 1
+            FROM prop_bookmarks pb
+            WHERE pb.user_id = ?
+              AND pb.prop_id = pf.prop_id
+          )
+        THEN 1
+        ELSE 0
+      END AS is_bookmarked
 
     FROM prop_form pf
 
@@ -1113,35 +1002,38 @@ export class FormModule {
     ${
       city && district && state
         ? `
-      ORDER BY
-        CASE
-          WHEN
-            LOWER(TRIM(pf.city)) = LOWER(TRIM(?))
-            AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-            AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-          THEN 1
+          ORDER BY
+            CASE
+              WHEN
+                LOWER(TRIM(pf.city)) = LOWER(TRIM(?))
+                AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+                AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+              THEN 1
 
-          WHEN
-            LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-            AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-          THEN 2
+              WHEN
+                LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+                AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+              THEN 2
 
-          WHEN
-            LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-          THEN 3
+              WHEN
+                LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+              THEN 3
 
-          ELSE 4
-        END,
-        pf.id DESC
-      `
+              ELSE 4
+            END,
+            pf.id DESC
+        `
         : `
-      ORDER BY pf.id DESC
-      `
+          ORDER BY pf.id DESC
+        `
     }
 
     LIMIT ? OFFSET ?
   `;
 
+    // ---------------------------------------
+    // DATA PARAMS
+    // ---------------------------------------
     const dataParams: any[] = [
       user_id || null,
       user_id || null,
@@ -1149,26 +1041,43 @@ export class FormModule {
       ...locationParams,
     ];
 
-    // ORDER BY CASE parameters
+    // ---------------------------------------
+    // ORDER BY LOCATION PARAMS
+    // ---------------------------------------
     if (city && district && state) {
       dataParams.push(city, district, state, district, state, state);
     }
 
-    // Pagination
+    // ---------------------------------------
+    // PAGINATION
+    // ---------------------------------------
     dataParams.push(limit, offset);
 
     const properties: any[] = await executeQuery(dataQuery, dataParams);
 
     // ---------------------------------------
-    // COVER IMAGE
+    // COVER + ONE AMENITY + ONE HIGHLIGHT
     // ---------------------------------------
-    const propertiesWithCover = await Promise.all(
+    const propertiesWithDetails = await Promise.all(
       properties.map(async (property: any) => {
-        const media = await this.getPropertyMedia(property.prop_id);
+        const [media, amenities, highlights] = await Promise.all([
+          this.getPropertyCover(property.prop_id),
+          this.getPropOneAmenity(property.prop_id),
+          this.getPropertyOneHigh(property.prop_id),
+        ]);
 
         return {
           ...property,
-          cover_image: media.cover,
+
+          cover_image: media || null,
+
+          amenities: Array.isArray(amenities)
+            ? amenities[0] || null
+            : amenities || null,
+
+          property_highs: Array.isArray(highlights)
+            ? highlights[0] || null
+            : highlights || null,
         };
       }),
     );
@@ -1177,7 +1086,7 @@ export class FormModule {
     // RESPONSE
     // ---------------------------------------
     return {
-      properties: propertiesWithCover,
+      properties: propertiesWithDetails,
 
       pagination: {
         total,

@@ -55,5 +55,23 @@ class PlanController {
             ]);
         }
     }
+    static async getPropertyPlan(req, res) {
+        try {
+            const { user_id, prop_id } = req.query;
+            if (!user_id || !prop_id) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "user_id and prop_id are required", []);
+            }
+            const data = await plan_model_1.PlanModel.getPropertyPlan({
+                user_id: Number(user_id),
+                prop_id: String(prop_id),
+            });
+            return (0, helper_1.sendResponse)(res, 200, 1, data, "Property plan fetched successfully", []);
+        }
+        catch (error) {
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error?.message || error,
+            ]);
+        }
+    }
 }
 exports.PlanController = PlanController;

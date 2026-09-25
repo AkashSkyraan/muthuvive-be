@@ -124,5 +124,40 @@ class PlanModel {
             id,
         };
     }
+    static async getPropertyPlan(data) {
+        const { user_id, prop_id } = data;
+        const query = `
+    SELECT
+      pp.id,
+      pp.user_id,
+      pp.prop_id,
+      pp.plan_id,
+      p.features AS features,
+      p.old_amount AS old_amount,
+      p.new_amount AS new_amount,
+      p.duration AS duration,
+      pp.purchased_at,
+      pp.expired_at,
+
+      CASE
+        WHEN pp.purchased_at <= NOW()
+          AND (pp.expired_at IS NULL OR pp.expired_at > NOW())
+        THEN 1
+        ELSE 0
+      END AS is_active
+
+    FROM prop_plans pp
+
+    LEFT JOIN plan p
+      ON p.id = pp.plan_id
+
+    WHERE pp.user_id = ?
+      AND pp.prop_id = ?
+
+    ORDER BY pp.id DESC
+  `;
+        const result = await (0, helper_1.executeQuery)(query, [user_id, prop_id]);
+        return result;
+    }
 }
 exports.PlanModel = PlanModel;

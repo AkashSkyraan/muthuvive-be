@@ -447,6 +447,13 @@ router.get(
       example: 1,
       description: 'User ID for bookmark status or user-specific properties'
     }
+       #swagger.parameters['search'] = {
+      in: 'query',
+      required: false,
+      type: 'string',
+      example: "GReen Valley Resort",
+      description: 'Hrre have to give prop_name'
+    }
 
     #swagger.parameters['min_price'] = {
       in: 'query',

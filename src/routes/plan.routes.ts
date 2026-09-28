@@ -165,4 +165,50 @@ router.get(
   PlanController.getPropertyPlan,
 );
 
+router.post(
+  "/paid-and-post",
+  /*
+    #swagger.tags = ['3.Plan']
+    #swagger.summary = 'Pay and post property'
+    #swagger.description = 'Purchases a plan for a property, calculates the expiry date based on duration, updates the property as posted, and stores the purchase in history.'
+
+    #swagger.parameters['body'] = {
+      in: 'body',
+      required: true,
+      schema: {      
+          user_id: 1,
+
+          plan_id:1,
+          prop_id: "Pasdf123",
+          duration: 365
+      }
+    }
+
+    #swagger.responses[200] = {
+      description: 'Property paid and posted successfully',
+      schema: {
+        success: true,
+        message: 'Property paid and posted successfully',
+        data: {
+          user_id: 10,
+          plan_id: 2,
+          prop_id: 'PABC12',
+          duration: 365,
+          purchased_at: '2026-09-27T18:30:00.000Z',
+          expired_at: '2027-09-27T18:30:00.000Z',
+          status: 'posted'
+        }
+      }
+    }
+
+    #swagger.responses[400] = {
+      description: 'Validation error'
+    }
+
+    #swagger.responses[500] = {
+      description: 'Internal server error'
+    }
+  */
+  PlanController.paidAndPost,
+);
 export default router;

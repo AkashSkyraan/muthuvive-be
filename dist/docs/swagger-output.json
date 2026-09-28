@@ -1406,6 +1406,14 @@
                         "description": "User ID for bookmark status or user-specific properties"
                     },
                     {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "example": "GReen Valley Resort",
+                        "description": "Hrre have to give prop_name"
+                    },
+                    {
                         "name": "min_price",
                         "in": "query",
                         "required": false,
@@ -4192,6 +4200,103 @@
                     },
                     "500": {
                         "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/plan/paid-and-post": {
+            "post": {
+                "tags": [
+                    "3.Plan"
+                ],
+                "summary": "Pay and post property",
+                "description": "Purchases a plan for a property, calculates the expiry date based on duration, updates the property as posted, and stores the purchase in history.",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "user_id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "plan_id": {
+                                    "type": "number",
+                                    "example": 1
+                                },
+                                "prop_id": {
+                                    "type": "string",
+                                    "example": "Pasdf123"
+                                },
+                                "duration": {
+                                    "type": "number",
+                                    "example": 365
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property paid and posted successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Property paid and posted successfully"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "number",
+                                            "example": 10
+                                        },
+                                        "plan_id": {
+                                            "type": "number",
+                                            "example": 2
+                                        },
+                                        "prop_id": {
+                                            "type": "string",
+                                            "example": "PABC12"
+                                        },
+                                        "duration": {
+                                            "type": "number",
+                                            "example": 365
+                                        },
+                                        "purchased_at": {
+                                            "type": "string",
+                                            "example": "2026-09-27T18:30:00.000Z"
+                                        },
+                                        "expired_at": {
+                                            "type": "string",
+                                            "example": "2027-09-27T18:30:00.000Z"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "posted"
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
                     }
                 }
             }

@@ -232,7 +232,7 @@ class PropertyController {
     // }
     static async getPropertyBasedOnTypes(req, res) {
         try {
-            const { status, type, location, user_id, min_price, max_price, amenities, prop_highlights, } = req.query;
+            const { status, type, location, user_id, min_price, max_price, amenities, prop_highlights, search } = req.query;
             const page = Math.max(Number(req.query.page) || 1, 1);
             const limit = Math.max(Number(req.query.limit) || 5, 1);
             const offset = (page - 1) * limit;
@@ -279,6 +279,7 @@ class PropertyController {
                     : null,
                 amenities: amenitiesArray,
                 prop_highlights: propHighlightsArray,
+                search,
                 page,
                 limit,
                 offset,

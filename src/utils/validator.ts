@@ -32,7 +32,9 @@ export const verifyOtpSchema = Joi.object({
 export const resetPasswordSchema = Joi.object({
   email: Joi.string().optional(),
   mobile: Joi.string().optional(),
-  password: Joi.string().min(8).max(128).required(),
+  password: Joi.string().min(8).max(125).required().messages({
+    "any.required": "Password is required",
+  }),
 });
 
 export const signupSchema = Joi.object({
@@ -263,7 +265,6 @@ export const addUpdateConsultantSchema = Joi.object({
     "any.required": "Image is required",
   }),
 });
-
 
 export const bookmarkSchema = Joi.object({
   user_id: Joi.number().required(),

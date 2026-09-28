@@ -128,4 +128,50 @@ export class PlanController {
       ]);
     }
   }
+
+  // 
+
+  static async paidAndPost(req: Request, res: Response) {
+  try {
+    const { user_id, plan_id, prop_id, duration } = req.body;
+
+    if (!user_id || !plan_id || !prop_id || !duration) {
+      return sendResponse(
+        res,
+        400,
+        0,
+        [],
+        "user_id, plan_id, prop_id and duration are required",
+        []
+      );
+    }
+
+    const result = await PlanModel.paidAndPost({
+      user_id: Number(user_id),
+      plan_id: Number(plan_id),
+      prop_id: String(prop_id),
+      duration: Number(duration),
+    });
+
+    return sendResponse(
+      res,
+      200,
+      1,
+      [result],
+      "Property paid and posted successfully",
+      []
+    );
+  } catch (error: any) {
+    console.error("paidAndPost error:", error);
+
+    return sendResponse(
+      res,
+      500,
+      0,
+      [],
+       "Something went wrong",
+      [error.message]
+    );
+  }
+}
 }

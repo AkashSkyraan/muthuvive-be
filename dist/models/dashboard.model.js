@@ -8,7 +8,7 @@ class DashboardModel {
         const { prop_id, status, rejection_reason } = data;
         let query = "";
         let params = [];
-        if (status === "accepted") {
+        if (status === "approved") {
             query = `
       UPDATE prop_form
       SET
@@ -42,8 +42,6 @@ class DashboardModel {
       SET
         status = ?,
         sold_at = NOW(),
-        approved_at = NULL,
-        rejected_at = NULL,
         rejected_reason = NULL
       WHERE prop_id = ?
        

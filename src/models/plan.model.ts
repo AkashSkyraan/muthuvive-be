@@ -1,3 +1,4 @@
+import db from "../config/db";
 import { AddUpdatePlanInput, GetPlanInput } from "../types/plan.types";
 import { executeQuery } from "../utils/helper";
 
@@ -187,4 +188,163 @@ export class PlanModel {
 
     return result;
   }
+
+  static async paidAndPost(data: any) {
+    const { user_id, plan_id, prop_id, duration } = data;
+
+    const connection = await db.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      // ---------------------------------------
+      // PROPERTY
+      // ---------------------------------------
+      const [propertyRows]: any = await connection.query(
+        `
+      SELECT
+        id,
+        prop_id,
+        user_id,
+        status
+      FROM prop_form
+      WHERE prop_id = ?
+        AND status IN ('approved', 'posted')
+      LIMIT 1
+      `,
+        [prop_id],
+      );
+
+      if (!propertyRows.length) {
+        throw new Error("Property not found");
+      }
+
+      const property = propertyRows[0];
+
+      // ---------------------------------------
+      // USER OWNERSHIP
+      // ---------------------------------------
+      if (Number(property.user_id) !== Number(user_id)) {
+        throw new Error("You are not authorized to post this property");
+      }
+
+      // ---------------------------------------
+      // PLAN
+      // ---------------------------------------
+      const [planRows]: any = await connection.query(
+        `
+      SELECT
+        id,
+        duration
+      FROM plan
+      WHERE id = ?
+      LIMIT 1
+      `,
+        [plan_id],
+      );
+
+      if (!planRows.length) {
+        throw new Error("Plan not found");
+      }
+
+      // ---------------------------------------
+      // DURATION
+      // ---------------------------------------
+      const days = Number(duration);
+
+      if (!Number.isInteger(days) || days <= 0) {
+        throw new Error("Duration must be a valid number of days");
+      }
+
+      // ---------------------------------------
+      // PURCHASE DATE
+      // ---------------------------------------
+      const purchasedAt = new Date();
+
+      // ---------------------------------------
+      // EXPIRY DATE
+      // ---------------------------------------
+      const expiredAt = new Date(purchasedAt);
+
+      expiredAt.setDate(expiredAt.getDate() + days);
+
+      // ---------------------------------------
+      // UPDATE PROPERTY
+      // ---------------------------------------
+      await connection.query(
+        `
+      UPDATE prop_form
+      SET
+        purchase_plan = ?,
+        purchased_at = ?,
+        status = 'posted'
+      WHERE prop_id = ?
+        AND user_id = ?
+      `,
+        [plan_id, purchasedAt, prop_id, user_id],
+      );
+
+      // ---------------------------------------
+      // INSERT HISTORY
+      // ---------------------------------------
+      await connection.query(
+        `
+      INSERT INTO prop_plans
+      (
+        user_id,
+        plan_id,
+        prop_id,
+        purchased_at,
+        expired_at
+      )
+      VALUES (?, ?, ?, ?, ?)
+      `,
+        [user_id, plan_id, prop_id, purchasedAt, expiredAt],
+      );
+
+      // ---------------------------------------
+      // COMMIT
+      // ---------------------------------------
+      await connection.commit();
+
+      return {
+        user_id,
+        plan_id,
+        prop_id,
+        duration: days,
+        purchased_at: purchasedAt,
+        expired_at: expiredAt,
+        status: "posted",
+      };
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
+  static async expireProperties() {
+    const connection = await db.getConnection();
+
+    try {
+      const [result]: any = await connection.query(`
+      UPDATE prop_form
+      SET
+        status = 'expired'
+      WHERE status = 'posted'
+        AND expired_at IS NOT NULL
+        AND expired_at <= NOW()
+    `);
+
+      return {
+        affectedRows: result.affectedRows,
+      };
+    } finally {
+      connection.release();
+    }
+  }
+
+
+  
 }

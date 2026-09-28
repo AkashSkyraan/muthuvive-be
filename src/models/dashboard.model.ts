@@ -107,7 +107,7 @@ export class DashboardModel {
     let query = "";
     let params: any[] = [];
 
-    if (status === "accepted") {
+    if (status === "approved") {
       query = `
       UPDATE prop_form
       SET
@@ -145,8 +145,6 @@ export class DashboardModel {
       SET
         status = ?,
         sold_at = NOW(),
-        approved_at = NULL,
-        rejected_at = NULL,
         rejected_reason = NULL
       WHERE prop_id = ?
        

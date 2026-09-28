@@ -33,7 +33,9 @@ exports.verifyOtpSchema = joi_1.default.object({
 exports.resetPasswordSchema = joi_1.default.object({
     email: joi_1.default.string().optional(),
     mobile: joi_1.default.string().optional(),
-    password: joi_1.default.string().min(8).max(128).required(),
+    password: joi_1.default.string().min(8).max(125).required().messages({
+        "any.required": "Password is required",
+    }),
 });
 exports.signupSchema = joi_1.default.object({
     user_name: joi_1.default.string().optional(),

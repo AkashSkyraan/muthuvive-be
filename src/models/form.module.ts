@@ -790,6 +790,7 @@ export class FormModule {
       max_price,
       amenities,
       prop_highlights,
+      search = undefined,
       page,
       limit,
       offset,
@@ -798,6 +799,8 @@ export class FormModule {
     let baseWhere = `WHERE pf.created_at IS NOT NULL`;
     const baseParams: any[] = [];
 
+
+
     // ---------------------------------------
     // USER
     // ---------------------------------------
@@ -805,6 +808,12 @@ export class FormModule {
       baseWhere += ` AND pf.user_id = ?`;
       baseParams.push(user_id);
     }
+
+
+   if (search?.trim()) {
+  baseWhere += ` AND pf.prop_name LIKE ?`;
+  baseParams.push(`%${search.trim()}%`);
+}
 
     // ---------------------------------------
     // STATUS

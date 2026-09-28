@@ -395,6 +395,7 @@ export class PropertyController {
       max_price,
       amenities,
       prop_highlights,
+      search
     } = req.query;
 
     const page = Math.max(Number(req.query.page) || 1, 1);
@@ -460,7 +461,7 @@ export class PropertyController {
 
       amenities: amenitiesArray,
       prop_highlights: propHighlightsArray,
-
+      search,
       page,
       limit,
       offset,

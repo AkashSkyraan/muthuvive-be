@@ -570,7 +570,7 @@ class FormModule {
         };
     }
     static async getPropertyBasedOnTypes(data) {
-        const { status, type, location, user_id, min_price, max_price, amenities, prop_highlights, page, limit, offset, } = data;
+        const { status, type, location, user_id, min_price, max_price, amenities, prop_highlights, search = undefined, page, limit, offset, } = data;
         let baseWhere = `WHERE pf.created_at IS NOT NULL`;
         const baseParams = [];
         // ---------------------------------------
@@ -579,6 +579,10 @@ class FormModule {
         if (user_id) {
             baseWhere += ` AND pf.user_id = ?`;
             baseParams.push(user_id);
+        }
+        if (search?.trim()) {
+            baseWhere += ` AND pf.prop_name LIKE ?`;
+            baseParams.push(`%${search.trim()}%`);
         }
         // ---------------------------------------
         // STATUS

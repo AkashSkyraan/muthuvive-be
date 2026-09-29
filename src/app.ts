@@ -15,32 +15,33 @@ app.use(cookieParser());
 
 app.use(helmet());
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  }),
-);
-
-// const allowedOrigins = [
-//   "http://localhost:5175",
-//   "http://localhost:3000",
-//   "http://127.0.0.1:5175",
-//   "http://192.168.100.48:5175",
-// ];
-
 // app.use(
 //   cors({
-//     origin: (origin, callback) => {
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
+//     origin: true,
 //     credentials: true,
-//   })
+//   }),
 // );
+
+const allowedOrigins = [
+  "http://localhost:5175",
+  "http://localhost:3000",
+  "http://127.0.0.1:5175",
+  "http://192.168.100.48:5175",
+  "https://muthuvives.skyraantech.com"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(

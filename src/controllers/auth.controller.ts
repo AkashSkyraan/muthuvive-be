@@ -179,12 +179,13 @@ export class AuthController {
 
       const token = generateToken(userId);
 
+      const isProduction = process.env.NODE_ENV === "production";
+
       res.cookie("access_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-       
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        maxAge: 90 * 24 * 60 * 60 * 1000,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",
       });
 
@@ -235,12 +236,12 @@ export class AuthController {
 
       const token = generateToken(user.id);
 
-      // Set JWT cookie
+      const isProduction = process.env.NODE_ENV === "production";
+
       res.cookie("access_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",
       });

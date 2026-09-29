@@ -101,11 +101,12 @@ class AuthController {
             const hashedPassword = await bcryptjs_1.default.hash(password, 10);
             const userId = await auth_model_1.AuthModel.createUser(user_name, email, mobile, hashedPassword);
             const token = (0, helper_1.generateToken)(userId);
+            const isProduction = process.env.NODE_ENV === "production";
             res.cookie("access_token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-                maxAge: 90 * 24 * 60 * 60 * 1000,
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
                 path: "/",
             });
             return (0, helper_1.sendResponse)(res, 201, 1, [
@@ -137,11 +138,11 @@ class AuthController {
                 return (0, helper_1.sendResponse)(res, 400, 0, [], "Invalid password", []);
             }
             const token = (0, helper_1.generateToken)(user.id);
-            // Set JWT cookie
+            const isProduction = process.env.NODE_ENV === "production";
             res.cookie("access_token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
                 path: "/",
             });

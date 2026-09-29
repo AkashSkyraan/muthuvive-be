@@ -17,9 +17,15 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 app.use((0, helmet_1.default)());
+// app.use(
+//   cors({
+//     origin: true,
+//     credentials: true,
+//   }),
+// );
 app.use((0, cors_1.default)({
-    origin: true,
-    credentials: true,
+    origin: "http://192.168.100.48:5175/",
+    credentials: true
 }));
 app.use(express_1.default.json());
 app.use(express_1.default.json({

@@ -17,29 +17,28 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 app.use((0, helmet_1.default)());
-// app.use(
-//   cors({
-//     origin: true,
-//     credentials: true,
-//   }),
-// );
-const allowedOrigins = [
-    "http://localhost:5175",
-    "http://localhost:3000",
-    "http://127.0.0.1:5175",
-    "http://192.168.100.48:5175",
-];
 app.use((0, cors_1.default)({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        }
-        else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
+    origin: true,
     credentials: true,
 }));
+// const allowedOrigins = [
+//   "http://localhost:5175",
+//   "http://localhost:3000",
+//   "http://127.0.0.1:5175",
+//   "http://192.168.100.48:5175",
+// ];
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//   })
+// );
 app.use(express_1.default.json());
 app.use(express_1.default.json({
     verify: (req, res, buf) => {

@@ -15,19 +15,19 @@ app.use(cookieParser());
 
 app.use(helmet());
 
-// app.use(
-//   cors({
-//     origin: true,
-//     credentials: true,
-//   }),
-// );
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
 
-const allowedOrigins = [
-  "http://localhost:5175",
-  "http://localhost:3000",
-  "http://127.0.0.1:5175",
-  "http://192.168.100.48:5175",
-];
+// const allowedOrigins = [
+//   "http://localhost:5175",
+//   "http://localhost:3000",
+//   "http://127.0.0.1:5175",
+//   "http://192.168.100.48:5175",
+// ];
 
 app.use(
   cors({

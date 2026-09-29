@@ -615,7 +615,7 @@ export class FormModule {
       requested_at,
       approved_at,
       rejected_at,
-      reject_reason,
+      rejected_reason,
       expired_at,
       sold_at
     FROM prop_form

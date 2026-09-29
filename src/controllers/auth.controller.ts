@@ -181,7 +181,8 @@ export class AuthController {
 
       res.cookie("access_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        // secure: process.env.NODE_ENV === "production" ,
+        secure: false,
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 90 * 24 * 60 * 60 * 1000,
       });
@@ -236,7 +237,8 @@ export class AuthController {
       // Set JWT cookie
       res.cookie("access_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        // secure: process.env.NODE_ENV === "production",
+        secure: false,
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });

@@ -23,9 +23,22 @@ app.use((0, helmet_1.default)());
 //     credentials: true,
 //   }),
 // );
+const allowedOrigins = [
+    "http://localhost:5175",
+    "http://localhost:3000",
+    "http://127.0.0.1:5175",
+    "http://192.168.100.48:5175",
+];
 app.use((0, cors_1.default)({
-    origin: "http://192.168.100.48:5175/",
-    credentials: true
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
 }));
 app.use(express_1.default.json());
 app.use(express_1.default.json({

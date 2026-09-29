@@ -24,8 +24,8 @@ app.use((0, helmet_1.default)());
 //   }),
 // );
 app.use((0, cors_1.default)({
-    origin: ["http://localhost:5175", "http://localhost:3000"],
-    credentials: true,
+    origin: ["http://localhost:5175", "http://localhost:3000", "http://192.168.100.48:5175/"],
+    credentials: true
 }));
 app.use(express_1.default.json());
 app.use(express_1.default.json({

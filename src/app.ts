@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -24,12 +24,19 @@ app.use(
 
 // app.use(
 //   cors({
-//     origin: "http://localhost:5175",
+//     origin: ["http://localhost:5175", "http://localhost:3000"],
 //     credentials: true,
 //   }),
 // );
 
 app.use(express.json());
+app.use(
+  express.json({
+    verify: (req: any, res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 app.use(morgan("dev"));
@@ -38,6 +45,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(
   "/src/uploads/images",
+  (req: Request, res: Response, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
   express.static(path.join(process.cwd(), "src", "uploads", "images")),
 );
 

@@ -15,6 +15,7 @@ const enquiry_routes_1 = __importDefault(require("./enquiry.routes"));
 const src_routes_1 = __importDefault(require("./src.routes"));
 const dashboard_routes_1 = __importDefault(require("./dashboard.routes"));
 const form_routes_1 = __importDefault(require("./form.routes"));
+const payment_routes_1 = __importDefault(require("./payment.routes"));
 const upload_controller_1 = require("../controllers/upload.controller");
 const multer_1 = require("../config/multer");
 const router = (0, express_1.Router)();
@@ -29,6 +30,7 @@ router.use("/gallery", gallery_routes_1.default);
 router.use("/enquiry", enquiry_routes_1.default);
 router.use("/src", src_routes_1.default);
 router.use("/form", form_routes_1.default);
+router.use("/payment", payment_routes_1.default);
 router.post("/upload", 
 /*
       #swagger.tags = ['1.Upload']

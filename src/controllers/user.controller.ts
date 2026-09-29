@@ -84,7 +84,7 @@ export class UserController {
     try {
       const token = req.cookies?.access_token;
 
-      console.log(token);
+
 
       if (!token) {
         return sendResponse(res, 401, 0, [], "Authentication required", []);

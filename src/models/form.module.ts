@@ -611,7 +611,13 @@ export class FormModule {
       status,
       created_at,
       updated_at,
-      purchase_plan
+      purchase_plan,
+      requested_at,
+      approved_at,
+      rejected_at,
+      reject_reason,
+      expired_at,
+      sold_at
     FROM prop_form
     WHERE prop_id = ?
     LIMIT 1
@@ -791,6 +797,8 @@ export class FormModule {
       amenities,
       prop_highlights,
       search = undefined,
+      facingDirection,
+      searchLoc,
       page,
       limit,
       offset,
@@ -798,8 +806,6 @@ export class FormModule {
 
     let baseWhere = `WHERE pf.created_at IS NOT NULL`;
     const baseParams: any[] = [];
-
-
 
     // ---------------------------------------
     // USER
@@ -809,12 +815,26 @@ export class FormModule {
       baseParams.push(user_id);
     }
 
+    if (search?.trim()) {
+      baseWhere += ` AND pf.prop_name LIKE ?`;
+      baseParams.push(`%${search.trim()}%`);
+    }
 
-   if (search?.trim()) {
-  baseWhere += ` AND pf.prop_name LIKE ?`;
-  baseParams.push(`%${search.trim()}%`);
-}
+    if (searchLoc?.city && searchLoc?.district && searchLoc?.state) {
+      baseWhere += `
+    AND (
+      LOWER(TRIM(pf.city)) LIKE LOWER(TRIM(?))
+      AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+      AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    )
+  `;
 
+      baseParams.push(
+        `%${searchLoc.city}%`,
+        searchLoc.district,
+        searchLoc.state,
+      );
+    }
     // ---------------------------------------
     // STATUS
     // ---------------------------------------
@@ -850,6 +870,22 @@ export class FormModule {
       baseParams.push(max_price);
     }
 
+    if (facingDirection) {
+      const facingValues = String(facingDirection)
+        .split(",")
+        .map((value) => Number(value.trim()))
+        .filter((value) => Number.isInteger(value));
+
+      if (facingValues.length > 0) {
+        const placeholders = facingValues.map(() => "?").join(",");
+
+        baseWhere += `
+      AND pf.facing IN (${placeholders})
+    `;
+
+        baseParams.push(...facingValues);
+      }
+    }
     // ---------------------------------------
     // AMENITIES
     // ---------------------------------------

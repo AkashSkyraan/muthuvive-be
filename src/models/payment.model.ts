@@ -1,315 +1,281 @@
+import crypto from "crypto";
+import {
+  CreatePaymentOrderData,
+  VerifyPaymentData,
+} from "../types/payment.types";
+import { executeQuery } from "../utils/helper";
+import razorpay from "../config/payment";
 
+export class PaymentModel {
+  static async createOrder(data: CreatePaymentOrderData) {
+    const { user_id, prop_id, plan_id } = data;
 
-// import pool from "../config/db";
-// import razorpay from "../config/payment";
-// import { executeQuery } from "../utils/helper";
+    const planRows: any[] = await executeQuery(
+      `
+      SELECT
+        id,
+        new_amount
+      FROM prop_plans
+      WHERE id = ?
+      LIMIT 1
+      `,
+      [plan_id],
+    );
 
+    if (!planRows.length) {
+      throw new Error("Plan not found");
+    }
 
-// class PaymentModule {
- 
-//   static async createOrder(data: {
-//     user_id: number;
-//     prop_id: string;
-//     plan_id: number;
-//   }) {
-//     const { user_id, prop_id, plan_id } = data;
+    const plan = planRows[0];
 
-    
-//     const planQuery = `
-//       SELECT
-//         id,
-//         name,
-//         price,
-//         duration
-//       FROM plans
-//       WHERE id = ?
-//         AND status = 'active'
-//       LIMIT 1
-//     `;
+    const amount = Number(plan.new_amount);
 
-//     const plans: any[] = await executeQuery(planQuery, [plan_id]);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new Error("Invalid plan amount");
+    }
 
-//     if (!plans.length) {
-//       throw new Error("Plan not found or inactive");
-//     }
+    // Razorpay expects amount in paise
+    const amountInPaise = Math.round(amount * 100);
 
-//     const plan = plans[0];
+    // -------------------------------------------------------
+    // 2. Check property exists / belongs to user
+    // -------------------------------------------------------
 
-    
-//     const propertyQuery = `
-//       SELECT
-//         prop_id,
-//         user_id,
-//         prop_name
-//       FROM prop_form
-//       WHERE prop_id = ?
-//         AND user_id = ?
-//       LIMIT 1
-//     `;
+    const propertyRows: any[] = await executeQuery(
+      `
+      SELECT
+        prop_id
+      FROM prop_form
+      WHERE prop_id = ?
+        AND user_id = ?
+      LIMIT 1
+      `,
+      [prop_id, user_id],
+    );
 
-//     const properties: any[] = await executeQuery(propertyQuery, [
-//       prop_id,
-//       user_id,
-//     ]);
+    if (!propertyRows.length) {
+      throw new Error("Property not found or unauthorized");
+    }
 
-//     if (!properties.length) {
-//       throw new Error("Property not found for this user");
-//     }
+    const receipt = `prop_${prop_id}_${user_id}_${Date.now()}`;
 
-//     const amount = Math.round(Number(plan.price) * 100);
+    const order = await razorpay.orders.create({
+      amount: amountInPaise,
+      currency: "INR",
+      receipt,
+      notes: {
+        user_id: String(user_id),
+        prop_id,
+        plan_id: String(plan_id),
+      },
+    });
 
-//     if (!amount || amount <= 0) {
-//       throw new Error("Invalid plan amount");
-//     }
+    // -------------------------------------------------------
+    // 5. Save payment record
+    // -------------------------------------------------------
 
-//     const receipt = `PROP_${prop_id}_${Date.now()}`;
+    await executeQuery(
+      `
+      INSERT INTO payments
+      (
+        user_id,
+        prop_id,
+        plan_id,
+        razorpay_order_id,
+        amount,
+        currency,
+        status
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
+      [user_id, prop_id, plan_id, order.id, amountInPaise, "INR", "created"],
+    );
 
-//     const razorpayOrder = await razorpay.orders.create({
-//       amount,
-//       currency: "INR",
-//       receipt,
-//       notes: {
-//         user_id: String(user_id),
-//         prop_id,
-//         plan_id: String(plan_id),
-//       },
-//     });
+    return {
+      order_id: order.id,
+      amount: amountInPaise,
+      currency: "INR",
+      key_id: process.env.RAZORPAY_KEY_ID,
+    };
+  }
 
-    
-//     const insertQuery = `
-//       INSERT INTO payments (
-//         user_id,
-//         prop_id,
-//         plan_id,
-//         razorpay_order_id,
-//         amount,
-//         currency,
-//         status
-//       )
-//       VALUES (?, ?, ?, ?, ?, ?, ?)
-//     `;
+  static async verifyPayment(data: VerifyPaymentData) {
+    const {
+      user_id,
+      prop_id,
+      plan_id,
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = data;
 
-//     await executeQuery(insertQuery, [
-//       user_id,
-//       prop_id,
-//       plan_id,
-//       razorpayOrder.id,
-//       Number(plan.price),
-//       "INR",
-//       "created",
-//     ]);
+    // -------------------------------------------------------
+    // 1. Get payment from DB
+    // -------------------------------------------------------
 
-//     return {
-//       order_id: razorpayOrder.id,
-//       amount: Number(plan.price),
-//       amount_paise: amount,
-//       currency: "INR",
+    const paymentRows: any[] = await executeQuery(
+      `
+      SELECT
+        *
+      FROM payments
+      WHERE razorpay_order_id = ?
+        AND user_id = ?
+        AND prop_id = ?
+        AND plan_id = ?
+      LIMIT 1
+      `,
+      [razorpay_order_id, user_id, prop_id, plan_id],
+    );
 
-//       key_id: process.env.RAZORPAY_KEY_ID,
+    if (!paymentRows.length) {
+      throw new Error("Payment order not found");
+    }
 
-//       plan: {
-//         id: plan.id,
-//         name: plan.name,
-//         price: Number(plan.price),
-//         duration: plan.duration,
-//       },
+    const payment = paymentRows[0];
 
-//       property: {
-//         prop_id,
-//         prop_name: properties[0].prop_name,
-//       },
-//     };
-//   }
+    // -------------------------------------------------------
+    // 2. Prevent duplicate processing
+    // -------------------------------------------------------
 
-//   /**
-//    * Verify Razorpay Payment
-//    */
-//   static async verifyPayment(data: {
-//     user_id: number;
-//     prop_id: string;
-//     plan_id: number;
+    if (payment.status === "paid") {
+      return {
+        success: true,
+        alreadyPaid: true,
+        payment_id: payment.razorpay_payment_id,
+      };
+    }
 
-//     razorpay_order_id: string;
-//     razorpay_payment_id: string;
-//     razorpay_signature: string;
-//   }) {
-//     const {
-//       user_id,
-//       prop_id,
-//       plan_id,
-//       razorpay_order_id,
-//       razorpay_payment_id,
-//       razorpay_signature,
-//     } = data;
+    // -------------------------------------------------------
+    // 3. Generate signature
+    // -------------------------------------------------------
 
-//     /**
-//      * Get payment
-//      */
-//     const paymentQuery = `
-//       SELECT
-//         id,
-//         user_id,
-//         prop_id,
-//         plan_id,
-//         amount,
-//         status
-//       FROM payments
-//       WHERE razorpay_order_id = ?
-//         AND user_id = ?
-//         AND prop_id = ?
-//         AND plan_id = ?
-//       LIMIT 1
-//     `;
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+      .update(`${payment.razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
 
-//     const payments: any[] = await executeQuery(paymentQuery, [
-//       razorpay_order_id,
-//       user_id,
-//       prop_id,
-//       plan_id,
-//     ]);
+    // -------------------------------------------------------
+    // 4. Compare signature safely
+    // -------------------------------------------------------
 
-//     if (!payments.length) {
-//       throw new Error("Payment order not found");
-//     }
+    const generatedBuffer = Buffer.from(generatedSignature);
+    const receivedBuffer = Buffer.from(razorpay_signature);
 
-//     const payment = payments[0];
+    if (
+      generatedBuffer.length !== receivedBuffer.length ||
+      !crypto.timingSafeEqual(generatedBuffer, receivedBuffer)
+    ) {
+      throw new Error("Invalid payment signature");
+    }
 
-//     /**
-//      * Verify Razorpay signature
-//      */
-//     const generatedSignature = crypto
-//       .createHmac(
-//         "sha256",
-//         process.env.RAZORPAY_KEY_SECRET as string,
-//       )
-//       .update(
-//         `${razorpay_order_id}|${razorpay_payment_id}`,
-//       )
-//       .digest("hex");
+    // -------------------------------------------------------
+    // 5. Verify amount from DB
+    // -------------------------------------------------------
 
-//     if (generatedSignature !== razorpay_signature) {
-//       throw new Error("Invalid payment signature");
-//     }
+    const expectedAmount = Number(payment.amount);
 
-//     /**
-//      * Already paid?
-//      */
-//     if (payment.status === "paid") {
-//       return {
-//         already_paid: true,
-//         payment_id: payment.id,
-//       };
-//     }
+    // -------------------------------------------------------
+    // 6. Update payment
+    // -------------------------------------------------------
 
-   
-//     const connection = await pool.getConnection();
+    await executeQuery(
+      `
+      UPDATE payments
+      SET
+        razorpay_payment_id = ?,
+        razorpay_signature = ?,
+        status = 'paid',
+        purchased_at = NOW(),
+        updated_at = NOW()
+      WHERE id = ?
+      `,
+      [razorpay_payment_id, razorpay_signature, payment.id],
+    );
 
-//     try {
-//       await connection.beginTransaction();
+    return {
+      success: true,
+      alreadyPaid: false,
+      payment_id: razorpay_payment_id,
+      order_id: razorpay_order_id,
+      amount: expectedAmount,
+      currency: payment.currency,
+      status: "paid",
+    };
+  }
 
-    
-//       await connection.query(
-//         `
-//           UPDATE payments
-//           SET
-//             razorpay_payment_id = ?,
-//             razorpay_signature = ?,
-//             status = 'paid',
-//             purchased_at = NOW()
-//           WHERE id = ?
-//         `,
-//         [
-//           razorpay_payment_id,
-//           razorpay_signature,
-//           payment.id,
-//         ],
-//       );
+  static async getPayment(data: {
+    user_id: number;
+    razorpay_order_id: string;
+  }) {
+    const { user_id, razorpay_order_id } = data;
 
-//       /**
-//        * Get plan duration
-//        */
-//       const [planRows]: any = await connection.query(
-//         `
-//           SELECT
-//             id,
-//             duration
-//           FROM plans
-//           WHERE id = ?
-//           LIMIT 1
-//         `,
-//         [plan_id],
-//       );
+    const rows: any[] = await executeQuery(
+      `
+      SELECT
+        id,
+        user_id,
+        prop_id,
+        plan_id,
+        razorpay_order_id,
+        razorpay_payment_id,
+        amount,
+        currency,
+        status,
+        purchased_at,
+        created_at,
+        updated_at
+      FROM payments
+      WHERE user_id = ?
+        AND razorpay_order_id = ?
+      LIMIT 1
+      `,
+      [user_id, razorpay_order_id],
+    );
 
-//       if (!planRows.length) {
-//         throw new Error("Plan not found");
-//       }
+    return rows[0] || null;
+  }
 
-//       const duration = Number(planRows[0].duration) || 30;
+  static async markWebhookPaid(data: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+  }) {
+    const { razorpay_order_id, razorpay_payment_id } = data;
 
-//       await connection.query(
-//         `
-//           INSERT INTO prop_plans (
-//             user_id,
-//             prop_id,
-//             plan_id,
-//             purchased_at,
-//             expired_at
-//           )
-//           VALUES (
-//             ?,
-//             ?,
-//             ?,
-//             NOW(),
-//             DATE_ADD(NOW(), INTERVAL ? DAY)
-//           )
-//         `,
-//         [
-//           user_id,
-//           prop_id,
-//           plan_id,
-//           duration,
-//         ],
-//       );
+    await executeQuery(
+      `
+    UPDATE payments
+    SET
+      razorpay_payment_id = ?,
+      status = 'paid',
+      purchased_at = COALESCE(
+        purchased_at,
+        NOW()
+      ),
+      updated_at = NOW()
+    WHERE razorpay_order_id = ?
+      AND status <> 'paid'
+    `,
+      [razorpay_payment_id, razorpay_order_id],
+    );
+  }
 
-//       await connection.commit();
+  static async markWebhookFailed(data: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+  }) {
+    const { razorpay_order_id, razorpay_payment_id } = data;
 
-//       return {
-//         already_paid: false,
-//         payment_id: payment.id,
-//         razorpay_order_id,
-//         razorpay_payment_id,
-//         prop_id,
-//         plan_id,
-//         status: "paid",
-//       };
-//     } catch (error) {
-//       await connection.rollback();
-//       throw error;
-//     } finally {
-//       connection.release();
-//     }
-//   }
-
-//   /**
-//    * Get payment by order ID
-//    */
-//   static async getPaymentByOrderId(
-//     razorpay_order_id: string,
-//   ) {
-//     const query = `
-//       SELECT
-//         *
-//       FROM payments
-//       WHERE razorpay_order_id = ?
-//       LIMIT 1
-//     `;
-
-//     const result: any[] = await executeQuery(query, [
-//       razorpay_order_id,
-//     ]);
-
-//     return result[0] || null;
-//   }
-// }
-
-// export default PaymentModule;
+    await executeQuery(
+      `
+    UPDATE payments
+    SET
+      razorpay_payment_id = ?,
+      status = 'failed',
+      updated_at = NOW()
+    WHERE razorpay_order_id = ?
+      AND status <> 'paid'
+    `,
+      [razorpay_payment_id, razorpay_order_id],
+    );
+  }
+}

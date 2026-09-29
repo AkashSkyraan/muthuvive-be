@@ -94,7 +94,15 @@ class SourceController {
     // search alogorith,
     static async searchPincode(req, res) {
         try {
-            const search = String(req.query.search || "").trim();
+            let search = String(req.query.search || "").trim();
+            // + and other symbols -> space
+            // only letters, spaces and commas allowed
+            search = search
+                .replace(/\+/g, " ")
+                .replace(/[^a-zA-Z,\s]/g, "")
+                .replace(/\s+/g, " ")
+                .replace(/\s*,\s*/g, ", ")
+                .trim();
             if (search.length < 3) {
                 return (0, helper_1.sendResponse)(res, 400, 0, [], "Search must contain at least 3 characters", []);
             }

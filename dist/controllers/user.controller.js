@@ -55,7 +55,6 @@ _a = UserController;
 UserController.getUser = async (req, res) => {
     try {
         const token = req.cookies?.access_token;
-        console.log(token);
         if (!token) {
             return (0, helper_1.sendResponse)(res, 401, 0, [], "Authentication required", []);
         }

@@ -386,6 +386,13 @@ router.get("/get-property",
     example: 'coimbatore',
     description: 'Fetch properties based on location'
   }
+  #swagger.parameters['search_loc'] = {
+    in: 'query',
+    required: false,
+    type: 'string',
+    example: 'coimbatore',
+    description: 'Fetch properties based on location'
+  }
 
   #swagger.parameters['user_id'] = {
     in: 'query',
@@ -401,6 +408,8 @@ router.get("/get-property",
     example: "GReen Valley Resort",
     description: 'Hrre have to give prop_name'
   }
+
+ 
 
   #swagger.parameters['min_price'] = {
     in: 'query',

@@ -345,8 +345,6 @@ export class PropertyController {
 
   // DTCP
 
-
-
   // static async getPropertyBasedOnTypes(req: Request, res: Response) {
   //   try {
   //     const { status, type, location, user_id } = req.query;
@@ -383,113 +381,118 @@ export class PropertyController {
   //   }
   // }
 
-
   static async getPropertyBasedOnTypes(req: Request, res: Response) {
-  try {
-    const {
-      status,
-      type,
-      location,
-      user_id,
-      min_price,
-      max_price,
-      amenities,
-      prop_highlights,
-      search
-    } = req.query;
+    try {
+      const {
+        status,
+        type,
+        location,
+        user_id,
+        min_price,
+        max_price,
+        amenities,
+        prop_highlights,
+        search,
+        facingDirection,
+        search_loc,
+      } = req.query;
 
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.max(Number(req.query.limit) || 5, 1);
+      const page = Math.max(Number(req.query.page) || 1, 1);
+      const limit = Math.max(Number(req.query.limit) || 5, 1);
 
-    const offset = (page - 1) * limit;
+      const offset = (page - 1) * limit;
 
-    // ---------------------------------------
-    // STATUS ARRAY
-    // available,sold
-    // ---------------------------------------
-    const statusArray = status
-      ? String(status)
+      let searchLocData = null;
+
+      if (search_loc) {
+        const locationParts = String(search_loc)
           .split(",")
-          .map((item) => item.trim())
-          .filter(Boolean)
-      : [];
+          .map((item) => decodeURIComponent(item).trim())
+          .filter(Boolean);
 
-    // ---------------------------------------
-    // AMENITIES ARRAY
-    // 1,2,5
-    // ---------------------------------------
-    const amenitiesArray = amenities
-      ? String(amenities)
-          .split(",")
-          .map(Number)
-          .filter((id) => Number.isInteger(id) && id > 0)
-      : [];
+        searchLocData = {
+          city: locationParts[0] || null,
+          district: locationParts[1] || null,
+          state: locationParts[2] || null,
+        };
+      }
+      // ---------------------------------------
+      // STATUS ARRAY
+      // available,sold
+      // ---------------------------------------
+      const statusArray = status
+        ? String(status)
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : [];
 
+      // ---------------------------------------
+      // AMENITIES ARRAY
+      // 1,2,5
+      // ---------------------------------------
+      const amenitiesArray = amenities
+        ? String(amenities)
+            .split(",")
+            .map(Number)
+            .filter((id) => Number.isInteger(id) && id > 0)
+        : [];
 
+      // ---------------------------------------
+      // PROPERTY HIGHLIGHTS ARRAY
+      // 1,3,4
+      // ---------------------------------------
 
+      const propHighlightsArray = prop_highlights
+        ? String(prop_highlights)
+            .split(",")
+            .map(Number)
+            .filter((id) => Number.isInteger(id) && id > 0)
+        : [];
 
-    // ---------------------------------------
-    // PROPERTY HIGHLIGHTS ARRAY
-    // 1,3,4
-    // ---------------------------------------
+      const data = await FormModule.getPropertyBasedOnTypes({
+        status: statusArray,
+        type: type ? String(type) : null,
+        location: location ? String(location) : null,
 
+        user_id: user_id ? Number(user_id) : null,
 
-    
-    const propHighlightsArray = prop_highlights
-      ? String(prop_highlights)
-          .split(",")
-          .map(Number)
-          .filter((id) => Number.isInteger(id) && id > 0)
-      : [];
+        min_price:
+          min_price !== undefined && min_price !== ""
+            ? Number(min_price)
+            : null,
 
-    const data = await FormModule.getPropertyBasedOnTypes({
-      status: statusArray,
-      type: type ? String(type) : null,
-      location: location ? String(location) : null,
+        max_price:
+          max_price !== undefined && max_price !== ""
+            ? Number(max_price)
+            : null,
 
-      user_id: user_id ? Number(user_id) : null,
+        amenities: amenitiesArray,
+        prop_highlights: propHighlightsArray,
+        search,
+        facingDirection,
+        searchLoc: searchLocData,
+        page,
+        limit,
+        offset,
+      });
 
-      min_price:
-        min_price !== undefined && min_price !== ""
-          ? Number(min_price)
-          : null,
+      return sendResponse(
+        res,
+        200,
+        1,
+        data,
+        "Properties fetched successfully",
+        [],
+      );
+    } catch (error: any) {
+      console.error("getPropertyBasedOnTypes error:", error);
 
-      max_price:
-        max_price !== undefined && max_price !== ""
-          ? Number(max_price)
-          : null,
-
-      amenities: amenitiesArray,
-      prop_highlights: propHighlightsArray,
-      search,
-      page,
-      limit,
-      offset,
-    });
-
-    return sendResponse(
-      res,
-      200,
-      1,
-      data,
-      "Properties fetched successfully",
-      [],
-    );
-  } catch (error: any) {
-    console.error("getPropertyBasedOnTypes error:", error);
-
-    return sendResponse(
-      res,
-      500,
-      0,
-      [],
-      "Internal server error",
-      [error?.message || error],
-    );
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.message || error,
+      ]);
+    }
   }
-}
-
-
 
   static async addUpdateBookmark(req: Request, res: Response) {
     try {

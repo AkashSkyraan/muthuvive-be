@@ -257,7 +257,16 @@ export class SourceController {
 
   static async searchPincode(req: Request, res: Response) {
     try {
-      const search = String(req.query.search || "").trim();
+      let search = String(req.query.search || "").trim();
+
+      // + and other symbols -> space
+      // only letters, spaces and commas allowed
+      search = search
+        .replace(/\+/g, " ")
+        .replace(/[^a-zA-Z,\s]/g, "")
+        .replace(/\s+/g, " ")
+        .replace(/\s*,\s*/g, ", ")
+        .trim();
 
       if (search.length < 3) {
         return sendResponse(

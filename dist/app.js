@@ -23,16 +23,24 @@ app.use((0, cors_1.default)({
 }));
 // app.use(
 //   cors({
-//     origin: "http://localhost:5175",
+//     origin: ["http://localhost:5175", "http://localhost:3000"],
 //     credentials: true,
 //   }),
 // );
 app.use(express_1.default.json());
+app.use(express_1.default.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf;
+    },
+}));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use("/api", routes_1.default);
 app.use((0, morgan_1.default)("dev"));
 app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_output_json_1.default));
-app.use("/src/uploads/images", express_1.default.static(path_1.default.join(process.cwd(), "src", "uploads", "images")));
+app.use("/src/uploads/images", (req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+}, express_1.default.static(path_1.default.join(process.cwd(), "src", "uploads", "images")));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is swimming on PORT ${PORT}`);

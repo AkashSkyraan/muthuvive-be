@@ -10,6 +10,7 @@ import enquiryRoutes from "./enquiry.routes";
 import sourceRoutes from "./src.routes";
 import adminRoutes from "./dashboard.routes";
 import formRoutes from "./form.routes";
+import paymentRoutes from "./payment.routes";
 import { UploadController } from "../controllers/upload.controller";
 import { upload } from "../config/multer";
 const router = Router();
@@ -24,6 +25,7 @@ router.use("/gallery", galleryRoutes);
 router.use("/enquiry", enquiryRoutes);
 router.use("/src", sourceRoutes);
 router.use("/form", formRoutes);
+router.use("/payment", paymentRoutes);
 
 router.post(
   "/upload",

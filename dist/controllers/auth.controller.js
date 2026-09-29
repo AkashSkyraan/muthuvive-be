@@ -103,10 +103,10 @@ class AuthController {
             const token = (0, helper_1.generateToken)(userId);
             res.cookie("access_token", token, {
                 httpOnly: true,
-                // secure: process.env.NODE_ENV === "production" ,
-                secure: false,
+                secure: process.env.NODE_ENV === "production",
                 sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
                 maxAge: 90 * 24 * 60 * 60 * 1000,
+                path: "/",
             });
             return (0, helper_1.sendResponse)(res, 201, 1, [
                 {
@@ -140,10 +140,10 @@ class AuthController {
             // Set JWT cookie
             res.cookie("access_token", token, {
                 httpOnly: true,
-                // secure: process.env.NODE_ENV === "production",
-                secure: false,
+                secure: process.env.NODE_ENV === "production",
                 sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
+                path: "/",
             });
             return (0, helper_1.sendResponse)(res, 200, 1, [
                 {

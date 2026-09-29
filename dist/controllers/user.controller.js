@@ -54,6 +54,9 @@ _a = UserController;
 // get-user
 UserController.getUser = async (req, res) => {
     try {
+        console.log("NODE_ENV:", process.env.NODE_ENV);
+        console.log("Origin:", req.headers.origin);
+        console.log("Cookies:", req.cookies);
         const token = req.cookies?.access_token;
         if (!token) {
             return (0, helper_1.sendResponse)(res, 401, 0, [], "Authentication required", []);

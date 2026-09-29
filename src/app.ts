@@ -15,19 +15,13 @@ app.use(cookieParser());
 
 app.use(helmet());
 
-// app.use(
-//   cors({
-//     origin: true,
-//     credentials: true,
-//   }),
-// );
-
 app.use(
   cors({
-    origin: ["http://localhost:5175", "http://localhost:3000" , "http://192.168.100.48:5175/"],
-    credentials: true
+    origin: true,
+    credentials: true,
   }),
 );
+
 
 app.use(express.json());
 app.use(

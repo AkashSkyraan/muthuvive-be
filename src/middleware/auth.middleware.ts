@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 interface JwtPayload {
-  id: number;
+  user_id: number;
 }
 
 export const authMiddleware = (
@@ -11,6 +11,7 @@ export const authMiddleware = (
   next: NextFunction,
 ) => {
   try {
+   
     const authHeader = req.headers.authorization;
 
     const bearerToken = authHeader?.startsWith("Bearer ")
@@ -19,6 +20,7 @@ export const authMiddleware = (
 
     const token = bearerToken || req.cookies?.access_token;
 
+   
     if (!token) {
       return res.status(401).json({
         success: 0,
@@ -27,7 +29,6 @@ export const authMiddleware = (
     }
 
     if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET missing");
       return res.status(500).json({
         success: 0,
         message: "Internal Server Error",
@@ -36,8 +37,12 @@ export const authMiddleware = (
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
 
-    req.user = { id: decoded.id };
+    
+    req.user = {
+      id: decoded.user_id,
+    };
 
+   
     next();
   } catch (error) {
     console.log("Auth Middleware Error:", error);

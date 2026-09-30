@@ -83,6 +83,7 @@ class PropertyController {
     static async addUpdatePropertyArea(req, res) {
         try {
             const data = (0, helper_1.validateRequest)(req.body, validator_1.addUpdatePropertyAreaSchema);
+            console.log(data);
             const result = await property_model_1.PropertyModel.addUpdatePropertyArea(data);
             return (0, helper_1.sendResponse)(res, 200, 1, [result], data.id
                 ? "Property Area updated successfully"

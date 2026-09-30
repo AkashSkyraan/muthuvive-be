@@ -82,7 +82,7 @@ export class PropertyModel {
       sql += ` WHERE ${conditions.join(" AND ")}`;
     }
 
-    sql += ` ORDER BY id DESC`;
+    sql += ` ORDER BY id ASC`;
 
     const rows: any = await executeQuery(sql, values);
 
@@ -401,6 +401,4 @@ export class PropertyModel {
   };
 
   // nearby
-
-
 }

@@ -7547,6 +7547,11 @@
                 "description": "",
                 "parameters": [
                     {
+                        "name": "authorization",
+                        "in": "header",
+                        "type": "string"
+                    },
+                    {
                         "name": "body",
                         "in": "body",
                         "schema": {
@@ -7563,8 +7568,11 @@
                     }
                 ],
                 "responses": {
-                    "default": {
-                        "description": ""
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -7574,17 +7582,16 @@
                 "description": "",
                 "parameters": [
                     {
+                        "name": "authorization",
+                        "in": "header",
+                        "type": "string"
+                    },
+                    {
                         "name": "body",
                         "in": "body",
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "prop_id": {
-                                    "example": "any"
-                                },
-                                "plan_id": {
-                                    "example": "any"
-                                },
                                 "razorpay_order_id": {
                                     "example": "any"
                                 },
@@ -7599,8 +7606,11 @@
                     }
                 ],
                 "responses": {
-                    "default": {
-                        "description": ""
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -7610,14 +7620,22 @@
                 "description": "",
                 "parameters": [
                     {
+                        "name": "authorization",
+                        "in": "header",
+                        "type": "string"
+                    },
+                    {
                         "name": "razorpay_order_id",
                         "in": "query",
                         "type": "string"
                     }
                 ],
                 "responses": {
-                    "default": {
-                        "description": ""
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -7626,6 +7644,11 @@
             "post": {
                 "description": "",
                 "parameters": [
+                    {
+                        "name": "authorization",
+                        "in": "header",
+                        "type": "string"
+                    },
                     {
                         "name": "x-razorpay-signature",
                         "in": "header",
@@ -7638,6 +7661,9 @@
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"

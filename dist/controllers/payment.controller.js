@@ -13,6 +13,7 @@ class PaymentController {
     static async createOrder(req, res) {
         try {
             const user_id = Number(req.user?.id);
+            console.log(user_id);
             const { prop_id, plan_id } = req.body;
             if (!user_id) {
                 return (0, helper_1.sendResponse)(res, 401, 0, [], "Unauthorized", []);
@@ -41,26 +42,20 @@ class PaymentController {
     static async verifyPayment(req, res) {
         try {
             const user_id = Number(req.user?.id);
-            const { prop_id, plan_id, razorpay_order_id, razorpay_payment_id, razorpay_signature, } = req.body;
             if (!user_id) {
                 return (0, helper_1.sendResponse)(res, 401, 0, [], "Unauthorized", []);
             }
-            if (!prop_id ||
-                !plan_id ||
-                !razorpay_order_id ||
-                !razorpay_payment_id ||
-                !razorpay_signature) {
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+            if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
                 return (0, helper_1.sendResponse)(res, 400, 0, [], "Payment details are required", []);
             }
-            const data = await payment_model_1.PaymentModel.verifyPayment({
+            const data = await payment_model_1.PaymentModel.completePaidAndPost({
                 user_id,
-                prop_id: String(prop_id),
-                plan_id: Number(plan_id),
                 razorpay_order_id,
                 razorpay_payment_id,
                 razorpay_signature,
             });
-            return (0, helper_1.sendResponse)(res, 200, 1, data, "Payment verified successfully", []);
+            return (0, helper_1.sendResponse)(res, 200, 1, data, "Payment verified and property posted successfully", []);
         }
         catch (error) {
             console.error("Verify payment error:", error);

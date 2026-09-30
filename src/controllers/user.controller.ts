@@ -82,9 +82,7 @@ export class UserController {
 
   static getUser = async (req: Request, res: Response) => {
     try {
-      console.log("NODE_ENV:", process.env.NODE_ENV);
-      console.log("Origin:", req.headers.origin);
-      console.log("Cookies:", req.cookies);
+      
 
       const token = req.cookies?.access_token;
 

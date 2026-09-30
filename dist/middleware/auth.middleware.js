@@ -19,14 +19,15 @@ const authMiddleware = (req, res, next) => {
             });
         }
         if (!process.env.JWT_SECRET) {
-            console.error("JWT_SECRET missing");
             return res.status(500).json({
                 success: 0,
                 message: "Internal Server Error",
             });
         }
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        req.user = { id: decoded.id };
+        req.user = {
+            id: decoded.user_id,
+        };
         next();
     }
     catch (error) {

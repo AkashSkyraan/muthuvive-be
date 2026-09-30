@@ -11,7 +11,7 @@ class PaymentController {
   static async createOrder(req: Request, res: Response) {
     try {
       const user_id = Number(req.user?.id);
-
+      console.log(user_id);
       const { prop_id, plan_id } = req.body;
 
       if (!user_id) {
@@ -62,25 +62,14 @@ class PaymentController {
     try {
       const user_id = Number(req.user?.id);
 
-      const {
-        prop_id,
-        plan_id,
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature,
-      } = req.body;
-
       if (!user_id) {
         return sendResponse(res, 401, 0, [], "Unauthorized", []);
       }
 
-      if (
-        !prop_id ||
-        !plan_id ||
-        !razorpay_order_id ||
-        !razorpay_payment_id ||
-        !razorpay_signature
-      ) {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+        req.body;
+
+      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
         return sendResponse(
           res,
           400,
@@ -91,10 +80,8 @@ class PaymentController {
         );
       }
 
-      const data = await PaymentModel.verifyPayment({
+      const data = await PaymentModel.completePaidAndPost({
         user_id,
-        prop_id: String(prop_id),
-        plan_id: Number(plan_id),
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
@@ -105,7 +92,7 @@ class PaymentController {
         200,
         1,
         data,
-        "Payment verified successfully",
+        "Payment verified and property posted successfully",
         [],
       );
     } catch (error: any) {

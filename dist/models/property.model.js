@@ -66,7 +66,7 @@ class PropertyModel {
         if (conditions.length > 0) {
             sql += ` WHERE ${conditions.join(" AND ")}`;
         }
-        sql += ` ORDER BY id DESC`;
+        sql += ` ORDER BY id ASC`;
         const rows = await (0, helper_1.executeQuery)(sql, values);
         if (data.id) {
             return rows && rows.length > 0 ? rows[0] : null;

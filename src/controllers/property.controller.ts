@@ -134,6 +134,8 @@ export class PropertyController {
     try {
       const data = validateRequest(req.body, addUpdatePropertyAreaSchema);
 
+      console.log(data)
+
       const result = await PropertyModel.addUpdatePropertyArea(data);
 
       return sendResponse(

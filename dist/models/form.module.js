@@ -23,6 +23,7 @@ class FormModule {
         const { category, sub_category, country, state, district, city, map_link } = data.body;
         const user_id = data.user_id;
         const prop_id = data.prop_id;
+        const type = data.type ?? null;
         if (prop_id) {
             const result = await (0, helper_1.executeQuery)(`
         UPDATE prop_form
@@ -34,6 +35,7 @@ class FormModule {
           district = ?,
           city = ?,
           map = ?,
+          type = ?,
           step = GREATEST(step, 1)
         WHERE prop_id = ?
           AND user_id = ?
@@ -45,6 +47,7 @@ class FormModule {
                 district,
                 city,
                 map_link,
+                type,
                 prop_id,
                 user_id,
             ]);
@@ -70,10 +73,11 @@ class FormModule {
         city,
         user_id,
         map,
+         type,
         step,
         status
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'inprogress')
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, 1, 'inprogress')
       `, [
             newPropId,
             category,
@@ -84,6 +88,7 @@ class FormModule {
             city,
             user_id,
             map_link,
+            type,
         ]);
         return {
             prop_id: newPropId,

@@ -5483,6 +5483,10 @@
                                     "type": "string",
                                     "example": "PAb12C3456"
                                 },
+                                "type": {
+                                    "type": "string",
+                                    "example": "admin"
+                                },
                                 "category": {
                                     "type": "number",
                                     "example": 1

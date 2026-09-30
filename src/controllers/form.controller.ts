@@ -8,6 +8,13 @@ export class FormController {
     try {
       const step = Number(req.body.step);
       const user_id = Number(req.body.user_id);
+
+      const type =
+        req.body.type !== undefined &&
+        req.body.type !== null &&
+        String(req.body.type).trim()
+          ? String(req.body.type).trim()
+          : null;
       const prop_id = req.body.prop_id ? String(req.body.prop_id).trim() : null;
       if (!step || step < 1 || step > 5) {
         return sendResponse(res, 400, 0, [], "Invalid step", []);
@@ -20,6 +27,7 @@ export class FormController {
         step,
         prop_id,
         user_id,
+        type,
         body: req.body,
       });
 
@@ -98,6 +106,4 @@ export class FormController {
       return sendResponse(res, 500, 0, [], "Internal server error", []);
     }
   };
-
-  
 }

@@ -27,6 +27,7 @@ export class FormModule {
 
     const user_id = data.user_id;
     const prop_id = data.prop_id;
+    const type = data.type ?? null;
 
     if (prop_id) {
       const result: any = await executeQuery(
@@ -40,6 +41,7 @@ export class FormModule {
           district = ?,
           city = ?,
           map = ?,
+          type = ?,
           step = GREATEST(step, 1)
         WHERE prop_id = ?
           AND user_id = ?
@@ -52,6 +54,7 @@ export class FormModule {
           district,
           city,
           map_link,
+          type,
           prop_id,
           user_id,
         ],
@@ -83,10 +86,11 @@ export class FormModule {
         city,
         user_id,
         map,
+         type,
         step,
         status
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'inprogress')
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, 1, 'inprogress')
       `,
       [
         newPropId,
@@ -98,6 +102,7 @@ export class FormModule {
         city,
         user_id,
         map_link,
+        type,
       ],
     );
 

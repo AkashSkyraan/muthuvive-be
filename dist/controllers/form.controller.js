@@ -32,6 +32,11 @@ FormController.savePropertyStep = async (req, res) => {
     try {
         const step = Number(req.body.step);
         const user_id = Number(req.body.user_id);
+        const type = req.body.type !== undefined &&
+            req.body.type !== null &&
+            String(req.body.type).trim()
+            ? String(req.body.type).trim()
+            : null;
         const prop_id = req.body.prop_id ? String(req.body.prop_id).trim() : null;
         if (!step || step < 1 || step > 5) {
             return (0, helper_1.sendResponse)(res, 400, 0, [], "Invalid step", []);
@@ -43,6 +48,7 @@ FormController.savePropertyStep = async (req, res) => {
             step,
             prop_id,
             user_id,
+            type,
             body: req.body,
         });
         return (0, helper_1.sendResponse)(res, 200, 1, data, `Property Form Data saved successfully`, []);

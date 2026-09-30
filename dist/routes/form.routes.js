@@ -17,7 +17,7 @@ router.post("/properties/step",
         step: 1,
         user_id: 1,
         prop_id: "PAb12C3456",
-
+        type : "admin",
         category: 1,
         sub_category: 2,
         country: "India",

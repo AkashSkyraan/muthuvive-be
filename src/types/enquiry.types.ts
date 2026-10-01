@@ -7,6 +7,7 @@ export interface AddUpdateEnquiry {
   property_id?: String;
   regarding: string;
   status?: string;
+  user_id?: number;
 }
 
 export interface getEnquiry {
@@ -16,4 +17,10 @@ export interface getEnquiry {
   property_id?: string;
   mobile?: string;
   email?: string;
+}
+
+export interface AddUpdateEnquiryStatus {
+  id?: number;
+
+  status?: string;
 }

@@ -209,6 +209,7 @@ export const addUpdateEnquirySchema = Joi.object({
   name: Joi.string().required().messages({
     "any.required": "name is required",
   }),
+  user_id: Joi.number().optional(),
   email: Joi.string().optional(),
   mobile: Joi.string().optional(),
   messages: Joi.string().optional(),
@@ -269,4 +270,14 @@ export const addUpdateConsultantSchema = Joi.object({
 export const bookmarkSchema = Joi.object({
   user_id: Joi.number().required(),
   prop_id: Joi.string().trim().required(),
+});
+
+export const EnquiryStatusSchema = Joi.object({
+  id: Joi.number().integer().required().messages({
+    "any.required": "ID isrequired",
+  }),
+
+  status: Joi.string().required().messages({
+    "any.required": "Status is required",
+  }),
 });

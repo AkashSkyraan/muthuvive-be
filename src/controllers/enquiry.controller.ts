@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { EnquiryModel } from "../models/enquiry.model";
 import { sendResponse, validateRequest } from "../utils/helper";
-import { addUpdateEnquirySchema } from "../utils/validator";
+import {
+  addUpdateEnquirySchema,
+  EnquiryStatusSchema,
+} from "../utils/validator";
 
 class EnquiryController {
   static async addUpdateEnquiry(req: Request, res: Response) {
@@ -61,6 +64,31 @@ class EnquiryController {
 
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error.errors,
+      ]);
+    }
+  }
+
+  static async enquiryStatusChange(req: Request, res: Response) {
+    try {
+      const data = validateRequest(req.body, EnquiryStatusSchema);
+
+      const result = await EnquiryModel.addUpdateEnquiryStatus(data);
+
+     
+
+      return sendResponse(
+        res,
+        200,
+        1,
+        [result],
+        "Enquiry status updated successfully",
+        [],
+      );
+    } catch (error: any) {
+      console.log("Enquiry status change error:", error);
+
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.errors || error?.message,
       ]);
     }
   }

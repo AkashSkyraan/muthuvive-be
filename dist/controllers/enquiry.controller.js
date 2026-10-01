@@ -44,5 +44,18 @@ class EnquiryController {
             ]);
         }
     }
+    static async enquiryStatusChange(req, res) {
+        try {
+            const data = (0, helper_1.validateRequest)(req.body, validator_1.EnquiryStatusSchema);
+            const result = await enquiry_model_1.EnquiryModel.addUpdateEnquiryStatus(data);
+            return (0, helper_1.sendResponse)(res, 200, 1, [result], "Enquiry status updated successfully", []);
+        }
+        catch (error) {
+            console.log("Enquiry status change error:", error);
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error?.errors || error?.message,
+            ]);
+        }
+    }
 }
 exports.default = EnquiryController;

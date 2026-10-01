@@ -4938,7 +4938,7 @@
                                     "type": "string",
                                     "example": "9876543210"
                                 },
-                                "message": {
+                                "messages": {
                                     "type": "string",
                                     "example": "I am interested in this property"
                                 },
@@ -5058,6 +5058,16 @@
                     },
                     "500": {
                         "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/enquiry/status": {
+            "patch": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
                     }
                 }
             }

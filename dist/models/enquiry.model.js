@@ -13,6 +13,7 @@ class EnquiryModel {
             email = ?,
             messages = ?,
             regarding = ?,
+            user_id = ?,
             property_id = ?,
             status = ? 
           WHERE id = ?
@@ -23,6 +24,7 @@ class EnquiryModel {
                 data.email,
                 data.messages,
                 data.regarding,
+                data.user_id,
                 data.property_id,
                 data.status,
                 data.id,
@@ -38,9 +40,10 @@ class EnquiryModel {
           email,
           messages,
           regarding,
-          property_id
+          property_id,
+          user_id 
         )
-        VALUES (?, ?, ?, ? ,? , ?)
+        VALUES (?, ?, ?, ? ,? , ? , ?)
       `;
         const result = await (0, helper_1.executeQuery)(sql, [
             data.name,
@@ -49,6 +52,7 @@ class EnquiryModel {
             data.messages,
             data.regarding,
             data.property_id,
+            data.user_id,
         ]);
         return {
             id: result.insertId,
@@ -87,6 +91,7 @@ class EnquiryModel {
       name,
       regarding,
       property_id,
+      user_id,
       messages,
       mobile,
       email,
@@ -102,6 +107,27 @@ class EnquiryModel {
             return rows && rows.length > 0 ? rows[0] : null;
         }
         return rows || [];
+    }
+    static async addUpdateEnquiryStatus(data) {
+        if (!data.id) {
+            throw new Error("Enquiry ID is required");
+        }
+        if (!data.status) {
+            throw new Error("Enquiry status is required");
+        }
+        const sql = `
+    UPDATE send_enquiry
+    SET status = ?
+    WHERE id = ?
+  `;
+        const result = await (0, helper_1.executeQuery)(sql, [data.status, data.id]);
+        if (result?.affectedRows === 0) {
+            throw new Error("Enquiry not found");
+        }
+        return {
+            id: data.id,
+            status: data.status,
+        };
     }
 }
 exports.EnquiryModel = EnquiryModel;

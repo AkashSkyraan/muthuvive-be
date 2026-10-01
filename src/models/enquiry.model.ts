@@ -1,4 +1,8 @@
-import { AddUpdateEnquiry, getEnquiry } from "../types/enquiry.types";
+import {
+  AddUpdateEnquiry,
+  AddUpdateEnquiryStatus,
+  getEnquiry,
+} from "../types/enquiry.types";
 import { executeQuery } from "../utils/helper";
 
 export class EnquiryModel {
@@ -12,6 +16,7 @@ export class EnquiryModel {
             email = ?,
             messages = ?,
             regarding = ?,
+            user_id = ?,
             property_id = ?,
             status = ? 
           WHERE id = ?
@@ -23,6 +28,7 @@ export class EnquiryModel {
         data.email,
         data.messages,
         data.regarding,
+        data.user_id,
         data.property_id,
         data.status,
         data.id,
@@ -40,9 +46,10 @@ export class EnquiryModel {
           email,
           messages,
           regarding,
-          property_id
+          property_id,
+          user_id 
         )
-        VALUES (?, ?, ?, ? ,? , ?)
+        VALUES (?, ?, ?, ? ,? , ? , ?)
       `;
 
     const result: any = await executeQuery(sql, [
@@ -52,6 +59,7 @@ export class EnquiryModel {
       data.messages,
       data.regarding,
       data.property_id,
+      data.user_id,
     ]);
 
     return {
@@ -99,6 +107,7 @@ export class EnquiryModel {
       name,
       regarding,
       property_id,
+      user_id,
       messages,
       mobile,
       email,
@@ -119,5 +128,32 @@ export class EnquiryModel {
     }
 
     return rows || [];
+  }
+
+  static async addUpdateEnquiryStatus(data: AddUpdateEnquiryStatus) {
+    if (!data.id) {
+      throw new Error("Enquiry ID is required");
+    }
+
+    if (!data.status) {
+      throw new Error("Enquiry status is required");
+    }
+
+    const sql = `
+    UPDATE send_enquiry
+    SET status = ?
+    WHERE id = ?
+  `;
+
+    const result: any = await executeQuery(sql, [data.status, data.id]);
+
+    if (result?.affectedRows === 0) {
+      throw new Error("Enquiry not found");
+    }
+
+    return {
+      id: data.id,
+      status: data.status,
+    };
   }
 }

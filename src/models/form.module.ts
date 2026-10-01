@@ -617,6 +617,7 @@ export class FormModule {
       other_type,
       step,
       status,
+      plots,
       created_at,
       updated_at,
       purchase_plan,
@@ -1023,6 +1024,7 @@ export class FormModule {
       pf.approved_at,
       pf.rejected_at,
       pf.rejected_reason,
+      pf.plots,
       pf.purchased_at,
       pf.expired_at,
       pf.sold_at,
@@ -1603,6 +1605,7 @@ export class FormModule {
         pf.user_id,
 
         pf.map,
+        pf.plots,
 
         pf.prop_area,
         pf.area_unit,

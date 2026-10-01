@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bookmarkSchema = exports.addUpdateConsultantSchema = exports.addUpdateSubCategorySchema = exports.addUpdatePropertyHighlightSchema = exports.addUpdateAmenitiesSchema = exports.addUpdateEnquirySchema = exports.addUpdateGallerySchema = exports.addUpdateAboutUsSchema = exports.addUpdatePropertyAreaSchema = exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
+exports.EnquiryStatusSchema = exports.bookmarkSchema = exports.addUpdateConsultantSchema = exports.addUpdateSubCategorySchema = exports.addUpdatePropertyHighlightSchema = exports.addUpdateAmenitiesSchema = exports.addUpdateEnquirySchema = exports.addUpdateGallerySchema = exports.addUpdateAboutUsSchema = exports.addUpdatePropertyAreaSchema = exports.updateProfileSchema = exports.addUpdateTestimonialSchema = exports.addUpdatePlanSchema = exports.addUpdateCategorySchema = exports.loginSchema = exports.signupSchema = exports.resetPasswordSchema = exports.verifyOtpSchema = exports.requestOtpSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 exports.requestOtpSchema = joi_1.default.object({
     type: joi_1.default.string().optional(),
@@ -175,6 +175,7 @@ exports.addUpdateEnquirySchema = joi_1.default.object({
     name: joi_1.default.string().required().messages({
         "any.required": "name is required",
     }),
+    user_id: joi_1.default.number().optional(),
     email: joi_1.default.string().optional(),
     mobile: joi_1.default.string().optional(),
     messages: joi_1.default.string().optional(),
@@ -220,4 +221,12 @@ exports.addUpdateConsultantSchema = joi_1.default.object({
 exports.bookmarkSchema = joi_1.default.object({
     user_id: joi_1.default.number().required(),
     prop_id: joi_1.default.string().trim().required(),
+});
+exports.EnquiryStatusSchema = joi_1.default.object({
+    id: joi_1.default.number().integer().required().messages({
+        "any.required": "ID isrequired",
+    }),
+    status: joi_1.default.string().required().messages({
+        "any.required": "Status is required",
+    }),
 });

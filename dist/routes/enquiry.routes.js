@@ -23,7 +23,7 @@ router.post("/add-enquiry",
       name: "Kamalesh",
       email: "kamalesh@gmail.com",
       mobile: "9876543210",
-      message: "I am interested in this property",
+      messages: "I am interested in this property",
       regarding: "Property Enquiry",
       status : "pending",
       property_id: "pSDF1234"
@@ -108,4 +108,5 @@ router.get("/get-enquiries",
   }
 */
 enquiry_controller_1.default.getEnquiryData);
+router.patch("/status", enquiry_controller_1.default.enquiryStatusChange);
 exports.default = router;

@@ -71,7 +71,8 @@ router.post(
           pr_vid: [105, 106],
           patta: [107],
           pr_doc: [108, 109],
-          status : "inprogress"
+          status : "inprogress",
+          plots : 1
         }
       }
 

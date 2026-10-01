@@ -149,6 +149,7 @@ export class FormModule {
       your_floor,
       avail_status,
       bhk,
+      plots,
     } = body;
 
     const result: any = await executeQuery(
@@ -184,6 +185,7 @@ export class FormModule {
       super_build_unit = ?,
       total_floor = ?,
       your_floor = ?,
+      plots = ?,
       avail_status = ?,
       bhk = ?,
      step = GREATEST(step, 2)
@@ -220,6 +222,7 @@ export class FormModule {
         super_build_unit ?? null,
         total_floor ?? null,
         your_floor ?? null,
+        plots ?? null,
         avail_status ?? null,
         bhk ?? null,
         prop_id ?? null,

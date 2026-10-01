@@ -99,7 +99,7 @@ class FormModule {
     }
     static async updatePropertyStep2(data) {
         const { body, user_id, prop_id } = data;
-        const { prop_name, prop_area, area_unit, road_plan, road_length, road_length_unit, pathway, length, length_unit, width, width_unit, c_well, i_well, electricity, hp, facing, construct, construct_type, other_type, min_price, max_price, carpet_area, carp_unit, build, build_unit, super_build, super_build_unit, total_floor, your_floor, avail_status, bhk, } = body;
+        const { prop_name, prop_area, area_unit, road_plan, road_length, road_length_unit, pathway, length, length_unit, width, width_unit, c_well, i_well, electricity, hp, facing, construct, construct_type, other_type, min_price, max_price, carpet_area, carp_unit, build, build_unit, super_build, super_build_unit, total_floor, your_floor, avail_status, bhk, plots, } = body;
         const result = await (0, helper_1.executeQuery)(`
     UPDATE prop_form
     SET
@@ -132,6 +132,7 @@ class FormModule {
       super_build_unit = ?,
       total_floor = ?,
       your_floor = ?,
+      plots = ?,
       avail_status = ?,
       bhk = ?,
      step = GREATEST(step, 2)
@@ -167,6 +168,7 @@ class FormModule {
             super_build_unit ?? null,
             total_floor ?? null,
             your_floor ?? null,
+            plots ?? null,
             avail_status ?? null,
             bhk ?? null,
             prop_id ?? null,

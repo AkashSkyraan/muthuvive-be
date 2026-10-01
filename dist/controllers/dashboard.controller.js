@@ -135,7 +135,15 @@ DashController.loginAdmin = async (req, res) => {
         if (admin.status !== "active") {
             return (0, helper_1.sendResponse)(res, 200, 0, [], "Your account is inactive", []);
         }
-        const isPasswordValid = await bcryptjs_1.default.compare(password, admin.password);
+        let isPasswordValid = false;
+        // Admin password is bcrypt hashed
+        if (admin.role === "admin") {
+            isPasswordValid = await bcryptjs_1.default.compare(password, admin.password);
+        }
+        // Subadmin password is stored as plain text
+        else if (admin.role === "subadmin") {
+            isPasswordValid = password === admin.password;
+        }
         if (!isPasswordValid) {
             return (0, helper_1.sendResponse)(res, 200, 0, [], "Invalid username or password", []);
         }
@@ -211,14 +219,9 @@ DashController.logoutAdmin = async (req, res) => {
 };
 DashController.getSUbAdmin = async (req, res) => {
     try {
-        const name = req.query.name
-            ? String(req.query.name).trim()
-            : null;
-        const id = req.query.id
-            ? Number(req.query.id)
-            : null;
-        const status = req.query.status &&
-            String(req.query.status) !== "all"
+        const name = req.query.name ? String(req.query.name).trim() : null;
+        const id = req.query.id ? Number(req.query.id) : null;
+        const status = req.query.status && String(req.query.status) !== "all"
             ? String(req.query.status)
             : null;
         // ==========================================

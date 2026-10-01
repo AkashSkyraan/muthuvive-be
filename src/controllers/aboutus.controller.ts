@@ -78,12 +78,13 @@ export class AboutUsController {
         200,
         1,
         [result],
-        data.id
+        data?.id
           ? "Consultants updated successfully"
           : "Consultants added successfully",
         [],
       );
     } catch (error: any) {
+      console.log(error)
       return sendResponse(res, 500, 0, [], "Internal server error", [
         error.errors,
       ]);

@@ -55,6 +55,9 @@ app.use("/src/uploads/images", (req, res, next) => {
     next();
 }, express_1.default.static(path_1.default.join(process.cwd(), "src", "uploads", "images")));
 const PORT = process.env.PORT || 5000;
+app.get("/check", (req, res) => {
+    res.send("API working");
+});
 app.listen(PORT, () => {
     console.log(`Server is swimming on PORT ${PORT}`);
 });

@@ -3,7 +3,7 @@ const swaggerAutogen = require("swagger-autogen")();
 const doc = {
   info: {
     title: "Muthu Vive's API",
-    description: "Real Estate Website API",
+    description: "Real Estate Websit API",
   },
   // host: "localhost:5001/api",
   // schemes: ["http"],

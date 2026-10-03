@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "title": "Muthu Vive's API",
-        "description": "Real Estate Website API",
+        "description": "Real Estate Websit API",
         "version": "1.0.0"
     },
     "host": "muthuvives.skyraantech.com",

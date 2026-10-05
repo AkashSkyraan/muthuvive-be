@@ -1,11 +1,8 @@
-
-
 {
   "name": "muthu-be",
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-  
     "dev": "nodemon --exec ts-node --files src/app.ts",
     "build": "tsc",
     "swagger": "node src/docs/swagger.ts"
@@ -30,7 +27,7 @@
     "mysql2": "^3.24.2",
     "nanoid": "^6.0.1",
     "node-cron": "^4.6.0",
-    "nodemailer": "^9.0.5",
+    "nodemailer": "^9.1.1",
     "nodemon": "^3.1.14",
     "razorpay": "^2.9.8",
     "swagger-autogen": "^2.23.7",

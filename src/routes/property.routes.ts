@@ -383,7 +383,7 @@ router.get(
 //      example: 'coimbatore',
 //       description: 'fetch data location for fetch beside properties'
 //     }
-    
+
 //  #swagger.parameters['user_id'] = {
 //       in: 'query',
 //       required: false,
@@ -391,7 +391,6 @@ router.get(
 //       example: 1,
 //       description: 'user_id for users'
 //     }
-    
 
 //     #swagger.responses[400] = {
 //       description: 'Property ID is required'
@@ -407,7 +406,6 @@ router.get(
 //   */
 //   PropertyController.getPropertyBasedOnTypes,
 // );
-
 
 router.get(
   "/get-property",
@@ -1548,5 +1546,7 @@ router.get(
   */
   PropertyController.getRecentViews,
 );
+
+router.get("/user", PropertyController.getPropertyUser);
 
 export default router;

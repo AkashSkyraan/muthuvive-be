@@ -5,3 +5,8 @@ export interface UpdateProfileInput {
   country_code?: string;
   user_id: number;
 }
+
+export interface PropertyUserParams {
+  user_id: number;
+  type: string;
+}

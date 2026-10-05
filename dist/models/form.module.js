@@ -521,7 +521,7 @@ class FormModule {
     static async getRecentViews(data) {
         const { user_id } = data;
         const page = Math.max(Number(data.page) || 1, 1);
-        const limit = Math.min(Math.max(Number(data.limit) || 10, 1), 30);
+        const limit = Math.min(Math.max(Number(data.limit) || 30, 1), 30);
         const offset = (page - 1) * limit;
         if (!user_id) {
             throw new Error("User ID is required");
@@ -597,76 +597,397 @@ class FormModule {
             },
         };
     }
+    // static async getPropertyBasedOnTypes(data: any) {
+    //   const {
+    //     status,
+    //     type,
+    //     location,
+    //     user_id,
+    //     min_price,
+    //     max_price,
+    //     amenities,
+    //     prop_highlights,
+    //     search = undefined,
+    //     facingDirection,
+    //     searchLoc,
+    //     page,
+    //     limit,
+    //     offset,
+    //   } = data;
+    //   let baseWhere = `WHERE pf.created_at IS NOT NULL`;
+    //   const baseParams: any[] = [];
+    //   // ---------------------------------------
+    //   // USER
+    //   // ---------------------------------------
+    //   if (user_id) {
+    //     baseWhere += ` AND pf.user_id = ?`;
+    //     baseParams.push(user_id);
+    //   }
+    //   if (search?.trim()) {
+    //     baseWhere += ` AND pf.prop_name LIKE ?`;
+    //     baseParams.push(`%${search.trim()}%`);
+    //   }
+    //   if (searchLoc?.city && searchLoc?.district && searchLoc?.state) {
+    //     baseWhere += `
+    //   AND (
+    //     LOWER(TRIM(pf.city)) LIKE LOWER(TRIM(?))
+    //     AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+    //     AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    //   )
+    // `;
+    //     baseParams.push(
+    //       `%${searchLoc.city}%`,
+    //       searchLoc.district,
+    //       searchLoc.state,
+    //     );
+    //   }
+    //   // ---------------------------------------
+    //   // STATUS
+    //   // ---------------------------------------
+    //   if (Array.isArray(status) && status.length > 0) {
+    //     const placeholders = status.map(() => "?").join(",");
+    //     baseWhere += ` AND pf.status IN (${placeholders})`;
+    //     baseParams.push(...status);
+    //   }
+    //   // ---------------------------------------
+    //   // PROPERTY TYPE
+    //   // ---------------------------------------
+    //   if (type) {
+    //     baseWhere += ` AND pf.category = ?`;
+    //     baseParams.push(type);
+    //   }
+    //   // ---------------------------------------
+    //   // MIN PRICE
+    //   // ---------------------------------------
+    //   if (min_price !== null && min_price !== undefined) {
+    //     baseWhere += ` AND pf.min_price >= ?`;
+    //     baseParams.push(min_price);
+    //   }
+    //   // ---------------------------------------
+    //   // MAX PRICE
+    //   // ---------------------------------------
+    //   if (max_price !== null && max_price !== undefined) {
+    //     baseWhere += ` AND pf.max_price <= ?`;
+    //     baseParams.push(max_price);
+    //   }
+    //   if (facingDirection) {
+    //     const facingValues = String(facingDirection)
+    //       .split(",")
+    //       .map((value) => Number(value.trim()))
+    //       .filter((value) => Number.isInteger(value));
+    //     if (facingValues.length > 0) {
+    //       const placeholders = facingValues.map(() => "?").join(",");
+    //       baseWhere += `
+    //     AND pf.facing IN (${placeholders})
+    //   `;
+    //       baseParams.push(...facingValues);
+    //     }
+    //   }
+    //   // ---------------------------------------
+    //   // AMENITIES
+    //   // ---------------------------------------
+    //   if (Array.isArray(amenities) && amenities.length > 0) {
+    //     const placeholders = amenities.map(() => "?").join(",");
+    //     baseWhere += `
+    //     AND EXISTS (
+    //       SELECT 1
+    //       FROM prop_amenities pa_filter
+    //       WHERE pa_filter.prop_id = pf.prop_id
+    //       AND pa_filter.amenity_id IN (${placeholders})
+    //     )
+    //   `;
+    //     baseParams.push(...amenities);
+    //   }
+    //   // ---------------------------------------
+    //   // PROPERTY HIGHLIGHTS
+    //   // ---------------------------------------
+    //   if (Array.isArray(prop_highlights) && prop_highlights.length > 0) {
+    //     const placeholders = prop_highlights.map(() => "?").join(",");
+    //     baseWhere += `
+    //     AND EXISTS (
+    //       SELECT 1
+    //       FROM prop_highs ph_filter
+    //       WHERE ph_filter.prop_id = pf.prop_id
+    //       AND ph_filter.high_id IN (${placeholders})
+    //     )
+    //   `;
+    //     baseParams.push(...prop_highlights);
+    //   }
+    //   // ---------------------------------------
+    //   // LOCATION
+    //   // ---------------------------------------
+    //   let city: string | null = null;
+    //   let district: string | null = null;
+    //   let state: string | null = null;
+    //   if (location) {
+    //     const locationParts = String(location)
+    //       .split(",")
+    //       .map((item) => item.trim())
+    //       .filter(Boolean);
+    //     city = locationParts[0] || null;
+    //     district = locationParts[1] || null;
+    //     state = locationParts[2] || null;
+    //   }
+    //   // ---------------------------------------
+    //   // LOCATION WHERE
+    //   // ---------------------------------------
+    //   let locationWhere = "";
+    //   const locationParams: any[] = [];
+    //   if (city && district && state) {
+    //     locationWhere = `
+    //     AND (
+    //       (
+    //         LOWER(TRIM(pf.city)) = LOWER(TRIM(?))
+    //         AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+    //         AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    //       )
+    //       OR
+    //       (
+    //         LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+    //         AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    //       )
+    //       OR
+    //       (
+    //         LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    //       )
+    //     )
+    //   `;
+    //     locationParams.push(city, district, state, district, state, state);
+    //   }
+    //   // ---------------------------------------
+    //   // COUNT
+    //   // ---------------------------------------
+    //   const countQuery = `
+    //   SELECT COUNT(*) AS total
+    //   FROM prop_form pf
+    //   ${baseWhere}
+    //   ${locationWhere}
+    // `;
+    //   const countResult: any[] = await executeQuery(countQuery, [
+    //     ...baseParams,
+    //     ...locationParams,
+    //   ]);
+    //   const total = Number(countResult[0]?.total || 0);
+    //   // ---------------------------------------
+    //   // PROPERTY DATA
+    //   // ---------------------------------------
+    //   const dataQuery = `
+    //   SELECT
+    //     pf.id,
+    //     pf.prop_id,
+    //     pf.prop_name,
+    //     pf.user_id,
+    //     pf.type,
+    //     pf.category,
+    //     pc.name AS category_name,
+    //     pf.sub_category,
+    //     psc.sub_name AS sub_category_name,
+    //     pf.country,
+    //     pf.state,
+    //     pf.district,
+    //     pf.city,
+    //     pf.prop_area,
+    //     pf.area_unit,
+    //     pf.min_price,
+    //     pf.max_price,
+    //     pf.status,
+    //     pf.bhk,
+    //     pf.requested_at,
+    //     pf.approved_at,
+    //     pf.rejected_at,
+    //     pf.rejected_reason,
+    //     pf.plots,
+    //     pf.purchased_at,
+    //     pf.expired_at,
+    //     pf.sold_at,
+    //     pf.purchase_plan,
+    //     pf.created_at,
+    //     CASE
+    //       WHEN ? IS NOT NULL
+    //         AND EXISTS (
+    //           SELECT 1
+    //           FROM prop_bookmarks pb
+    //           WHERE pb.user_id = ?
+    //             AND pb.prop_id = pf.prop_id
+    //         )
+    //       THEN 1
+    //       ELSE 0
+    //     END AS is_bookmarked
+    //   FROM prop_form pf
+    //   LEFT JOIN property pc
+    //     ON pc.id = pf.category
+    //   LEFT JOIN prop_sub_category psc
+    //     ON psc.id = pf.sub_category
+    //   ${baseWhere}
+    //   ${locationWhere}
+    //   ${
+    //     city && district && state
+    //       ? `
+    //         ORDER BY
+    //           CASE
+    //             WHEN
+    //               LOWER(TRIM(pf.city)) = LOWER(TRIM(?))
+    //               AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+    //               AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    //             THEN 1
+    //             WHEN
+    //               LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+    //               AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    //             THEN 2
+    //             WHEN
+    //               LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+    //             THEN 3
+    //             ELSE 4
+    //           END,
+    //           pf.id DESC
+    //       `
+    //       : `
+    //         ORDER BY pf.id DESC
+    //       `
+    //   }
+    //   LIMIT ? OFFSET ?
+    // `;
+    //   // ---------------------------------------
+    //   // DATA PARAMS
+    //   // ---------------------------------------
+    //   const dataParams: any[] = [
+    //     user_id || null,
+    //     user_id || null,
+    //     ...baseParams,
+    //     ...locationParams,
+    //   ];
+    //   // ---------------------------------------
+    //   // ORDER BY LOCATION PARAMS
+    //   // ---------------------------------------
+    //   if (city && district && state) {
+    //     dataParams.push(city, district, state, district, state, state);
+    //   }
+    //   // ---------------------------------------
+    //   // PAGINATION
+    //   // ---------------------------------------
+    //   dataParams.push(limit, offset);
+    //   const properties: any[] = await executeQuery(dataQuery, dataParams);
+    //   // ---------------------------------------
+    //   // COVER + ONE AMENITY + ONE HIGHLIGHT
+    //   // ---------------------------------------
+    //   const propertiesWithDetails = await Promise.all(
+    //     properties.map(async (property: any) => {
+    //       const [media, amenities, highlights] = await Promise.all([
+    //         this.getPropertyCover(property.prop_id),
+    //         this.getPropOneAmenity(property.prop_id),
+    //         this.getPropertyOneHigh(property.prop_id),
+    //       ]);
+    //       return {
+    //         ...property,
+    //         cover_image: media || null,
+    //         amenities: Array.isArray(amenities)
+    //           ? amenities[0] || null
+    //           : amenities || null,
+    //         property_highs: Array.isArray(highlights)
+    //           ? highlights[0] || null
+    //           : highlights || null,
+    //       };
+    //     }),
+    //   );
+    //   // ---------------------------------------
+    //   // RESPONSE
+    //   // ---------------------------------------
+    //   return {
+    //     properties: propertiesWithDetails,
+    //     pagination: {
+    //       total,
+    //       page,
+    //       limit,
+    //       totalPages: Math.ceil(total / limit),
+    //     },
+    //   };
+    // }
     static async getPropertyBasedOnTypes(data) {
-        const { status, type, location, user_id, min_price, max_price, amenities, prop_highlights, search = undefined, facingDirection, searchLoc, page, limit, offset, } = data;
-        let baseWhere = `WHERE pf.created_at IS NOT NULL`;
+        const { status, type, location, user_id, min_price, max_price, amenities, prop_highlights, search, facingDirection, searchLoc, page, limit, offset, } = data;
+        // ============================================================
+        // BASE WHERE
+        // ============================================================
+        let baseWhere = `
+    WHERE pf.created_at IS NOT NULL
+  `;
         const baseParams = [];
-        // ---------------------------------------
+        // ============================================================
         // USER
-        // ---------------------------------------
+        // ============================================================
         if (user_id) {
             baseWhere += ` AND pf.user_id = ?`;
             baseParams.push(user_id);
         }
+        // ============================================================
+        // PROPERTY NAME SEARCH
+        // ============================================================
         if (search?.trim()) {
             baseWhere += ` AND pf.prop_name LIKE ?`;
             baseParams.push(`%${search.trim()}%`);
         }
-        if (searchLoc?.city && searchLoc?.district && searchLoc?.state) {
-            baseWhere += `
-    AND (
-      LOWER(TRIM(pf.city)) LIKE LOWER(TRIM(?))
-      AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-      AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-    )
-  `;
-            baseParams.push(`%${searchLoc.city}%`, searchLoc.district, searchLoc.state);
-        }
-        // ---------------------------------------
+        // ============================================================
         // STATUS
-        // ---------------------------------------
+        // ============================================================
         if (Array.isArray(status) && status.length > 0) {
             const placeholders = status.map(() => "?").join(",");
-            baseWhere += ` AND pf.status IN (${placeholders})`;
+            baseWhere += `
+      AND pf.status IN (${placeholders})
+    `;
             baseParams.push(...status);
         }
-        // ---------------------------------------
+        // ============================================================
         // PROPERTY TYPE
-        // ---------------------------------------
+        // ============================================================
         if (type) {
-            baseWhere += ` AND pf.category = ?`;
-            baseParams.push(type);
+            const typeArray = String(type)
+                .split(",")
+                .map((value) => Number(value.trim()))
+                .filter((value) => Number.isInteger(value) && value > 0);
+            if (typeArray.length > 0) {
+                const placeholders = typeArray.map(() => "?").join(",");
+                baseWhere += `
+        AND pf.category IN (${placeholders})
+      `;
+                baseParams.push(...typeArray);
+            }
         }
-        // ---------------------------------------
+        // ============================================================
         // MIN PRICE
-        // ---------------------------------------
+        // ============================================================
         if (min_price !== null && min_price !== undefined) {
-            baseWhere += ` AND pf.min_price >= ?`;
+            baseWhere += `
+      AND pf.min_price >= ?
+    `;
             baseParams.push(min_price);
         }
-        // ---------------------------------------
+        // ============================================================
         // MAX PRICE
-        // ---------------------------------------
+        // ============================================================
         if (max_price !== null && max_price !== undefined) {
-            baseWhere += ` AND pf.max_price <= ?`;
+            baseWhere += `
+      AND pf.max_price <= ?
+    `;
             baseParams.push(max_price);
         }
+        // ============================================================
+        // FACING
+        // ============================================================
         if (facingDirection) {
             const facingValues = String(facingDirection)
                 .split(",")
                 .map((value) => Number(value.trim()))
-                .filter((value) => Number.isInteger(value));
+                .filter((value) => Number.isInteger(value) && value > 0);
             if (facingValues.length > 0) {
                 const placeholders = facingValues.map(() => "?").join(",");
                 baseWhere += `
-      AND pf.facing IN (${placeholders})
-    `;
+        AND pf.facing IN (${placeholders})
+      `;
                 baseParams.push(...facingValues);
             }
         }
-        // ---------------------------------------
+        // ============================================================
         // AMENITIES
-        // ---------------------------------------
+        // ============================================================
         if (Array.isArray(amenities) && amenities.length > 0) {
             const placeholders = amenities.map(() => "?").join(",");
             baseWhere += `
@@ -679,9 +1000,9 @@ class FormModule {
     `;
             baseParams.push(...amenities);
         }
-        // ---------------------------------------
+        // ============================================================
         // PROPERTY HIGHLIGHTS
-        // ---------------------------------------
+        // ============================================================
         if (Array.isArray(prop_highlights) && prop_highlights.length > 0) {
             const placeholders = prop_highlights.map(() => "?").join(",");
             baseWhere += `
@@ -694,13 +1015,25 @@ class FormModule {
     `;
             baseParams.push(...prop_highlights);
         }
-        // ---------------------------------------
+        // ============================================================
         // LOCATION
-        // ---------------------------------------
+        //
+        // searchLoc:
+        // {
+        //   city: "Anna Nagar (Chennai)",
+        //   district: "Chennai",
+        //   state: "Tamil Nadu"
+        // }
+        // ============================================================
         let city = null;
         let district = null;
         let state = null;
-        if (location) {
+        if (searchLoc?.city && searchLoc?.district && searchLoc?.state) {
+            city = String(searchLoc.city).trim();
+            district = String(searchLoc.district).trim();
+            state = String(searchLoc.state).trim();
+        }
+        else if (location) {
             const locationParts = String(location)
                 .split(",")
                 .map((item) => item.trim())
@@ -709,40 +1042,46 @@ class FormModule {
             district = locationParts[1] || null;
             state = locationParts[2] || null;
         }
-        // ---------------------------------------
+        // ============================================================
         // LOCATION WHERE
-        // ---------------------------------------
+        // ============================================================
         let locationWhere = "";
         const locationParams = [];
-        if (city && district && state) {
-            locationWhere = `
-      AND (
-        (
-          LOWER(TRIM(pf.city)) = LOWER(TRIM(?))
-          AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-          AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-        )
-        OR
-        (
-          LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-          AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-        )
-        OR
-        (
-          LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-        )
-      )
-    `;
-            locationParams.push(city, district, state, district, state, state);
+        if (city || district || state) {
+            const conditions = [];
+            if (city) {
+                conditions.push(`
+        LOWER(TRIM(pf.city)) LIKE LOWER(TRIM(?))
+      `);
+                locationParams.push(`%${city}%`);
+            }
+            if (district) {
+                conditions.push(`
+        LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
+      `);
+                locationParams.push(district);
+            }
+            if (state) {
+                conditions.push(`
+        LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
+      `);
+                locationParams.push(state);
+            }
+            if (conditions.length > 0) {
+                locationWhere = `
+        AND ${conditions.join(" AND ")}
+      `;
+            }
         }
-        // ---------------------------------------
-        // COUNT
-        // ---------------------------------------
+        // ============================================================
+        // COUNT QUERY
+        // ============================================================
         const countQuery = `
     SELECT COUNT(*) AS total
     FROM prop_form pf
 
     ${baseWhere}
+
     ${locationWhere}
   `;
         const countResult = await (0, helper_1.executeQuery)(countQuery, [
@@ -750,15 +1089,16 @@ class FormModule {
             ...locationParams,
         ]);
         const total = Number(countResult[0]?.total || 0);
-        // ---------------------------------------
-        // PROPERTY DATA
-        // ---------------------------------------
+        // ============================================================
+        // DATA QUERY
+        // ============================================================
         const dataQuery = `
     SELECT
       pf.id,
       pf.prop_id,
       pf.prop_name,
-
+      pf.user_id,
+      pf.type,
       pf.category,
       pc.name AS category_name,
 
@@ -769,16 +1109,21 @@ class FormModule {
       pf.state,
       pf.district,
       pf.city,
+
       pf.prop_area,
       pf.area_unit,
+
       pf.min_price,
       pf.max_price,
+
       pf.status,
+
       pf.bhk,
       pf.requested_at,
       pf.approved_at,
       pf.rejected_at,
       pf.rejected_reason,
+
       pf.plots,
       pf.purchased_at,
       pf.expired_at,
@@ -807,62 +1152,34 @@ class FormModule {
       ON psc.id = pf.sub_category
 
     ${baseWhere}
+
     ${locationWhere}
 
-    ${city && district && state
-            ? `
-          ORDER BY
-            CASE
-              WHEN
-                LOWER(TRIM(pf.city)) = LOWER(TRIM(?))
-                AND LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-                AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-              THEN 1
-
-              WHEN
-                LOWER(TRIM(pf.district)) = LOWER(TRIM(?))
-                AND LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-              THEN 2
-
-              WHEN
-                LOWER(TRIM(pf.state)) = LOWER(TRIM(?))
-              THEN 3
-
-              ELSE 4
-            END,
-            pf.id DESC
-        `
-            : `
-          ORDER BY pf.id DESC
-        `}
+    ORDER BY
+      pf.id DESC
 
     LIMIT ? OFFSET ?
   `;
-        // ---------------------------------------
+        // ============================================================
         // DATA PARAMS
-        // ---------------------------------------
+        // ============================================================
         const dataParams = [
             user_id || null,
             user_id || null,
             ...baseParams,
             ...locationParams,
+            limit,
+            offset,
         ];
-        // ---------------------------------------
-        // ORDER BY LOCATION PARAMS
-        // ---------------------------------------
-        if (city && district && state) {
-            dataParams.push(city, district, state, district, state, state);
-        }
-        // ---------------------------------------
-        // PAGINATION
-        // ---------------------------------------
-        dataParams.push(limit, offset);
+        // ============================================================
+        // EXECUTE
+        // ============================================================
         const properties = await (0, helper_1.executeQuery)(dataQuery, dataParams);
-        // ---------------------------------------
-        // COVER + ONE AMENITY + ONE HIGHLIGHT
-        // ---------------------------------------
+        // ============================================================
+        // DETAILS
+        // ============================================================
         const propertiesWithDetails = await Promise.all(properties.map(async (property) => {
-            const [media, amenities, highlights] = await Promise.all([
+            const [media, propertyAmenities, highlights] = await Promise.all([
                 this.getPropertyCover(property.prop_id),
                 this.getPropOneAmenity(property.prop_id),
                 this.getPropertyOneHigh(property.prop_id),
@@ -870,17 +1187,17 @@ class FormModule {
             return {
                 ...property,
                 cover_image: media || null,
-                amenities: Array.isArray(amenities)
-                    ? amenities[0] || null
-                    : amenities || null,
+                amenities: Array.isArray(propertyAmenities)
+                    ? propertyAmenities[0] || null
+                    : propertyAmenities || null,
                 property_highs: Array.isArray(highlights)
                     ? highlights[0] || null
                     : highlights || null,
             };
         }));
-        // ---------------------------------------
+        // ============================================================
         // RESPONSE
-        // ---------------------------------------
+        // ============================================================
         return {
             properties: propertiesWithDetails,
             pagination: {
@@ -952,10 +1269,10 @@ class FormModule {
             }
             : null;
     }
-    // static async getBookmarkProperties(data: any) {
+    // static async getBookmarkProperties(data: any) {  
     //   const { user_id, page = 1, limit = 10, offset = 0, type, search } = data;
     //   const countResult: any = await executeQuery(
-    //     `
+    //     `  
     //   SELECT COUNT(*) AS total
     //   FROM prop_bookmarks pb
     //   INNER JOIN prop_form pf
@@ -1177,7 +1494,7 @@ class FormModule {
     }
     static async getPropertyBookmarkStatus(user_id, prop_id) {
         const query = `
-    SELECT 1
+    SELECT *
     FROM prop_bookmarks
     WHERE user_id = ?
       AND prop_id = ?

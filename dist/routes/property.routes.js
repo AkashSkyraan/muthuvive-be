@@ -1474,4 +1474,5 @@ router.get("/recent-views",
   }
 */
 property_controller_1.PropertyController.getRecentViews);
+router.get("/user", property_controller_1.PropertyController.getPropertyUser);
 exports.default = router;

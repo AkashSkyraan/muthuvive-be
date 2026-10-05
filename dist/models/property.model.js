@@ -289,6 +289,41 @@ class PropertyModel {
             message: "Property bookmarked successfully",
         };
     }
+    // nearby
+    static async getPropertyUser({ user_id, type }) {
+        if (!user_id) {
+            return null;
+        }
+        // ========================================================
+        // ADMIN
+        // ========================================================
+        if (String(type).toLowerCase() === "admin") {
+            const rows = await (0, helper_1.executeQuery)(`
+        SELECT
+          id,
+          name,
+          role
+        FROM admins
+        WHERE id = ?
+        LIMIT 1
+        `, [user_id]);
+            return rows?.[0] || null;
+        }
+        // ========================================================
+        // NORMAL USER
+        // ========================================================
+        const rows = await (0, helper_1.executeQuery)(`
+      SELECT
+        id,
+        user_name,
+        email,
+        mobile
+      FROM users
+      WHERE id = ?
+      LIMIT 1
+      `, [user_id]);
+        return rows?.[0] || null;
+    }
 }
 exports.PropertyModel = PropertyModel;
 _a = PropertyModel;

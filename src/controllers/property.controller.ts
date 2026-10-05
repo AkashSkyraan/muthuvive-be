@@ -134,7 +134,7 @@ export class PropertyController {
     try {
       const data = validateRequest(req.body, addUpdatePropertyAreaSchema);
 
-      console.log(data)
+      console.log(data);
 
       const result = await PropertyModel.addUpdatePropertyArea(data);
 
@@ -599,8 +599,8 @@ export class PropertyController {
 
       const result = await FormModule.getRecentViews({
         user_id: Number(user_id),
-        page,
-        limit,
+        page: 1,
+        limit: 30,
       });
 
       return sendResponse(
@@ -615,6 +615,40 @@ export class PropertyController {
       console.error("Get Recent Views Error:", error);
 
       return sendResponse(res, 500, 0, [], "Internal server error", []);
+    }
+  }
+
+  static async getPropertyUser(req: Request, res: Response) {
+    try {
+      const user_id = Number(req.query.user_id);
+      const type = String(req.query.type || "")
+        .trim()
+        .toLowerCase();
+
+      if (!user_id) {
+        return sendResponse(res, 400, 0, [], "user_id is required", []);
+      }
+
+      if (!type) {
+        return sendResponse(res, 400, 0, [], "type is required", []);
+      }
+
+      const data = await PropertyModel.getPropertyUser({
+        user_id,
+        type,
+      });
+
+      if (!data) {
+        return sendResponse(res, 404, 0, [], "User not found", []);
+      }
+
+      return sendResponse(res, 200, 1, data, "User fetched successfully", []);
+    } catch (error: any) {
+      console.error("getPropertyUser error:", error);
+
+      return sendResponse(res, 500, 0, [], "Internal server error", [
+        error?.message || error,
+      ]);
     }
   }
 }

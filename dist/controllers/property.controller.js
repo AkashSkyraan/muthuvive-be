@@ -360,14 +360,42 @@ class PropertyController {
             }
             const result = await form_module_1.FormModule.getRecentViews({
                 user_id: Number(user_id),
-                page,
-                limit,
+                page: 1,
+                limit: 30,
             });
             return (0, helper_1.sendResponse)(res, 200, 1, [result], "Recent views fetched successfully", []);
         }
         catch (error) {
             console.error("Get Recent Views Error:", error);
             return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", []);
+        }
+    }
+    static async getPropertyUser(req, res) {
+        try {
+            const user_id = Number(req.query.user_id);
+            const type = String(req.query.type || "")
+                .trim()
+                .toLowerCase();
+            if (!user_id) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "user_id is required", []);
+            }
+            if (!type) {
+                return (0, helper_1.sendResponse)(res, 400, 0, [], "type is required", []);
+            }
+            const data = await property_model_1.PropertyModel.getPropertyUser({
+                user_id,
+                type,
+            });
+            if (!data) {
+                return (0, helper_1.sendResponse)(res, 404, 0, [], "User not found", []);
+            }
+            return (0, helper_1.sendResponse)(res, 200, 1, data, "User fetched successfully", []);
+        }
+        catch (error) {
+            console.error("getPropertyUser error:", error);
+            return (0, helper_1.sendResponse)(res, 500, 0, [], "Internal server error", [
+                error?.message || error,
+            ]);
         }
     }
 }

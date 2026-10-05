@@ -5,10 +5,10 @@
         "description": "Real Estate Websit API",
         "version": "1.0.0"
     },
-    "host": "muthuvives.skyraantech.com",
-    "basePath": "/server/api",
+    "host": "localhost:5001/api",
+    "basePath": "/",
     "schemes": [
-        "https"
+        "http"
     ],
     "paths": {
         "/upload": {
@@ -4012,6 +4012,28 @@
                                 "name": "main"
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/property/user": {
+            "get": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
                     }
                 }
             }

@@ -83,7 +83,7 @@ export const addUpdatePlanSchema = Joi.object({
 
   features: Joi.array().items(Joi.string().trim().min(1).max(255)).default([]),
 
-  status: Joi.string().valid("active", "active").default("active"),
+  status: Joi.string().valid("active", "inactive").default("active"),
 });
 
 export const addUpdateTestimonialSchema = Joi.object({

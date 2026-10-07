@@ -68,7 +68,7 @@ exports.addUpdatePlanSchema = joi_1.default.object({
         "any.required": "New amount is required",
     }),
     features: joi_1.default.array().items(joi_1.default.string().trim().min(1).max(255)).default([]),
-    status: joi_1.default.string().valid("active", "active").default("active"),
+    status: joi_1.default.string().valid("active", "inactive").default("active"),
 });
 exports.addUpdateTestimonialSchema = joi_1.default.object({
     id: joi_1.default.number().integer().optional(),

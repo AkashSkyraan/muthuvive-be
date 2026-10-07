@@ -2131,7 +2131,7 @@ export class FormModule {
           ...property,
           cover_image: media,
           amenities,
-          prop_highs : highlights,
+          property_highs : highlights,
         };
       }),
     );

@@ -11,6 +11,7 @@ const auth_model_1 = require("../models/auth.model");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const sms_service_1 = require("../services/sms.service");
 const user_model_1 = require("../models/user.model");
+const email_1 = require("../utils/email");
 // signup - 1
 //forgot pass - 2
 class AuthController {
@@ -29,6 +30,9 @@ class AuthController {
             const expiresAt = (0, helper_1.getOtpExpiry)();
             if (process.env.NODE_ENV === "production" && mobile) {
                 await (0, sms_service_1.sendSmsOTP)(mobile, otp);
+            }
+            if (email) {
+                await (0, email_1.sendEmailOTP)(email, otp, purpose);
             }
             await auth_model_1.AuthModel.createOtp(email, mobile, otp, purpose, expiresAt);
             const result = process.env.NODE_ENV === "development" ? [{ otp: otp }] : [];

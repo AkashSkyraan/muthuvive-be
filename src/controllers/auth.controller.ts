@@ -17,6 +17,7 @@ import { AuthModel } from "../models/auth.model";
 import bcrypt from "bcryptjs";
 import { sendSmsOTP } from "../services/sms.service";
 import { UserModel } from "../models/user.model";
+import { sendEmailOTP } from "../utils/email";
 // signup - 1
 //forgot pass - 2
 
@@ -43,6 +44,11 @@ export class AuthController {
       if (process.env.NODE_ENV === "production" && mobile) {
         await sendSmsOTP(mobile, otp);
       }
+
+      if (email) {
+        await sendEmailOTP(email, otp, purpose);
+      }
+
       await AuthModel.createOtp(email, mobile, otp, purpose, expiresAt);
 
       const result =

@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
-
+import dotenv from "dotenv";
+dotenv.config();
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT) || 587,
@@ -16,9 +17,7 @@ export const sendEmailOTP = async (
   purpose: number,
 ) => {
   const purposeText =
-    purpose === 1
-      ? "complete your registration"
-      : "login to your account";
+    purpose === 1 ? "complete your registration" : "login to your account";
 
   await transporter.sendMail({
     from: `"Muthu Vive Properties" <${process.env.SMTP_USER}>`,

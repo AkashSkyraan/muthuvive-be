@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmailOTP = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const transporter = nodemailer_1.default.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT) || 587,
@@ -15,9 +17,7 @@ const transporter = nodemailer_1.default.createTransport({
     },
 });
 const sendEmailOTP = async (email, otp, purpose) => {
-    const purposeText = purpose === 1
-        ? "complete your registration"
-        : "login to your account";
+    const purposeText = purpose === 1 ? "complete your registration" : "login to your account";
     await transporter.sendMail({
         from: `"Muthu Vive Properties" <${process.env.SMTP_USER}>`,
         to: email,

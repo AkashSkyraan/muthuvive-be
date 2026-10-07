@@ -230,6 +230,8 @@ export class FormModule {
       ],
     );
 
+    console.log(result);
+
     if (result.affectedRows === 0) {
       throw new Error("Property not found");
     }
@@ -1621,11 +1623,11 @@ export class FormModule {
       : null;
   }
 
-  // static async getBookmarkProperties(data: any) {  
+  // static async getBookmarkProperties(data: any) {
   //   const { user_id, page = 1, limit = 10, offset = 0, type, search } = data;
 
   //   const countResult: any = await executeQuery(
-  //     `  
+  //     `
   //   SELECT COUNT(*) AS total
   //   FROM prop_bookmarks pb
   //   INNER JOIN prop_form pf
@@ -1882,7 +1884,7 @@ export class FormModule {
 
           is_bookmarked: 1,
 
-          media,
+          cover_image : media,
           amenities,
           highlights,
         };
